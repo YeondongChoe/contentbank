@@ -616,6 +616,7 @@ export function Step2() {
   const [newQuizPrevItems, setNewQuizPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
+  console.log('newQuizItems', newQuizItems);
   const [newQuizItemSetting, setNewQuizItemSetting] = useState<any>();
 
   // 새 문항 문항 불러오기 api
@@ -2074,15 +2075,15 @@ export function Step2() {
           );
           return [...prevItems, ...filteredQuizItem];
         });
-        setFavoriteQuestionList((prevItems) => {
-          if (prevItems) {
-            return {
-              ...prevItems,
-              quizList: [],
-            };
-          }
-          return prevItems;
-        });
+        // setFavoriteQuestionList((prevItems) => {
+        //   if (prevItems) {
+        //     return {
+        //       ...prevItems,
+        //       quizList: [],
+        //     };
+        //   }
+        //   return prevItems;
+        // });
       } else {
         openToastifyAlert({
           type: 'error',
@@ -2101,9 +2102,23 @@ export function Step2() {
       );
       if (selectedQuizItem) {
         if (initialItems.length + 1 <= getItemCountData) {
-          const alreadyExists = initialItems.some(
-            (item) => item.code === selectedQuizItem.code,
-          );
+          const alreadyExists = initialItems.some((item) => {
+            // 현재 item의 code와 비교
+            if (item.code === selectedQuizItem.code) {
+              return true;
+            }
+
+            // item의 quizItemList의 quizCode와 비교
+            if (
+              item.quizItemList?.some(
+                (quiz) => quiz.quizCode === selectedQuizItem.code,
+              )
+            ) {
+              return true;
+            }
+
+            return false;
+          });
           if (alreadyExists) {
             openToastifyAlert({
               type: 'error',
@@ -2152,9 +2167,23 @@ export function Step2() {
       );
       if (selectedQuizItem) {
         if (initialItems.length + 1 <= getItemCountData) {
-          const alreadyExists = initialItems.some(
-            (item) => item.code === selectedQuizItem.code,
-          );
+          const alreadyExists = initialItems.some((item) => {
+            // 현재 item의 code와 비교
+            if (item.code === selectedQuizItem.code) {
+              return true;
+            }
+
+            // item의 quizItemList의 quizCode와 비교
+            if (
+              item.quizItemList?.some(
+                (quiz) => quiz.quizCode === selectedQuizItem.code,
+              )
+            ) {
+              return true;
+            }
+
+            return false;
+          });
           if (alreadyExists) {
             openToastifyAlert({
               type: 'error',
@@ -2217,13 +2246,23 @@ export function Step2() {
       const nonTextItems = group.filter((item) => item.type !== 'TEXT');
 
       if (textItem) {
-        const updatedNonTextQuizItems = nonTextItems.flatMap((item) =>
+        let updatedNonTextQuizItems = nonTextItems.flatMap((item) =>
           (item.quizItemList || []).map((quizItem) => ({
             ...quizItem,
             quizIdx: item.idx ?? 0, // 기본값 처리
             quizCode: item.code ?? '', // 기본값 처리
           })),
         );
+
+        // 중복 제거: quizIdx를 기준으로 중복 제거
+        const uniqueItemsMap = new Map<
+          number,
+          (typeof updatedNonTextQuizItems)[number]
+        >();
+        updatedNonTextQuizItems.forEach((item) => {
+          uniqueItemsMap.set(item.quizIdx, item); // 동일한 quizIdx의 경우 마지막 항목으로 덮어씌움
+        });
+        updatedNonTextQuizItems = Array.from(uniqueItemsMap.values());
 
         textItem.quizItemList = [
           ...(textItem.quizItemList || []),
@@ -2237,7 +2276,7 @@ export function Step2() {
     });
 
     setInitialItems(processedItems);
-  }, [similarItems]);
+  }, [similarItems, newQuizItems]);
 
   const clickAddFavoriteQuizItem = (code: string) => {
     // 즐겨찾기 리스트
@@ -2247,9 +2286,23 @@ export function Step2() {
       );
       if (selectedQuizItem) {
         if (initialItems.length + 1 <= getItemCountData) {
-          const alreadyExists = initialItems.some(
-            (item) => item.code === selectedQuizItem.code,
-          );
+          const alreadyExists = initialItems.some((item) => {
+            // 현재 item의 code와 비교
+            if (item.code === selectedQuizItem.code) {
+              return true;
+            }
+
+            // item의 quizItemList의 quizCode와 비교
+            if (
+              item.quizItemList?.some(
+                (quiz) => quiz.quizCode === selectedQuizItem.code,
+              )
+            ) {
+              return true;
+            }
+
+            return false;
+          });
           if (alreadyExists) {
             openToastifyAlert({
               type: 'error',
@@ -2307,7 +2360,7 @@ export function Step2() {
       //문항 번호 넣어주기
       newSimilarItems[similarItemIndex] = {
         ...newInitialItems[initialItemIndex],
-        //num: temp.num,
+        num: similarItemIndex,
       };
 
       newInitialItems[initialItemIndex] = {
@@ -2525,11 +2578,20 @@ export function Step2() {
                                   addQuizItem={() =>
                                     clickAddSimilarQuizItem(item.code)
                                   }
-                                  favoriteQuizItem={
-                                    (e) =>
-                                      item.isFavorite
-                                        ? handleFavorite(e, item.idx, true, '') //TODO: 수정필요
-                                        : handleFavorite(e, item.idx, false, '') //TODO: 수정필요
+                                  favoriteQuizItem={(e) =>
+                                    item.isFavorite
+                                      ? handleFavorite(
+                                          e,
+                                          item.idx,
+                                          true,
+                                          item.type,
+                                        )
+                                      : handleFavorite(
+                                          e,
+                                          item.idx,
+                                          false,
+                                          item.type,
+                                        )
                                   }
                                 ></MathviewerAccordion>
                               );
@@ -3245,8 +3307,8 @@ export function Step2() {
                                     return (
                                       <MathviewerAccordion
                                         key={item.idx}
-                                        componentWidth="600px"
-                                        width="450px"
+                                        componentWidth="650px"
+                                        width="600px"
                                         componentHeight="150px"
                                         onClick={() => {}}
                                         isBorder={true}
@@ -3256,8 +3318,6 @@ export function Step2() {
                                         index={item.idx}
                                         // title={
                                         //   quizCategory?.유형 || 'N/A'
-                                        //   // quizCategory?.유형?.split('^^^')[0] ||
-                                        //   // 'N/A'
                                         // }
                                         category={quizCategoryType}
                                         quizNum={item.num}
@@ -3269,21 +3329,20 @@ export function Step2() {
                                         addQuizItem={() =>
                                           clickAddNewQuizItem(item.code)
                                         }
-                                        favoriteQuizItem={
-                                          (e) =>
-                                            item.isFavorite
-                                              ? handleFavorite(
-                                                  e,
-                                                  item.idx,
-                                                  true,
-                                                  '',
-                                                ) //TODO: 수정필요
-                                              : handleFavorite(
-                                                  e,
-                                                  item.idx,
-                                                  false,
-                                                  '',
-                                                ) //TODO: 수정필요
+                                        favoriteQuizItem={(e) =>
+                                          item.isFavorite
+                                            ? handleFavorite(
+                                                e,
+                                                item.idx,
+                                                true,
+                                                item.type,
+                                              )
+                                            : handleFavorite(
+                                                e,
+                                                item.idx,
+                                                false,
+                                                item.type,
+                                              )
                                         }
                                       ></MathviewerAccordion>
                                     );
@@ -3363,19 +3422,15 @@ export function Step2() {
                                     return (
                                       <MathviewerAccordion
                                         key={item.idx}
-                                        componentWidth="600px"
-                                        width="450px"
+                                        componentWidth="650px"
+                                        width="600px"
                                         componentHeight="150px"
                                         onClick={() => {}}
                                         isBorder={true}
                                         isNewQuiz={true}
                                         data={item}
                                         index={item.idx}
-                                        title={
-                                          quizCategory?.유형 || 'N/A'
-                                          // quizCategory?.유형?.split('^^^')[0] ||
-                                          // 'N/A'
-                                        }
+                                        title={quizCategory?.유형 || 'N/A'}
                                         category={quizCategoryType}
                                         quizNum={item.num}
                                         isFavorite={item.isFavorite}
@@ -3387,21 +3442,20 @@ export function Step2() {
                                         addQuizItem={() =>
                                           clickAddFavoriteQuizItem(item.code)
                                         }
-                                        favoriteQuizItem={
-                                          (e) =>
-                                            item.isFavorite
-                                              ? handleFavorite(
-                                                  e,
-                                                  item.idx,
-                                                  true,
-                                                  '',
-                                                ) //TODO: 수정필요
-                                              : handleFavorite(
-                                                  e,
-                                                  item.idx,
-                                                  false,
-                                                  '',
-                                                ) //TODO: 수정필요
+                                        favoriteQuizItem={(e) =>
+                                          item.isFavorite
+                                            ? handleFavorite(
+                                                e,
+                                                item.idx,
+                                                true,
+                                                item.type,
+                                              )
+                                            : handleFavorite(
+                                                e,
+                                                item.idx,
+                                                false,
+                                                item.type,
+                                              )
                                         }
                                       ></MathviewerAccordion>
                                     );

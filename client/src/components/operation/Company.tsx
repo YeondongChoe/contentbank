@@ -61,16 +61,16 @@ export function Company() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [onSearch, setOnSearch] = useState<boolean>(false);
   //기업리스트 idx값
-  const [idxValue, setIdxValue] = useState<string>('1');
+  const [idxValue, setIdxValue] = useState<string | null>(null);
   //선택한 idx값
   const [selectedIdxValue, setSelectedIdxValue] = useState<string | null>(null);
   //탭
-  const [tabVeiw, setTabVeiw] = useState<string>('기업 관리');
+  const [tabView, setTabView] = useState<string>('기업 관리');
   //기업 정보 설정 값
   //기업명
   const [nameValue, setNameValue] = useState('');
   //기업코드
-  const [codeValue, setCodeValue] = useState('');
+  const [codeValue, setCodeValue] = useState<string | null>(null);
   //언어코드
   const [languageValue, setLanguageValue] = useState('한국어(KO)');
   //기업 식별자
@@ -228,8 +228,8 @@ export function Company() {
       setSearchValue('');
       companyListRefetch();
       //공란일때 선택된 리스트, 상세정보 초기화
-      setIdxValue('1');
-      setSelectedIdxValue('1');
+      setIdxValue(null);
+      setSelectedIdxValue(null);
     }
   };
 
@@ -241,7 +241,7 @@ export function Company() {
 
   // 기업 상세 정보 불러오기 api
   const getCompanyInfo = async () => {
-    if (idxValue === '') {
+    if (idxValue === null) {
       return null;
     } else {
       const res = await userInstance.get(`/v1/company/${idxValue}`);
@@ -256,6 +256,7 @@ export function Company() {
     meta: {
       errorMessage: 'get-companyInfo 에러 메세지',
     },
+    enabled: !!idxValue,
   });
   //다른 기업 클릭했을때 정보 불러오기
   useEffect(() => {
@@ -373,7 +374,7 @@ export function Company() {
       meta: {
         errorMessage: 'get-companyAccount 에러 메세지',
       },
-      enabled: !idxValue && idxValue !== '',
+      enabled: !!idxValue && tabView === '계정 관리',
     },
   );
 
@@ -392,24 +393,15 @@ export function Company() {
     }
   }, [idxValue, page]);
 
-  // useEffect(() => {
-  //   companyListRefetch();
-  // }, [companyAccountRefetch()]);
-
   // 아이디 중복 확인 && 토탈 유저 수
   const { data: totalData, refetch: totalDataRefetch } = useQuery({
-    queryKey: ['get-memberlist-total'],
+    queryKey: ['get-memberlist-total', idxValue],
     queryFn: () => getUserListTotal({ totalCount, idxValue }),
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
-    enabled: !!companyAccountData,
+    enabled: !!idxValue,
   });
-
-  //기업 변경될때마다 기업의 보유 계정 수가 변경되며 그때마다 토탈 계정 정보 api 재호출
-  useEffect(() => {
-    if (totalCount) totalDataRefetch();
-  }, [totalCount]);
 
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
@@ -420,8 +412,8 @@ export function Company() {
         <RegisterModal
           memberList={totalData?.data.data.list}
           refetch={companyAccountRefetch}
-          companyIdx={idxValue}
-          companyCode={codeValue}
+          companyIdx={idxValue as string}
+          companyCode={codeValue as string}
           companyName={nameValue}
           companyCorporateIdentifier={corporateIdentifierValue}
         />
@@ -450,7 +442,7 @@ export function Company() {
   });
 
   useEffect(() => {
-    if (codeValue !== undefined) companyAccessMenuRefetch();
+    if (codeValue !== null) companyAccessMenuRefetch();
   }, [codeValue]);
 
   useEffect(() => {
@@ -624,8 +616,8 @@ export function Company() {
       setLargeItemValue('');
       setDetailItemCodeValue('');
       setDetailItemValue('');
-      setIdxValue('1'); //응답받은 기업 idx값
-      setSelectedIdxValue('1'); //리스트 idx값
+      setIdxValue(null); //응답받은 기업 idx값
+      setSelectedIdxValue(null); //리스트 idx값
     },
   });
 
@@ -746,8 +738,8 @@ export function Company() {
         text: '삭제 되었습니다.',
       });
       companyListRefetch();
-      setIdxValue('');
-      setSelectedIdxValue('');
+      setIdxValue(null);
+      setSelectedIdxValue(null);
     },
   });
   //계정 활성화 비활성화
@@ -780,7 +772,7 @@ export function Company() {
         type: 'success',
         text: '변경 되었습니다.',
       });
-      companyAccountRefetch();
+      //companyAccountRefetch();
     },
   });
 
@@ -864,7 +856,7 @@ export function Company() {
               fontSize="14px"
               type="text"
               borderradius="5px"
-              value={codeValue}
+              value={codeValue as string}
               disabled
             />
           </InputWrapper>
@@ -1429,16 +1421,16 @@ export function Company() {
                 menu={menuList}
                 width={'450px'}
                 lineStyle
-                selected={tabVeiw}
-                setTabVeiw={setTabVeiw}
+                selected={tabView}
+                setTabVeiw={setTabView}
                 onClickTab={changeTab}
               />
-              {idxValue !== '' && tabVeiw === '기업 관리' && (
+              {idxValue !== '' && tabView === '기업 관리' && (
                 <Button
                   buttonType="button"
                   onClick={() => {
-                    setIdxValue('');
-                    setSelectedIdxValue('');
+                    setIdxValue(null);
+                    setSelectedIdxValue(null);
                   }}
                   $padding="10px"
                   height={'34px'}
@@ -1450,7 +1442,7 @@ export function Company() {
                   <span>+기업 추가</span>
                 </Button>
               )}
-              {tabVeiw === '계정 관리' && (
+              {tabView === '계정 관리' && (
                 <TabButtonWrapper>
                   <Button
                     buttonType="button"
@@ -1481,8 +1473,8 @@ export function Company() {
                 </TabButtonWrapper>
               )}
             </TabWrapper>
-            {tabVeiw === '기업 관리' && <>{renderCompanyInputFields()}</>}
-            {tabVeiw === '기업 관리' && (
+            {tabView === '기업 관리' && <>{renderCompanyInputFields()}</>}
+            {tabView === '기업 관리' && (
               <ButtonWrapper>
                 <Button
                   buttonType="button"
@@ -1506,7 +1498,7 @@ export function Company() {
                   <Button
                     buttonType="button"
                     onClick={() => {
-                      setIdxValue('1');
+                      setIdxValue(null);
                     }}
                     $padding="10px"
                     height={'35px'}
@@ -1519,8 +1511,8 @@ export function Company() {
                 )}
               </ButtonWrapper>
             )}
-            {tabVeiw === '계정 관리' && <>{renderAccountInputFields()}</>}
-            {tabVeiw === '계정 관리' && isModalOpen && (
+            {tabView === '계정 관리' && <>{renderAccountInputFields()}</>}
+            {tabView === '계정 관리' && isModalOpen && (
               <>{accessMenuSettingModal()}</>
             )}
           </ListWrapper>
