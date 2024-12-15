@@ -1187,7 +1187,8 @@ export function ContentList({
                   {item ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.process ? (
-                        <span key={` ${item.process}`}>{item.process}</span>
+                        // <span key={` ${item.process}`}>{item.process}</span>
+                        <span></span>
                       ) : (
                         <span></span>
                       )}
