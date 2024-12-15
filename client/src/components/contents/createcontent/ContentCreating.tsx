@@ -197,7 +197,7 @@ export function ContentCreating({
 
   //   try {
   //     const response = await axios.post(
-  //       'https://j-dev01.dreamonesys.co.kr/file',
+  //       'https://web-stage.olympiad.ac/file',
   //       formData,
   //       {
   //         headers: {
@@ -211,7 +211,7 @@ export function ContentCreating({
   //       .toISOString()
   //       .split('T')[0]
   //       .split('-');
-  //     const newUrl = `https://j-dev01.dreamonesys.co.kr/file/${year}/${month}/${day}/${imgUUID}.png`;
+  //     const newUrl = `https://web-stage.olympiad.ac/file/${year}/${month}/${day}/${imgUUID}.png`;
 
   //     return newUrl;
   //   } catch (error) {

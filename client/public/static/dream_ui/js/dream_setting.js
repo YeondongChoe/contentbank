@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 // 업로드 다운로드 요청 url
-var dream_server_url = 'https://j-dev01.dreamonesys.co.kr/file'; // 드림원시스 쪽 노드서버 연결
+var dream_server_url = 'https://web-stage.olympiad.ac/file'; // 드림원시스 쪽 노드서버 연결
 
 // 업로드 이미지 URL
 // var uploaded_img_url = 'https://itex-dev-image.s3.ap-northeast-2.amazonaws.com';
