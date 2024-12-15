@@ -383,7 +383,6 @@ export function OptionList({
     // setSourceOptions([]);
     // 기존 출처 데이터를 초기화
     setSourceOptions([]);
-    setSelectedValues({});
     setTitleArr([]);
     setOptionsList([
       { name: '', categories: [] },
@@ -392,6 +391,7 @@ export function OptionList({
       { name: '', categories: [] },
       { name: '', categories: [] },
     ]);
+    setSelectedValues({});
 
     if (quizCategory) {
       // `titleArr`와 `optionsList` 업데이트
@@ -405,8 +405,12 @@ export function OptionList({
 
       setOptionsList(updatedOptionsList);
 
-      quizCategory.map((el, index) => {
-        setSelectedValues({ [index]: el.출처 });
+      // 기존 값을 유지하면서 새 값 병합
+      setSelectedValues((prev) => {
+        const newValues = Object.fromEntries(
+          quizCategory.map((el, index) => [index, el.출처]),
+        );
+        return { ...prev, ...newValues };
       });
     }
   }, [onItemClickData]); // 체크된 값이 변할때
