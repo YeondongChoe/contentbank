@@ -203,9 +203,77 @@ export function Step3() {
   };
   //workSheetIdx 관리해서 넘겨주기
   const goBackMainPopup = () => {
+    const quizList = getLocalData.data;
+
+    const mergedQuizList = (() => {
+      const groupMap = quizList.reduce(
+        (acc: Record<string, any[]>, item: any) => {
+          if (item.groupCode) {
+            acc[item.groupCode] = acc[item.groupCode] || [];
+            acc[item.groupCode].push(item);
+          }
+          return acc;
+        },
+        {},
+      );
+
+      const result = quizList.map((quiz: any) => {
+        if (quiz.groupCode && groupMap[quiz.groupCode]) {
+          const group = groupMap[quiz.groupCode];
+          const textType = group.find(
+            (groupItem: any) => groupItem.type === 'TEXT',
+          );
+
+          if (textType) {
+            let sortCounter = 2; // Sort starts from 2 for non-TEXT items.
+            group.forEach((groupItem: any) => {
+              if (groupItem !== textType) {
+                // Add items to textItem's quizItemList with appropriate sort value
+                groupItem.quizItemList.forEach(
+                  (quizItem: any, index: number) => {
+                    textType.quizItemList.push({
+                      ...quizItem,
+                      quizIdx: groupItem.idx,
+                      quizCode: groupItem.code,
+                      quizFavorite: groupItem.isFavorite,
+                      sort: sortCounter++,
+                    });
+                  },
+                );
+                groupItem.quizItemList = []; // Clear quizItemList for merged items
+              }
+            });
+            console.log('textType', textType);
+            // Ensure textItem's own sort is set to 1
+            textType.quizItemList = textType.quizItemList.map(
+              (quizItem: any, index: number) => ({
+                ...quizItem,
+                sort: index + 1,
+                quizIdx:
+                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                    ? textType.idx
+                    : quizItem.quizIdx,
+                quizCode:
+                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                    ? textType.code
+                    : quizItem.quizCode,
+                quizFavorite:
+                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                    ? textType.isFavorite
+                    : quizItem.isFavorite,
+              }),
+            );
+          }
+        }
+        return quiz;
+      });
+
+      return result.filter((item: any) => item.quizItemList.length > 0);
+    })();
+
     const data = {
       data: {
-        quizList: getLocalData.data,
+        quizList: mergedQuizList,
         isEditWorkbook: isEditWorkbook,
         title: nameValue,
         examiner: contentAuthor,
