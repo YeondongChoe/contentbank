@@ -213,16 +213,36 @@ export function ContentEdit({
     // }
 
     if (onItemClickData) {
-      const quizCategory = onItemClickData?.quizCategoryList[0]?.quizCategory;
+      const quizCategories = onItemClickData?.quizCategoryList.map(
+        (item) => item.quizCategory,
+      );
 
-      console.log('quizCategory-------------', quizCategory);
+      console.log('리스트 선택 시 기존값 셋팅-------------', quizCategories);
 
-      // 값이 존재하면 상태값을 업데이트
-      if (quizCategory) {
-        setSelectedQuestionType((quizCategory?.문항타입 as string) || '');
-        setSelectedDifficulty((quizCategory?.난이도 as string) || '');
-        setSelectedDifficultyCommon((quizCategory?.난이도공통 as string) || '');
-        setSelectedSource((quizCategory?.sources as Source[]) || []);
+      if (quizCategories) {
+        // '문항타입' 설정
+        const questionType = quizCategories.find(
+          (category) => category?.문항타입,
+        )?.문항타입;
+        setSelectedQuestionType((questionType as string) || '');
+
+        // '난이도' 설정
+        const difficulty = quizCategories.find(
+          (category) => category?.난이도,
+        )?.난이도;
+        setSelectedDifficulty((difficulty as string) || '');
+
+        // '난이도공통' 설정
+        const difficultyCommon = quizCategories.find(
+          (category) => category?.난이도공통,
+        )?.난이도공통;
+        setSelectedDifficultyCommon((difficultyCommon as string) || '');
+
+        // 'sources' 설정
+        const sources = quizCategories.find(
+          (category) => category?.sources,
+        )?.sources;
+        setSelectedSource((sources as Source[]) || []);
       }
     }
   }, [onItemClickData]);

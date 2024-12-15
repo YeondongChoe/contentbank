@@ -98,7 +98,7 @@ export function ClassificationEdit({
 
   //리스트 솔팅 정렬
   const [columnsCount, setColumnsCount] = useState<number>(2);
-  const [itemHeight, setItemHeight] = useState<string | undefined>('250px');
+  const [itemHeight, setItemHeight] = useState<string | undefined>('300px');
   useEffect(() => {}, [columnsCount, itemHeight]);
 
   const [radio1depthCheck, setRadio1depthCheck] = useState<RadioStateType>({
@@ -204,7 +204,8 @@ export function ClassificationEdit({
   const [categoryNameList, setCategoryNameList] = useState<string>('');
   //첫번째 카테고리 선택 리스트
   const [categoriesA, setCategoriesA] = useState<ItemCategoryType[]>([]);
-  const [categoriesDD, setCategoriesDD] = useState<ItemCategoryType[]>([]);
+  const [categoriesDD1, setCategoriesDD1] = useState<ItemCategoryType[]>([]);
+  const [categoriesDD2, setCategoriesDD2] = useState<ItemCategoryType[]>([]);
 
   // 메뉴 목록 조회 api (셋팅값)
   const getMenuSetting = async () => {
@@ -317,7 +318,8 @@ export function ClassificationEdit({
     if (idxNamePairsDD[0] && Array.isArray(idxNamePairsDD[0])) {
       console.log('idxNamePairsDD ----- ', idxNamePairsDD);
       console.log('idxNamePairsDD[0].idx ----- ', idxNamePairsDD[0][0].idx);
-      fetchCategoryItems(idxNamePairsDD[0][0].idx, setCategoriesDD);
+      fetchCategoryItems(idxNamePairsDD[0][0].idx, setCategoriesDD1);
+      fetchCategoryItems(idxNamePairsDD[0][1].idx, setCategoriesDD2);
     }
   }, [idxNamePairsA, idxNamePairsDD]);
 
@@ -339,8 +341,8 @@ export function ClassificationEdit({
 
   useEffect(() => {
     console.log('categoriesA ----- ', categoriesA);
-    console.log('categoriesDD ----- ', categoriesDD);
-  }, [categoriesA, categoriesDD]);
+    console.log('categoriesDD ----- ', categoriesDD1, categoriesDD2);
+  }, [categoriesA, categoriesDD1, categoriesDD2]);
 
   const [radioChecks, setRadioChecks] = useState<Record<string, any>>({});
   const [selectedDepth, setSelectedDepth] = useState<Record<string, string>>(
@@ -367,27 +369,17 @@ export function ClassificationEdit({
     // 선택된 값의 뎁스 추출
     const currentDepthIndex = parseInt(depth.replace('depth', ''), 10);
 
-    // 선택된 뎁스를 기준으로 이후 nextLists 초기화 ?? TODO : 초기화
-    setNextLists((prev) =>
-      Object.keys(prev).reduce(
-        (acc, key) => {
-          const keyDepthIndex = parseInt(key.replace('depth', ''), 10);
-          if (keyDepthIndex <= currentDepthIndex + 1) {
-            acc[key] = prev[key]; // 현재 뎁스와 이전 뎁스 값 유지
-          }
-          return acc;
-        },
-        {} as Record<string, any>,
-      ),
-    );
-
-    console.log(`NextLists reset after depth: ${depth}`);
+    // 4뎁스 선택이후 아이템트리 api 호출
+    // if (currentDepthIndex > 3 && !isPending) {
+    //   categoryItemTreeDataMutate();
+    // }
 
     // 선택된 값을 저장
     setSelectedDepth((prev) => ({
       ...prev,
-      [depth]: value,
+      [depth]: name,
     }));
+
     setRadioChecks((prev) => ({
       ...prev,
       [depth]: {
@@ -526,9 +518,9 @@ export function ClassificationEdit({
     }
   };
   // 분류 바꾸기 (등록) api
-  const putClassification = async (data: ClassificationStateType) => {
-    const res = await classificationInstance.put(`/v1/item/quiz`, data);
-    console.log('putClassification', res);
+  const putClassification = async (data: QuizClassificationData) => {
+    const res = await classificationInstance.put(`/v1/item`, data);
+    console.log('데이터 최종 등록 후 리턴값 --- ', res);
     return res;
   };
 
