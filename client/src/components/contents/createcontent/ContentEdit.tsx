@@ -167,51 +167,6 @@ export function ContentEdit({
 
   // 리스트 선택시 기존값 셋팅
   useEffect(() => {
-    // if (onItemClickData) {
-    //   const quizCategoryList = onItemClickData?.quizCategoryList;
-
-    //   console.log('quizCategoryList-------------', quizCategoryList);
-
-    //   let foundSources: any[] = [];
-    //   let foundQuestionType = '';
-    //   let foundDifficulty = '';
-
-    //   // 값이 존재하면 상태값을 업데이트
-    //   quizCategoryList.forEach((item) => {
-    //     const quizCategory = item?.quizCategory;
-
-    //     console.log(
-    //       '값이 존재하면 상태값을 업데이트quizCategory -------',
-    //       quizCategory,
-    //     );
-
-    //     if (quizCategory) {
-    //       if (quizCategory.sources && Array.isArray(quizCategory.sources)) {
-    //         foundSources = [...foundSources, ...quizCategory.sources];
-    //       }
-    //       if (quizCategory.문항타입 && !foundQuestionType) {
-    //         foundQuestionType = quizCategory.문항타입;
-    //       }
-    //       if (quizCategory.난이도 && !foundDifficulty) {
-    //         foundDifficulty = quizCategory.난이도;
-    //       }
-    //     }
-    //   });
-
-    //   console.log(
-    //     '값이 존재하면 상태값을 업데이트 최종 -------',
-    //     foundQuestionType,
-    //     foundDifficulty,
-    //     foundSources,
-    //   );
-
-    //   setSelectedQuestionType(foundQuestionType);
-    //   setSelectedDifficulty(foundDifficulty);
-    //   setSelectedSource(foundSources);
-
-    //   // 데이터 바뀔시 실행
-    // }
-
     if (onItemClickData) {
       const quizCategories = onItemClickData?.quizCategoryList.map(
         (item) => item.quizCategory,
@@ -517,6 +472,11 @@ export function ContentEdit({
       }
 
       // 첫번째 출처 값
+      // 교재
+      const filteredCategoriesF: any[] = [];
+      //내신
+      const filteredCategoriesG: any[] = [];
+      //기출
       const filteredCategoriesH: any[] = [];
       // 두번째 추가정보
       const filteredCategoriesDD: any[] = [];
@@ -549,11 +509,40 @@ export function ContentEdit({
             viewList: viewList[index] === 'true',
           }));
 
-          if (menuDetail.groupCode == 'H') {
-            setIdxNamePairsH((prev) => [...prev, ...pairs]);
+          if (menuDetail.groupCode == 'MATERIALS') {
+            setIdxNamePairsF((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
           }
+          if (menuDetail.groupCode == 'INTERNAL') {
+            setIdxNamePairsG((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'EXAMS') {
+            setIdxNamePairsH((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          // if (menuDetail.groupCode == 'MOREINFO') {
+          //   setIdxNamePairsDD((prev) => {
+          //     const uniquePairs = pairs.filter(
+          //       (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+          //     );
+          //     return [...prev, ...uniquePairs];
+          //   });
+          // }
 
-          if (menuDetail.groupCode == 'H') {
+          if (menuDetail.groupCode == 'EXAMS') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -563,7 +552,27 @@ export function ContentEdit({
               viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesH.push(categories);
-          } else if (menuDetail.groupCode == 'DD') {
+          } else if (menuDetail.groupCode == 'MATERIALS') {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              viewList: viewList[idxIndex] === 'true',
+            }));
+            filteredCategoriesF.push(categories);
+          } else if (menuDetail.groupCode == 'INTERNAL') {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              viewList: viewList[idxIndex] === 'true',
+            }));
+            filteredCategoriesG.push(categories);
+          } else if (menuDetail.groupCode == 'MOREINFO') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -576,22 +585,8 @@ export function ContentEdit({
           }
         },
       );
-
-      const idxListH = filteredCategoriesH
-        .flat()
-        // .filter((category) => category.inputType === 'SELECT')
-        .map((category) => category.idx)
-        .join(',');
-      const idxListDD = filteredCategoriesDD
-        .flat()
-        // .filter((category) => category.inputType === 'SELECT')
-        .map((category) => category.idx)
-        .join(',');
-
-      console.log('inputType 이 셀렉트인것만', idxListH, '/', idxListDD);
     }
   }, [menuSettingData]);
-
   // 카테고리의 그룹 아이템 조회
   const fetchCategoryItems = async (
     typeList: string,
@@ -750,7 +745,13 @@ export function ContentEdit({
   const quizCategory = useMemo(() => {
     console.log('onItemClickData 클릭된 아이템 ----', onItemClickData);
     if (onItemClickData) {
-      const category = onItemClickData.quizCategoryList[0]?.quizCategory;
+      // `sources` 출처가 포함된 quizCategoryList항목 찾기
+      const category = onItemClickData.quizCategoryList.find(
+        (item) => item.quizCategory?.sources,
+      )?.quizCategory;
+
+      // console.log('category?.sources 출처 --------', category?.sources);
+
       return {
         문항타입: category?.문항타입 || '',
         난이도: category?.난이도 || '',
@@ -761,6 +762,7 @@ export function ContentEdit({
     return {
       문항타입: '',
       난이도: '',
+      난이도공통: '',
       sources: [],
     };
   }, [onItemClickData]);

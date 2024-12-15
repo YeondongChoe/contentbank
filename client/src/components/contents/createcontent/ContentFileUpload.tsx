@@ -291,7 +291,7 @@ export function ContentFileUpload({
             viewList: viewList[index] === 'true',
           }));
 
-          if (menuDetail.groupCode == 'F') {
+          if (menuDetail.groupCode == 'MATERIALS') {
             setIdxNamePairsF((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
@@ -299,7 +299,7 @@ export function ContentFileUpload({
               return [...prev, ...uniquePairs];
             });
           }
-          if (menuDetail.groupCode == 'G') {
+          if (menuDetail.groupCode == 'INTERNAL') {
             setIdxNamePairsG((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
@@ -307,7 +307,7 @@ export function ContentFileUpload({
               return [...prev, ...uniquePairs];
             });
           }
-          if (menuDetail.groupCode == 'H') {
+          if (menuDetail.groupCode == 'EXAMS') {
             setIdxNamePairsH((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
@@ -315,7 +315,7 @@ export function ContentFileUpload({
               return [...prev, ...uniquePairs];
             });
           }
-          // if (menuDetail.groupCode == 'DD') {
+          // if (menuDetail.groupCode == 'MOREINFO') {
           //   setIdxNamePairsDD((prev) => {
           //     const uniquePairs = pairs.filter(
           //       (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
@@ -324,7 +324,7 @@ export function ContentFileUpload({
           //   });
           // }
 
-          if (menuDetail.groupCode == 'H') {
+          if (menuDetail.groupCode == 'EXAMS') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -334,7 +334,7 @@ export function ContentFileUpload({
               viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesH.push(categories);
-          } else if (menuDetail.groupCode == 'F') {
+          } else if (menuDetail.groupCode == 'MATERIALS') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -344,7 +344,7 @@ export function ContentFileUpload({
               viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesF.push(categories);
-          } else if (menuDetail.groupCode == 'G') {
+          } else if (menuDetail.groupCode == 'INTERNAL') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -354,7 +354,7 @@ export function ContentFileUpload({
               viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesG.push(categories);
-          } else if (menuDetail.groupCode == 'DD') {
+          } else if (menuDetail.groupCode == 'MOREINFO') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],

@@ -269,7 +269,7 @@ export function ClassificationEdit({
           const searchList = menuDetail?.searchList?.split(',');
           const viewList = menuDetail?.viewList?.split(',');
 
-          if (menuDetail.groupCode == 'DD') {
+          if (menuDetail.groupCode == 'MOREINFO') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],

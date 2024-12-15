@@ -423,6 +423,11 @@ export function ContentCopyEdit({
       }
 
       // 첫번째 출처 값
+      // 교재
+      const filteredCategoriesF: any[] = [];
+      //내신
+      const filteredCategoriesG: any[] = [];
+      //기출
       const filteredCategoriesH: any[] = [];
       // 두번째 추가정보
       const filteredCategoriesDD: any[] = [];
@@ -455,11 +460,40 @@ export function ContentCopyEdit({
             viewList: viewList[index] === 'true',
           }));
 
-          if (menuDetail.groupCode == 'H') {
-            setIdxNamePairsH((prev) => [...prev, ...pairs]);
+          if (menuDetail.groupCode == 'MATERIALS') {
+            setIdxNamePairsF((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
           }
+          if (menuDetail.groupCode == 'INTERNAL') {
+            setIdxNamePairsG((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'EXAMS') {
+            setIdxNamePairsH((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          // if (menuDetail.groupCode == 'MOREINFO') {
+          //   setIdxNamePairsDD((prev) => {
+          //     const uniquePairs = pairs.filter(
+          //       (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+          //     );
+          //     return [...prev, ...uniquePairs];
+          //   });
+          // }
 
-          if (menuDetail.groupCode == 'H') {
+          if (menuDetail.groupCode == 'EXAMS') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -469,7 +503,27 @@ export function ContentCopyEdit({
               viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesH.push(categories);
-          } else if (menuDetail.groupCode == 'DD') {
+          } else if (menuDetail.groupCode == 'MATERIALS') {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              viewList: viewList[idxIndex] === 'true',
+            }));
+            filteredCategoriesF.push(categories);
+          } else if (menuDetail.groupCode == 'INTERNAL') {
+            const categories = idxList.map((idx, idxIndex) => ({
+              idx,
+              name: nameList[idxIndex],
+              code: nameList[idxIndex],
+              inputType: inputList[idxIndex] === 'true',
+              searchList: searchList[idxIndex] === 'true',
+              viewList: viewList[idxIndex] === 'true',
+            }));
+            filteredCategoriesG.push(categories);
+          } else if (menuDetail.groupCode == 'MOREINFO') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -482,19 +536,6 @@ export function ContentCopyEdit({
           }
         },
       );
-
-      const idxListH = filteredCategoriesH
-        .flat()
-        // .filter((category) => category.inputType === 'SELECT')
-        .map((category) => category.idx)
-        .join(',');
-      const idxListDD = filteredCategoriesDD
-        .flat()
-        // .filter((category) => category.inputType === 'SELECT')
-        .map((category) => category.idx)
-        .join(',');
-
-      console.log('inputType 이 셀렉트인것만', idxListH, '/', idxListDD);
     }
   }, [menuSettingData]);
 

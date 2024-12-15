@@ -71,26 +71,13 @@ export function OptionList({
     }[]
   >([]);
 
-  const [optionsList1, setOptionsList1] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
-  const [optionsList2, setOptionsList2] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
-  const [optionsList3, setOptionsList3] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
-  const [optionsList4, setOptionsList4] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
-  const [optionsList5, setOptionsList5] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
+  const [optionsList, setOptionsList] = useState<CategoryList[]>([
+    { name: '', categories: [] },
+    { name: '', categories: [] },
+    { name: '', categories: [] },
+    { name: '', categories: [] },
+    { name: '', categories: [] },
+  ]);
 
   const [sourceArr, setSourceArr] = useState<any[]>([]);
   const [sourceValue, setSourceValue] = useState<{
@@ -233,6 +220,8 @@ export function OptionList({
 
   const getCategoryList = (value: string): ItemCategoryType[] => {
     const list = lists.find((list) => list.name === value);
+    console.log('기존 등록 출처인덱스 리스트의 카테고리값 -----', list);
+
     return list ? list.categories : [];
   };
 
@@ -258,7 +247,7 @@ export function OptionList({
   }, [selectedValue]);
 
   useEffect(() => {
-    // console.log('sourceValue 변경시 넘어온 출처값----------', sourceValue);
+    console.log('sourceValue 변경시 넘어온 출처값----------', sourceValue);
 
     // sourceValue의 객체 요소 중 하나라도 키값이 빈 문자열이 아닐 때
     if (
@@ -386,57 +375,68 @@ export function OptionList({
   }, [totalSource, selectedValues]);
 
   const [titleArr, setTitleArr] = useState<string[]>([]);
+
+  // 수정 페이지에서 기존의 값 출처 배열에 넣기
   useEffect(() => {
-    console.log('onItemClickData---기존 출처값 ', quizCategory);
-    // console.log('quizCategory---기존 출처값', quizCategory);
+    console.log('onItemClickData---기존 출처값 ', onItemClickData);
+    console.log('quizCategory---기존 출처값', quizCategory);
+    // setSourceOptions([]);
+    // 기존 출처 데이터를 초기화
     setSourceOptions([]);
+    setSelectedValues({});
+    setTitleArr([]);
+    setOptionsList([
+      { name: '', categories: [] },
+      { name: '', categories: [] },
+      { name: '', categories: [] },
+      { name: '', categories: [] },
+      { name: '', categories: [] },
+    ]);
 
     if (quizCategory) {
-      // 기존 출처값 배열을
-      // 객체내 출처키의 값이 해당하는 값들을 각기
+      // `titleArr`와 `optionsList` 업데이트
       const titleArr = quizCategory.map((el) => el.출처);
       setTitleArr(titleArr);
-      console.log('titleArr -----', '출처', titleArr);
-      const arr = [];
-      for (let i = 0; i < titleArr.length; i++) {
-        arr.push(quizCategory[i].출처);
 
-        if (i == 0) {
-          setOptionsList1({
-            name: titleArr[i],
-            categories: quizCategory[i],
-          });
-        }
-        if (i == 1) {
-          setOptionsList2({
-            name: titleArr[i],
-            categories: quizCategory[i],
-          });
-        }
-        if (i == 2) {
-          setOptionsList3({
-            name: titleArr[i],
-            categories: quizCategory[i],
-          });
-        }
-        if (i == 3) {
-          setOptionsList4({
-            name: titleArr[i],
-            categories: quizCategory[i],
-          });
-        }
-        if (i == 4) {
-          setOptionsList5({
-            name: titleArr[i],
-            categories: quizCategory[i],
-          });
-        }
-      }
+      const updatedOptionsList = quizCategory.map((el, index) => ({
+        name: el.출처,
+        categories: el || [],
+      }));
 
-      // console.log('해당 순번에 들어갈 출처리스트', arr);
-      setSelectedValues(arr);
+      setOptionsList(updatedOptionsList);
+
+      quizCategory.map((el, index) => {
+        setSelectedValues({ [index]: el.출처 });
+      });
     }
   }, [onItemClickData]); // 체크된 값이 변할때
+
+  useEffect(() => {
+    console.log('들어온 옵션 리스트 값 ----- ', optionsList);
+
+    optionsList.map((item, index) => {
+      if (item.name !== '') getCategoryList(item.name);
+    });
+    // getCategoryList('기출');
+    // if (optionsList[0].name !== '') {
+    // const list = lists.find((list) => list.name === value);
+    // return list ? list.categories : [];
+    //   const list2 = optionsList.filter((item) => item.name === value);
+    //   console.log('불러진 출처인덱스 리스트의 카테고리값 -----', list2);
+    // }
+
+    // `selectedValues` 업데이트
+    // const selectedValuesMap = [];
+    // optionsList.map((item, index) =>
+    //   selectedValuesMap.push({ [index]: item.name }),
+    // );
+    // setSelectedValues(selectedValuesMap);
+
+    // 셀렉트 선택이후 옵션에 속한 버튼값보여주기
+    // setSelectedValues((prev) => ({ ...prev, [index]: value }));
+  }, [optionsList]);
+
+  console.log('들어온  ------ SelectedValues[index] ----- ', selectedValues);
 
   useEffect(() => {
     //버튼
@@ -513,7 +513,6 @@ export function OptionList({
                   setSelected={setSelected}
                 />
               </SelectMapWrapper>
-
               {selectedValues[index] &&
                 getCategoryList(selectedValues[index]).map((category, idx) => (
                   <Options
