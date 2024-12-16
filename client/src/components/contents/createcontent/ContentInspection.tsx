@@ -15,8 +15,10 @@ import {
   openToastifyAlert,
   Select,
   ValueNone,
+  AlertBar,
 } from '../..';
-import { classificationInstance, quizService } from '../../../api/axios';
+import { quizService } from '../../../api/axios';
+import { getMyInfo } from '../../../api/user';
 import { useModal } from '../../../hooks';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { QuizListType, QuizType } from '../../../types';
@@ -42,12 +44,20 @@ export function ContentInspection({
   const [checkedList, setCheckedList] = useState<string[]>([]);
   // 선택된 리스트 아이템 데이터
   const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
-
   const [dataFetched, setDataFetched] = useState(false);
   // alert
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [inspectionArea, setInspectionArea] = useState<string>('');
   const [inspectionReason, setInspectionReason] = useState<string>('');
+  const [status, setStatus] = useState<string | null>(null);
+
+  const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+  const closeSuccessAlert = () => {
+    setIsSuccessAlertOpen(false);
+    window.opener.postMessage('popupClosed', '*');
+    window.opener.localStorage.clear();
+    window.close();
+  };
 
   // 수정시 체크리스트 값 가져오기
   useEffect(() => {
@@ -62,11 +72,25 @@ export function ContentInspection({
       setParsedStoredQuizList(JSON.parse(storedQuizList));
 
       // 로컬스토리지 값 다받은 뒤 초기화
-      window.opener.localStorage.clear();
+      // window.opener.localStorage.clear();
       return;
     }
   }, []);
   console.log('parsedStoredQuizList', parsedStoredQuizList);
+  console.log('quizList', quizList);
+
+  // 마이페이지 데이터 불러오기 api
+  const {
+    isLoading,
+    data: myInfoData,
+    refetch,
+  } = useQuery({
+    queryKey: ['get-myInfo'],
+    queryFn: getMyInfo,
+    meta: {
+      errorMessage: 'get-myInfo 에러 메세지',
+    },
+  });
 
   // 전역에서 가져온 체크된 리스트값을 수정용 검수 문항 상세 조회
   const getInspectionQuiz = async () => {
@@ -97,6 +121,44 @@ export function ContentInspection({
       setDataFetched(true);
     }
   }, [inspectionQuizData, setQuizList]);
+
+  const postProcess = async () => {
+    const data = {
+      idx: 1,
+      currentStep: 2,
+      status: status,
+      comment: '빨리빨리',
+    };
+    return await quizService.put(`/v1/process`, data);
+  };
+
+  const { mutate: postProcessData } = useMutation({
+    mutationFn: postProcess,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //성공 시 리스트 리패치
+      //processNameListRefetch();
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+      setIsSuccessAlertOpen(true);
+      //setProcessCode(null);
+      //setProcessIdxList([]);
+      //closeModal();
+    },
+  });
 
   // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
   // const getQuiz = async () => {
@@ -200,9 +262,84 @@ export function ContentInspection({
 
         <ContentListWrapper className="flex_1">
           <Title>프로세스</Title>
-          <ListBoxWrapper>
+          {quizList.map((process) => {
+            return (
+              <ListBoxWrapper key={process.idx}>
+                {process.processInfo?.stepList.map((step) => {
+                  return (
+                    <ListBox key={step.stepSort}>
+                      <strong className="title">
+                        {step.stepName === 'BUILD'
+                          ? '제작'
+                          : step.stepName === 'EDITING'
+                            ? '편집'
+                            : step.stepName === 'REVIEW'
+                              ? '검수'
+                              : ''}
+                      </strong>
+                      <PerfectScrollbar>
+                        {step.workerList.map((worker) => {
+                          return (
+                            <ul className="name_list" key={worker.idx}>
+                              {worker.account ? (
+                                <li>
+                                  {myInfoData?.data.data.name ===
+                                  worker.account.name ? (
+                                    <button className="active">
+                                      <span className="name">
+                                        {`${worker.account.name}(${worker.account.id})`}
+                                      </span>
+                                      <span className="tag">
+                                        {worker.account.authorityName}
+                                      </span>
+                                    </button>
+                                  ) : (
+                                    <button>
+                                      <span className="name">
+                                        {`${worker.account.name}(${worker.account.id})`}
+                                      </span>
+                                      <span className="tag">
+                                        {worker.account.authorityName}
+                                      </span>
+                                    </button>
+                                  )}
+                                </li>
+                              ) : worker.authority ? (
+                                <li>
+                                  {myInfoData?.data.data.authority.name ===
+                                  worker.authority.name ? (
+                                    <button className="active">
+                                      <span className="name">
+                                        {worker.authority.name}
+                                      </span>
+                                      <span className="tag">
+                                        {worker.authority.code}
+                                      </span>
+                                    </button>
+                                  ) : (
+                                    <button>
+                                      <span className="name">
+                                        {worker.authority.name}
+                                      </span>
+                                      <span className="tag">
+                                        {worker.authority.code}
+                                      </span>
+                                    </button>
+                                  )}
+                                </li>
+                              ) : null}
+                            </ul>
+                          );
+                        })}
+                      </PerfectScrollbar>
+                    </ListBox>
+                  );
+                })}
+              </ListBoxWrapper>
+            );
+          })}
+          {/* <ListBoxWrapper>
             <ListBox>
-              <strong className="title">제작</strong>
               <PerfectScrollbar>
                 <ul className="name_list">
                   <li>
@@ -303,7 +440,7 @@ export function ContentInspection({
                 </ul>
               </PerfectScrollbar>
             </ListBox>
-          </ListBoxWrapper>
+          </ListBoxWrapper> */}
         </ContentListWrapper>
         <Modal />
 
@@ -322,10 +459,15 @@ export function ContentInspection({
           <Button
             buttonType="button"
             onClick={() => {
+              setStatus('HOLD');
               openModal({
                 title: '',
                 content: (
-                  <InspectionModal type={'보류'} item={onItemClickData} />
+                  <InspectionModal
+                    type={'보류'}
+                    item={onItemClickData}
+                    onClick={postProcessData}
+                  />
                 ),
               });
             }}
@@ -337,10 +479,15 @@ export function ContentInspection({
           <Button
             buttonType="button"
             onClick={() => {
+              setStatus('REJECT');
               openModal({
                 title: '',
                 content: (
-                  <InspectionModal type={'반려'} item={onItemClickData} />
+                  <InspectionModal
+                    type={'반려'}
+                    item={onItemClickData}
+                    onClick={postProcessData}
+                  />
                 ),
               });
             }}
@@ -354,10 +501,15 @@ export function ContentInspection({
           <Button
             buttonType="button"
             onClick={() => {
+              setStatus('APPROVAL');
               openModal({
                 title: '',
                 content: (
-                  <InspectionModal type={'승인'} item={onItemClickData} />
+                  <InspectionModal
+                    type={'승인'}
+                    item={onItemClickData}
+                    onClick={postProcessData}
+                  />
                 ),
               });
             }}
@@ -369,6 +521,13 @@ export function ContentInspection({
           </Button>
         </SubmitButtonWrapper>
       </BorderWrapper>
+      <AlertBar
+        isCloseKor
+        type="success"
+        isAlertOpen={isSuccessAlertOpen}
+        closeAlert={closeSuccessAlert}
+        message={'검수작업이이 완료되었습니다'}
+      ></AlertBar>
     </Container>
   );
 }
@@ -476,6 +635,9 @@ const ListBox = styled.div`
     flex-direction: column;
     padding: 0 10px;
     gap: 10px;
+  }
+  .name_list li {
+    padding-bottom: 10px;
   }
 
   .name_list button {

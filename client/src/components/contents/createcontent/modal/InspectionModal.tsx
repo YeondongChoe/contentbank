@@ -16,9 +16,10 @@ import { COLOR } from '../../../constants';
 type InspectionModalProps = {
   item: any;
   type: string;
+  onClick: () => void;
 };
 
-export function InspectionModal({ item, type }: InspectionModalProps) {
+export function InspectionModal({ item, type, onClick }: InspectionModalProps) {
   const { closeModal } = useModal();
 
   // const getQuiz = async () => {
@@ -51,7 +52,7 @@ export function InspectionModal({ item, type }: InspectionModalProps) {
         <Button width="100px" height="40px" onClick={() => closeModal()}>
           취소
         </Button>
-        <Button width="100px" height="40px" onClick={() => {}} $filled>
+        <Button width="100px" height="40px" onClick={onClick} $filled>
           확인
         </Button>
       </ButtonWrapper>

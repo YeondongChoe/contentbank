@@ -29,8 +29,27 @@ export function Inspection() {
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
   // 셀렉트
   const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
-
   const [groupCode, setGroupCode] = useState<string | null>(null);
+
+  //리스트 갱신
+  const callServerAPI = () => {
+    quizDataRefetch();
+  };
+
+  //step3 학습지 생성 후 postMessage로 리스트 갱신
+  useEffect(() => {
+    // 메시지 이벤트 리스너 설정
+    const handleMessage = (event: any) => {
+      if (event.data === 'popupClosed') {
+        callServerAPI();
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   //그룹 화면설정 정보 불러오기 api
   const getMenu = async () => {
@@ -187,6 +206,7 @@ export function Inspection() {
     idx: number,
   ) => {
     const selectedValue = event.currentTarget.value;
+    console.log(selectedValue);
 
     setSelectedList((prevList) =>
       prevList.map((item) => {
@@ -233,14 +253,16 @@ export function Inspection() {
           <SelectWrapper>
             {selectedList.map((list, i) => {
               if (list.type === 'SELECT' && list.search) {
+                console.log(selectedList.filter((selected) => selected.name));
                 return (
                   <Select
+                    key={`${list.idx}-${list.selectedName}`}
                     width={'130px'}
-                    defaultValue={list.name}
-                    key={list.idx}
+                    defaultValue={list.selectedName || list.name}
                     options={categoryList[i]}
                     onSelect={(event) => selectCategoryOption(event, list.idx)}
                     heightScroll={'300px'}
+                    isnormalizedOptions
                   />
                 );
               }
