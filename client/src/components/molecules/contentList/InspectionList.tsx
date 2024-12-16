@@ -30,7 +30,7 @@ import { quizService } from '../../../api/axios';
 import { useModal } from '../../../hooks';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { pageAtom } from '../../../store/utilAtom';
-import { QuizListType } from '../../../types';
+import { QuizListType, QuizCategory, QuizItemListType } from '../../../types';
 import { selectedListType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
@@ -64,7 +64,7 @@ export function InspectionList({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  console.log('questionList', questionList);
+
   // 문항 검수/수정 윈도우 열기
   const openCreateEditWindow = () => {
     saveLocalData();
@@ -152,8 +152,6 @@ export function InspectionList({
   const sortList = () => {
     const codesSet = new Set(checkList);
     const filteredList = questionList.filter((item) => codesSet.has(item.idx));
-    console.log('sortedList------------', filteredList);
-
     setSortedList(filteredList);
   };
 
@@ -306,7 +304,7 @@ export function InspectionList({
               if (list.view === true) {
                 return (
                   <>
-                    <span key={list.name} className="width_80px item_wrapper">
+                    <span key={list.name} className="width_10 item_wrapper">
                       <strong>{list.name}</strong>
                     </span>
                     <i className="line"></i>
@@ -315,20 +313,20 @@ export function InspectionList({
               }
               return null;
             })}
-            <span className="width_80px item_wrapper">
+            <span className="width_10 item_wrapper">
               <strong>담당자</strong>
             </span>
             <i className="line"></i>
-            <span className="width_80px item_wrapper">
+            <span className="width_10 item_wrapper">
               <strong>등록일자</strong>
             </span>
             <i className="line"></i>
-            <span className="width_80px item_wrapper">
+            <span className="width_10 item_wrapper">
               <strong>프로세스(단계)</strong>
             </span>
             <i className="line"></i>
-            <span className="width_20px item_wrapper">
-              <strong>설정</strong>
+            <span className="width_10 item_wrapper">
+              <strong>상태</strong>
             </span>
           </ItemLayout>
         </ListItem>
@@ -349,7 +347,76 @@ export function InspectionList({
                 readOnly
               />
               <ItemLayout>
-                <span
+                {selectedList.map((list) => {
+                  const matchedCategory = item.quizCategoryList.find(
+                    (category) =>
+                      Object.keys(category.quizCategory).some(
+                        (key) => key === list.name,
+                      ),
+                  );
+                  if (matchedCategory && list.view === true) {
+                    const matchedKey = Object.keys(
+                      matchedCategory.quizCategory,
+                    ).find((key) => key === list.name);
+
+                    const codeValue =
+                      matchedKey &&
+                      Array.isArray(
+                        (
+                          matchedCategory.quizCategory as Record<
+                            string,
+                            Array<{ name: string }>
+                          >
+                        )[matchedKey],
+                      ) &&
+                      (
+                        matchedCategory.quizCategory as Record<
+                          string,
+                          Array<{ name: string }>
+                        >
+                      )[matchedKey][0]?.name;
+
+                    return (
+                      <>
+                        <span className="width_10 item_wrapper">
+                          <span className="ellipsis">{codeValue}</span>
+                        </span>
+                        <i className="line"></i>
+                      </>
+                    );
+                  } else {
+                    if (list.view === true) {
+                      return (
+                        <>
+                          <span className="width_10 item_wrapper">
+                            <span className="ellipsis"></span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    }
+                  }
+                })}
+                <span className="width_10 item_wrapper">
+                  <strong className="title">당담자</strong>
+                  <span className="tag ellipsis">{item.createdBy}</span>
+                </span>
+                <i className="line"></i>
+                <span className="width_10 item_wrapper">
+                  <strong className="title">등록일자</strong>
+                  <span className="tag">{item.createdAt}</span>
+                </span>
+                <i className="line"></i>
+                <span className="width_10 item_wrapper">
+                  <strong className="title">프로세스(단계)</strong>
+                  <span className="tag">{item.createdAt}</span>
+                </span>
+                <i className="line"></i>
+                <span className="width_10 item_wrapper">
+                  <strong className="title">상태</strong>
+                  <span className="tag">{item.process?.state}</span>
+                </span>
+                {/* <span
                   className="width_80px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
@@ -818,7 +885,7 @@ export function InspectionList({
                   ) : (
                     <span className="tag"></span>
                   )}
-                </span>
+                </span> */}
               </ItemLayout>
             </ListItem>
           ))}
@@ -876,7 +943,7 @@ const ItemLayout = styled.span`
   width: 100%;
   min-height: 40px;
   justify-content: space-around;
-  align-items: self-start;
+  align-content: center;
   flex-wrap: wrap;
 
   .tooltip_wrapper item_wrapper {
@@ -891,6 +958,7 @@ const ItemLayout = styled.span`
     min-width: 30px;
     max-width: 150px;
     font-weight: normal;
+    align-content: center;
   }
 
   /* 두줄 이상 ellipsis 처리  */

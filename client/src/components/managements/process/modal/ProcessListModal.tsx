@@ -1,16 +1,17 @@
 import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import ReactToPrint from 'react-to-print';
 import { styled } from 'styled-components';
 
-import { quizService } from '../../../../api/axios';
-import { Button } from '../../../../components/atom';
+import { userInstance, quizService } from '../../../../api/axios';
+import { Button, openToastifyAlert } from '../../../../components/atom';
 import { ListItem } from '../../../../components/molecules';
 import { useModal } from '../../../../hooks';
+import { postRefreshToken } from '../../../../utils/tokenHandler';
 import { COLOR } from '../../../constants';
 
 type ProcessModalProps = {
@@ -18,15 +19,24 @@ type ProcessModalProps = {
 };
 
 type ProcessListProps = {
-  title: string;
-  type: string;
-  card: { name: string; id: string; authority: string }[];
+  idx: number;
+  code: string;
+  name: string;
 };
 
 export function ProcessListModal({ list }: ProcessModalProps) {
   const { closeModal } = useModal();
   const [processList, setProcessList] = useState<ProcessListProps[]>();
+  const [processCode, setProcessCode] = useState<string | null>(null);
+  const [processIdxList, setProcessIdxList] = useState<number[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);
+  console.log('processIdxList', processIdxList);
+  console.log('checkList', checkList);
+
+  useEffect(() => {
+    const idxList = list.map((quiz) => quiz.idx);
+    if (idxList) setProcessIdxList(idxList);
+  }, [list]);
   // const getQuiz = async () => {
   //   const res = await quizService.get(`/v1/quiz/${idxList}`);
   //   // console.log('list data----------', res);
@@ -44,6 +54,66 @@ export function ProcessListModal({ list }: ProcessModalProps) {
   //     errorMessage: 'get-idx-quizList 에러 메세지',
   //   },
   // });
+  console.log('processList', processList);
+
+  //프로세스 리스트 불러오기 api
+  const getProcessNameList = async () => {
+    const res = await userInstance.get(`/v1/process`);
+    //console.log(res);
+    return res;
+  };
+  const {
+    data: processNameListData,
+    isFetching: isProcessNameListLoading,
+    refetch: processNameListRefetch,
+  } = useQuery({
+    queryKey: ['get-processNameList'],
+    queryFn: getProcessNameList,
+    meta: {
+      errorMessage: 'get-processNameList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (processNameListData)
+      setProcessList(processNameListData?.data.data.list);
+  }, [processNameListData]);
+
+  const postProcess = async () => {
+    const data = {
+      processCode: processCode,
+      idxList: processIdxList,
+    };
+    return await quizService.put(`/v1/process/req`, data);
+  };
+
+  const { mutate: postProcessData } = useMutation({
+    mutationFn: postProcess,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      //성공 시 리스트 리패치
+      processNameListRefetch();
+      //저장 알람
+      openToastifyAlert({
+        type: 'success',
+        text: '저장되었습니다.',
+      });
+      setProcessCode(null);
+      setProcessIdxList([]);
+      closeModal();
+    },
+  });
+
   const handleButtonCheck = (
     e: React.MouseEvent<HTMLButtonElement>,
     id: string,
@@ -57,35 +127,35 @@ export function ProcessListModal({ list }: ProcessModalProps) {
     }
   };
 
-  useEffect(() => {
-    setProcessList([
-      {
-        title: '프로세스명01',
-        type: 'string',
-        card: [{ name: 'string', id: 'string', authority: 'string' }],
-      },
-      {
-        title: '프로세스명02',
-        type: 'string',
-        card: [{ name: 'string', id: 'string', authority: 'string' }],
-      },
-      {
-        title: '프로세스명03',
-        type: 'string',
-        card: [{ name: 'string', id: 'string', authority: 'string' }],
-      },
-      {
-        title: '프로세스명04',
-        type: 'string',
-        card: [{ name: 'string', id: 'string', authority: 'string' }],
-      },
-      {
-        title: '프로세스명05',
-        type: 'string',
-        card: [{ name: 'string', id: 'string', authority: 'string' }],
-      },
-    ]);
-  }, []);
+  // useEffect(() => {
+  //   setProcessList([
+  //     {
+  //       title: '프로세스명01',
+  //       type: 'string',
+  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
+  //     },
+  //     {
+  //       title: '프로세스명02',
+  //       type: 'string',
+  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
+  //     },
+  //     {
+  //       title: '프로세스명03',
+  //       type: 'string',
+  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
+  //     },
+  //     {
+  //       title: '프로세스명04',
+  //       type: 'string',
+  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
+  //     },
+  //     {
+  //       title: '프로세스명05',
+  //       type: 'string',
+  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
+  //     },
+  //   ]);
+  // }, []);
   return (
     <Container>
       <Title>프로세스 리스트</Title>
@@ -94,12 +164,15 @@ export function ProcessListModal({ list }: ProcessModalProps) {
           <List>
             {processList?.map((list) => (
               <ListItem
-                key={list.title as string}
-                isChecked={checkList.includes(list.title)}
-                onClick={(e) => handleButtonCheck(e, list.title)}
+                key={list.idx}
+                isChecked={checkList.includes(list.name)}
+                onClick={(e) => {
+                  handleButtonCheck(e, list.name);
+                  setProcessCode(list.code);
+                }}
               >
                 <ItemLayout>
-                  <span>{list.title}</span>
+                  <span>{list.name}</span>
                 </ItemLayout>
               </ListItem>
             ))}
@@ -110,7 +183,12 @@ export function ProcessListModal({ list }: ProcessModalProps) {
         <Button width="100px" height="40px" onClick={() => closeModal()}>
           취소
         </Button>
-        <Button width="100px" height="40px" onClick={() => {}} $filled>
+        <Button
+          width="100px"
+          height="40px"
+          onClick={() => postProcessData()}
+          $filled
+        >
           확인
         </Button>
       </ButtonWrapper>

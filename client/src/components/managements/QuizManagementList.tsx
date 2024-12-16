@@ -21,9 +21,14 @@ import {
   ValueNone,
   openToastifyAlert,
 } from '..';
-import { classificationInstance, quizService } from '../../api/axios';
+import {
+  classificationInstance,
+  quizService,
+  resourceServiceInstance,
+} from '../../api/axios';
 import { pageAtom } from '../../store/utilAtom';
 import { ItemCategoryType, QuestionTableType } from '../../types';
+import { selectedListType } from '../../types/WorkbookType';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { windowOpenHandler } from '../../utils/windowHandler';
 import { COLOR } from '../constants';
@@ -40,10 +45,13 @@ export function QuizManagementList() {
   const [content, setContent] = useState<string[]>([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   // 셀렉트
+  const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
+  const [groupCode, setGroupCode] = useState<string | null>(null);
+
   // const [selectedSource, setSelectedSource] = useState<string>(''); //출처
-  const [selectedCurriculum, setSelectedCurriculum] = useState<string>(''); //교육과정
-  const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
-  const [selectedGrade, setSelectedGrade] = useState<string>(''); //학년
+  //const [selectedCurriculum, setSelectedCurriculum] = useState<string>(''); //교육과정
+  //const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
+  //const [selectedGrade, setSelectedGrade] = useState<string>(''); //학년
   // const [selectedSemester, setSelectedSemester] = useState<string>(''); //학기
   // const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
   // const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
@@ -69,13 +77,83 @@ export function QuizManagementList() {
   //   },
   // ];
 
+  //그룹 화면설정 정보 불러오기 api
+  const getMenu = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=contentListManagementSetting`,
+    );
+    //console.log(res);
+    return res;
+  };
+  const {
+    data: menuData,
+    isLoading: isMenuLoading,
+    refetch: menuRefetch,
+  } = useQuery({
+    queryKey: ['get-menu'],
+    queryFn: getMenu,
+    meta: {
+      errorMessage: 'get-menu 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    menuRefetch();
+  }, []);
+
+  useEffect(() => {
+    if (menuData) {
+      const filterList = menuData.data.data.menuDetailList;
+      const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const categoryIdxArray = filterList[0]?.idxList?.split(',') || [];
+      const typeListArray = filterList[0]?.inputList?.split(',') || [];
+      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const newArray = nameListArray.map((name: string, index: number) => ({
+        name,
+        idx: categoryIdxArray[index] || '',
+        type: typeListArray[index] || '',
+        view: viewListArray[index] || false,
+        search: searchListArray[index] || false,
+      }));
+      setSelectedList(newArray);
+      setGroupCode(filterList[0]?.groupCode);
+    }
+  }, [menuData]);
+
+  ///쿼리스트링 만드는 함수
+  const createQueryString = (params: Record<string, string>) => {
+    return Object.entries(params)
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+      )
+      .join('&');
+  };
+
   // 문항리스트 불러오기 api
   const getQuiz = async () => {
+    const depthChecks = selectedList.map((el) => el.selectedName);
+    const groupsArray = selectedList.map((el) => el.name);
+    const keyValuePairs = groupsArray.reduce<Record<string, string>>(
+      (acc, item, index) => {
+        const depthCheck = depthChecks[index];
+        if (depthCheck) {
+          acc[item] = depthCheck; // title 속성을 사용하여 acc 객체에 추가
+        }
+        return acc;
+      },
+      {},
+    );
+
+    const queryString = createQueryString(keyValuePairs);
     // if (tabVeiw == '문항 리스트') {
     const res = await quizService.get(
-      !onSearch
-        ? `/v1/quiz?pageIndex=${page}&pageUnit=${8}`
-        : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}`,
+      `/v1/quiz?pageIndex=${page}&pageUnit=${8}&${queryString}`,
     );
     return res.data.data;
     // }
@@ -228,7 +306,6 @@ export function QuizManagementList() {
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      console.log('itemsList', itemsList);
       setCategory(itemsList);
     } catch (error: any) {
       if (error.data?.code == 'GE-002') postRefreshToken();
@@ -238,22 +315,37 @@ export function QuizManagementList() {
     // console.log('categoryList', categoryList);
   }, [categoryList]);
 
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const value = event.currentTarget.value;
-    setContent((prevContent) => [...prevContent, value]);
-    // if (value !== '교육과정' || value !== '학교급' || value !== '학년') {
-    //   setOnSearch(true);
-    // } else {
-    //   setOnSearch(false);
-    // }
+  //선택값 업데이트 함수
+  const selectCategoryOption = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    idx: number,
+  ) => {
+    const selectedValue = event.currentTarget.value;
+
+    setSelectedList((prevList) =>
+      prevList.map((item) => {
+        if (item.idx === idx) {
+          // 선택된 값이 item.name과 같으면 `selectedName` 제거
+          if (item.name === selectedValue) {
+            const { selectedName, ...rest } = item; // `selectedName` 키 제거
+            return rest;
+          }
+
+          // 선택된 값이 다르면 `selectedName` 업데이트
+          return { ...item, selectedName: selectedValue };
+        }
+        return item; // 나머지 항목은 변경 없이 유지
+      }),
+    );
   };
+
   //셀렉트 초기화
   const handleDefaultSelect = (defaultValue?: string) => {
     if (defaultValue == 'all') {
       // setSelectedSource('');
-      setSelectedCurriculum('');
-      setSelectedLevel('');
-      setSelectedGrade('');
+      //setSelectedCurriculum('');
+      //setSelectedLevel('');
+      //setSelectedGrade('');
       // setSelectedSemester('');
       // setSelectedSubject('');
       // setSelectedCourse('');
@@ -265,13 +357,13 @@ export function QuizManagementList() {
     }
     switch (defaultValue) {
       case '교육과정':
-        setSelectedCurriculum('');
+        //setSelectedCurriculum('');
         break;
       case '학교급':
-        setSelectedLevel('');
+        //setSelectedLevel('');
         break;
       case '학년':
-        setSelectedGrade('');
+        //setSelectedGrade('');
         break;
 
       default:
@@ -299,9 +391,9 @@ export function QuizManagementList() {
     setOnSearch(true);
   }, [
     // selectedSource,
-    selectedCurriculum,
-    selectedLevel,
-    selectedGrade,
+    //selectedCurriculum,
+    //selectedLevel,
+    //selectedGrade,
     // selectedSemester,
     // selectedSubject,
     // selectedCourse,
@@ -404,8 +496,24 @@ export function QuizManagementList() {
         <>
           {/* 리스트 셀렉트 */}
           <SelectWrapper>
+            {selectedList.map((list, i) => {
+              if (list.type === 'SELECT' && list.search) {
+                console.log(selectedList.filter((selected) => selected.name));
+                return (
+                  <Select
+                    key={`${list.idx}-${list.selectedName}`}
+                    width={'130px'}
+                    defaultValue={list.selectedName || list.name}
+                    options={categoryList[i]}
+                    onSelect={(event) => selectCategoryOption(event, list.idx)}
+                    heightScroll={'300px'}
+                    isnormalizedOptions
+                  />
+                );
+              }
+            })}
             {/* 교육과정 */}
-            <Select
+            {/* <Select
               onDefaultSelect={() => handleDefaultSelect('교육과정')}
               width={'130px'}
               defaultValue={'교육과정'}
@@ -414,9 +522,9 @@ export function QuizManagementList() {
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setSelectedCurriculum}
               heightScroll={'300px'}
-            />
+            /> */}
             {/* 학교급 */}
-            <Select
+            {/* <Select
               onDefaultSelect={() => handleDefaultSelect('학교급')}
               width={'130px'}
               defaultValue={'학교급'}
@@ -425,9 +533,9 @@ export function QuizManagementList() {
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setSelectedLevel}
               heightScroll={'300px'}
-            />
+            /> */}
             {/* 학년 */}
-            <Select
+            {/* <Select
               onDefaultSelect={() => handleDefaultSelect('학년')}
               width={'130px'}
               defaultValue={'학년'}
@@ -436,7 +544,7 @@ export function QuizManagementList() {
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setSelectedGrade}
               heightScroll={'300px'}
-            />
+            /> */}
 
             {/* <Search
               value={searchValue}
@@ -457,6 +565,7 @@ export function QuizManagementList() {
                 <ContentList
                   key={key}
                   list={questionList}
+                  selectedList={selectedList}
                   deleteBtn
                   quizDataRefetch={quizDataRefetch}
                   ondeleteClick={() => {

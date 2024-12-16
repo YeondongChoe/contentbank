@@ -20,12 +20,17 @@ import {
   Icon,
   Modal,
 } from '..';
-import { classificationInstance, quizService } from '../../api/axios';
+import {
+  classificationInstance,
+  quizService,
+  resourceServiceInstance,
+} from '../../api/axios';
 import { useModal } from '../../hooks';
 import { myAuthorityAtom } from '../../store/myAuthorityAtom';
 import { quizListAtom } from '../../store/quizListAtom';
 import { pageAtom } from '../../store/utilAtom';
 import { ItemCategoryType, QuizListType } from '../../types';
+import { selectedListType } from '../../types/WorkbookType';
 import { postRefreshToken } from '../../utils/tokenHandler';
 
 import { CreateContentModal } from './CreateContentModal';
@@ -37,16 +42,20 @@ export function QuizCreateList() {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   // const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   // 셀렉트
+  const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
+  const [groupCode, setGroupCode] = useState<string | null>(null);
+
   // const [selectedSource, setSelectedSource] = useState<string>(''); //출처
-  const [selectedCurriculum, setSelectedCurriculum] = useState<string>(''); //교육과정
-  const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
-  const [selectedGrade, setSelectedGrade] = useState<string>(''); //학년
+  //const [selectedCurriculum, setSelectedCurriculum] = useState<string>(''); //교육과정
+  //const [selectedLevel, setSelectedLevel] = useState<string>(''); //학교급
+  //const [selectedGrade, setSelectedGrade] = useState<string>(''); //학년
   // const [selectedSemester, setSelectedSemester] = useState<string>(''); //학기
   // const [selectedSubject, setSelectedSubject] = useState<string>(''); //교과
   // const [selectedCourse, setSelectedCourse] = useState<string>(''); //과목
@@ -77,20 +86,89 @@ export function QuizCreateList() {
     callback: () => {},
   };
 
+  //그룹 화면설정 정보 불러오기 api
+  const getMenu = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=contentListSetting`,
+    );
+    //console.log(res);
+    return res;
+  };
+  const {
+    data: menuData,
+    isLoading: isMenuLoading,
+    refetch: menuRefetch,
+  } = useQuery({
+    queryKey: ['get-menu'],
+    queryFn: getMenu,
+    meta: {
+      errorMessage: 'get-menu 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    menuRefetch();
+  }, []);
+
+  useEffect(() => {
+    if (menuData) {
+      const filterList = menuData.data.data.menuDetailList;
+      const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const categoryIdxArray = filterList[0]?.idxList?.split(',') || [];
+      const typeListArray = filterList[0]?.inputList?.split(',') || [];
+      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const newArray = nameListArray.map((name: string, index: number) => ({
+        name,
+        idx: categoryIdxArray[index] || '',
+        type: typeListArray[index] || '',
+        view: viewListArray[index] || false,
+        search: searchListArray[index] || false,
+      }));
+      setSelectedList(newArray);
+      setGroupCode(filterList[0]?.groupCode);
+    }
+  }, [menuData]);
+
+  ///쿼리스트링 만드는 함수
+  const createQueryString = (params: Record<string, string>) => {
+    return Object.entries(params)
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+      )
+      .join('&');
+  };
+
   // 문항리스트 불러오기 api
   const getQuiz = async () => {
+    const depthChecks = selectedList.map((el) => el.selectedName);
+    const groupsArray = selectedList.map((el) => el.name);
+    const keyValuePairs = groupsArray.reduce<Record<string, string>>(
+      (acc, item, index) => {
+        const depthCheck = depthChecks[index];
+        if (depthCheck) {
+          acc[item] = depthCheck; // title 속성을 사용하여 acc 객체에 추가
+        }
+        return acc;
+      },
+      {},
+    );
+
+    const queryString = createQueryString(keyValuePairs);
+
     if (tabVeiw == '즐겨찾는 문항') {
       const res = await quizService.get(
-        !onSearch
-          ? `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}`
-          : `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}`,
+        `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&${queryString}`,
       );
       return res.data.data;
     } else {
       const res = await quizService.get(
-        !onSearch
-          ? `/v1/quiz?pageIndex=${page}&pageUnit=${8}`
-          : `/v1/quiz?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&curriculum=${selectedCurriculum}&level=${selectedLevel}&grade=${selectedGrade}`,
+        `/v1/quiz?pageIndex=${page}&pageUnit=${8}&${queryString}`,
       );
       return res.data.data;
     }
@@ -137,72 +215,57 @@ export function QuizCreateList() {
 
   // 카테고리의 그룹 유형 조회
   const getCategoryGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/group/A');
+    const response = await classificationInstance.get(
+      `/v1/category/group/${groupCode}`,
+    );
     return response.data.data.typeList;
   };
   const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
-    queryKey: ['get-category-groups-A'],
+    queryKey: ['get-category'],
     queryFn: getCategoryGroups,
-    // enabled: !!categoryData,
     meta: {
-      errorMessage: 'get-category-groups-A 에러 메세지',
+      errorMessage: 'get-category 에러 메세지',
     },
+    enabled: !!groupCode,
   });
   useEffect(() => {
     if (groupsData) {
       fetchCategoryItems(groupsData, setCategoryList);
     }
   }, [groupsData]);
-  // 카테고리의 그룹 유형 조회 (출처)
-  const getCategoryGroupsE = async () => {
-    const response = await classificationInstance.get('/v1/category/group/E');
-    return response.data.data.typeList;
-  };
-  const { data: groupsEData, refetch: groupsDataERefetch } = useQuery({
-    queryKey: ['get-category-groups-E'],
-    queryFn: getCategoryGroupsE,
-    // enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups-E 에러 메세지',
-    },
-  });
-  useEffect(() => {
-    if (groupsEData) {
-      fetchCategoryItems(groupsEData, setCategoriesE);
-    }
-  }, [groupsEData]);
 
   // 카테고리의 그룹 아이템 조회
   const fetchCategoryItems = async (
     typeList: string,
     setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
   ) => {
-    const typeIds = typeList.split(',');
+    const typeIds = typeList.split(',').map((id) => id.trim());
+    const filteredIds = selectedList
+      .filter((item) => item.search) // `search`가 true인 항목 필터링
+      .map((item) => item.idx.toString()) // `idx`를 문자열로 변환
+      .filter((id) => typeIds.includes(id)); // `typeIds`와 일치하는 항목만 필터링
+
     try {
-      const requests = typeIds.map((id) =>
+      const requests = filteredIds.map((id) =>
         classificationInstance.get(`/v1/category/class/${id}`),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
         (res) => res?.data?.data?.categoryClassList,
       );
-      console.log('itemsList', itemsList);
       setCategory(itemsList);
     } catch (error: any) {
-      if (error.response.data?.code == 'GE-002') postRefreshToken();
+      if (error.data?.code == 'GE-002') postRefreshToken();
     }
   };
-  useEffect(() => {
-    console.log('categoryList', categoryList);
-  }, [categoryList]);
 
   //셀렉트 초기화
   const handleDefaultSelect = (defaultValue?: string) => {
     if (defaultValue == 'all') {
       // setSelectedSource('');
-      setSelectedCurriculum('');
-      setSelectedLevel('');
-      setSelectedGrade('');
+      //setSelectedCurriculum('');
+      //setSelectedLevel('');
+      //setSelectedGrade('');
       // setSelectedSemester('');
       // setSelectedSubject('');
       // setSelectedCourse('');
@@ -215,13 +278,13 @@ export function QuizCreateList() {
 
     switch (defaultValue) {
       case '교육과정':
-        setSelectedCurriculum('');
+        //setSelectedCurriculum('');
         break;
       case '학교급':
-        setSelectedLevel('');
+        //setSelectedLevel('');
         break;
       case '학년':
-        setSelectedGrade('');
+        //setSelectedGrade('');
         break;
 
       default:
@@ -231,15 +294,28 @@ export function QuizCreateList() {
     setOnSearch(false);
   };
 
-  const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
-    const value = event.currentTarget.value;
-    setContent((prevContent) => [...prevContent, value]);
+  //선택값 업데이트 함수
+  const selectCategoryOption = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    idx: number,
+  ) => {
+    const selectedValue = event.currentTarget.value;
 
-    // if (value !== '교육과정' || value !== '학교급' || value !== '학년') {
-    //   setOnSearch(true);
-    // } else {
-    //   setOnSearch(false);
-    // }
+    setSelectedList((prevList) =>
+      prevList.map((item) => {
+        if (item.idx === idx) {
+          // 선택된 값이 item.name과 같으면 `selectedName` 제거
+          if (item.name === selectedValue) {
+            const { selectedName, ...rest } = item; // `selectedName` 키 제거
+            return rest;
+          }
+
+          // 선택된 값이 다르면 `selectedName` 업데이트
+          return { ...item, selectedName: selectedValue };
+        }
+        return item; // 나머지 항목은 변경 없이 유지
+      }),
+    );
   };
 
   // 검색용 셀렉트 선택시
@@ -260,9 +336,9 @@ export function QuizCreateList() {
     setOnSearch(true);
   }, [
     // selectedSource,
-    selectedCurriculum,
-    selectedLevel,
-    selectedGrade,
+    //selectedCurriculum,
+    //selectedLevel,
+    //selectedGrade,
     // selectedSemester,
     // selectedSubject,
     // selectedCourse,
@@ -338,6 +414,27 @@ export function QuizCreateList() {
     }
   }, [onSearch]);
 
+  //탭이 바뀔 때 마다 selectedName 삭제
+  useEffect(() => {
+    setSelectedList((prevList) => {
+      return prevList.map((item) => {
+        // `selectedName` 키를 제거
+        const { selectedName, ...rest } = item;
+        return rest;
+      });
+    });
+  }, [tabVeiw]);
+
+  // 검색용 셀렉트 선택시
+  useEffect(() => {
+    quizDataRefetch();
+  }, [selectedList]);
+
+  // 데이터 변경시 리랜더링
+  useEffect(() => {
+    quizDataRefetch();
+  }, [page]);
+
   return (
     <Container>
       <TitleWrapper>
@@ -373,8 +470,23 @@ export function QuizCreateList() {
 
       {!isLoading && quizData && (
         <>
-          {/* 리스트 셀렉트 */}
           <SelectWrapper>
+            {selectedList.map((list, i) => {
+              if (list.type === 'SELECT' && list.search) {
+                console.log(selectedList.filter((selected) => selected.name));
+                return (
+                  <Select
+                    key={`${list.idx}-${list.selectedName}`}
+                    width={'130px'}
+                    defaultValue={list.selectedName || list.name}
+                    options={categoryList[i]}
+                    onSelect={(event) => selectCategoryOption(event, list.idx)}
+                    heightScroll={'300px'}
+                    isnormalizedOptions
+                  />
+                );
+              }
+            })}
             {/* 출처 */}
             {/* {categoriesE && categoryTitles[15] && (
               <Select
@@ -391,7 +503,7 @@ export function QuizCreateList() {
               />
             )} */}
             {/* 교육과정 학교급 학년 학기 */}
-            <Select
+            {/* <Select
               onDefaultSelect={() => handleDefaultSelect('교육과정')}
               width={'130px'}
               defaultValue={'교육과정'}
@@ -420,7 +532,7 @@ export function QuizCreateList() {
               onSelect={(event) => selectCategoryOption(event)}
               setSelectedValue={setSelectedGrade}
               heightScroll={'300px'}
-            />
+            /> */}
             {/* {categoryList && categoryTitles[2] && (
               <Select
                 onDefaultSelect={() =>
@@ -480,7 +592,6 @@ export function QuizCreateList() {
                 heightScroll={'300px'}
               />
             )} */}
-
             {/* 오픈여부 */}
             {/* <Select
               onDefaultSelect={() => handleDefaultSelect('오픈여부')}
@@ -528,6 +639,7 @@ export function QuizCreateList() {
               <ContentList
                 key={key}
                 list={questionList}
+                selectedList={selectedList}
                 quizDataRefetch={quizDataRefetch}
                 tabVeiw={tabVeiw}
                 totalCount={quizData?.pagination?.totalCount}
