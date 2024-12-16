@@ -418,26 +418,9 @@ export function OptionList({
   useEffect(() => {
     console.log('들어온 옵션 리스트 값 ----- ', optionsList);
 
-    optionsList.map((item, index) => {
-      if (item.name !== '') getCategoryList(item.name);
-    });
-    // getCategoryList('기출');
-    // if (optionsList[0].name !== '') {
-    // const list = lists.find((list) => list.name === value);
-    // return list ? list.categories : [];
-    //   const list2 = optionsList.filter((item) => item.name === value);
-    //   console.log('불러진 출처인덱스 리스트의 카테고리값 -----', list2);
-    // }
-
-    // `selectedValues` 업데이트
-    // const selectedValuesMap = [];
-    // optionsList.map((item, index) =>
-    //   selectedValuesMap.push({ [index]: item.name }),
-    // );
-    // setSelectedValues(selectedValuesMap);
-
-    // 셀렉트 선택이후 옵션에 속한 버튼값보여주기
-    // setSelectedValues((prev) => ({ ...prev, [index]: value }));
+    // optionsList.map((item, index) => {
+    //   if (item.name !== '') getCategoryList(item.name);
+    // });
   }, [optionsList]);
 
   console.log('들어온  ------ SelectedValues[index] ----- ', selectedValues);

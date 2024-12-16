@@ -852,26 +852,16 @@ export function ClassificationEdit({
           const value = category.quizCategory[
             key as keyof UnitClassificationType
           ] as any;
+          const title =
+            Array.isArray(value) &&
+            value.map((item: { name: any }) => item.name).join(', ');
+
           console.log('value key----', value);
-          // 행동요소1, 행동요소2인 경우 객체 배열로 추가
-          if ((value.key as string) === '행동요소1') {
-            console.log('typedKey key---- in ', value);
-            actionElement1.push({
-              title: value.title as string,
-              checkValue: value.checkValue,
-              code: value.code,
-              key: value.key,
-            });
-          } else if ((value.key as string) === '행동요소2') {
-            actionElement2.push({
-              title: value.title as string,
-              checkValue: value.checkValue,
-              code: value.code,
-              key: value.key,
-            });
-          } else {
+          console.log('title: title', title);
+
+          if (title) {
             list.push({
-              title: value as string,
+              title: title,
               checkValue: 0,
               code: key,
               key: key,
@@ -1514,7 +1504,7 @@ export function ClassificationEdit({
                 총 {`${questionList.length} 건`} 전체선택
               </span>
             </div>
-            <p>총 {`${questionList.length} 건`} 중 5건 분류없음</p>
+            {/* <p>총 {`${questionList.length} 건`} 중 5건 분류없음</p> */}
           </TopButtonWrapper>
           <TopButtonWrapper>
             {/* <Select
@@ -1665,14 +1655,46 @@ export function ClassificationEdit({
                     >
                       <PerfectScrollbar>
                         <div className="class_wrap">
-                          {quiz.quizCategoryList.some(
-                            (item) => item.quizCategory?.교육과정,
+                          {quiz.quizCategoryList.some((item) =>
+                            Array.isArray(item.quizCategory?.교육과정),
                           ) ? (
-                            quiz.quizCategoryList.map((item, idx) => (
-                              <span key={idx}>
-                                {`${item.quizCategory?.교육과정}/${item.quizCategory?.과목}/${item.quizCategory?.교과}/${item.quizCategory?.학년}/${item.quizCategory?.학기}`}
-                              </span>
-                            ))
+                            quiz.quizCategoryList.map((item, idx) => {
+                              const 교육과정 =
+                                Array.isArray(item.quizCategory?.교육과정) &&
+                                item.quizCategory.교육과정
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 과목 =
+                                Array.isArray(item.quizCategory?.과목) &&
+                                item.quizCategory.과목
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 교과 =
+                                Array.isArray(item.quizCategory?.교과) &&
+                                item.quizCategory.교과
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 학년 =
+                                Array.isArray(item.quizCategory?.학년) &&
+                                item.quizCategory.학년
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 학기 =
+                                Array.isArray(item.quizCategory?.학기) &&
+                                item.quizCategory.학기
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              return (
+                                <span key={idx}>
+                                  {`${교육과정 || ''}/${과목 || ''}/${교과 || ''}/${학년 || ''}/${학기 || ''}`}
+                                </span>
+                              );
+                            })
                           ) : (
                             <span>(분류없음)</span>
                           )}

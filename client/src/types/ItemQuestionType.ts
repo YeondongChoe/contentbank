@@ -204,7 +204,7 @@ export interface CategoryGroup {
 }
 export interface CategoryItems {
   code?: string;
-  name: string;
+  name: string | number;
 }
 // categoryList 아이템 타입 정의
 type CategoryItem = {

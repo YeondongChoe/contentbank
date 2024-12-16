@@ -121,13 +121,8 @@ export function ContentEdit({
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
   const [isEditor, setIsEditor] = useState<boolean>(false);
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
-  const [quizItemArrList, setQuizItemArrList] = useState<QuizItemListType[]>(
-    [],
-  );
-  const [addQuestionList, setAddQuestionList] = useState<AddQuestionListType>(
-    [],
-  );
-  const [quizClassList, setQuizClassList] = useState<QuestionClassListType>([]);
+
+  const [categories, setCategories] = useState({});
 
   // 선택된 리스트 아이템 데이터
   const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
@@ -169,9 +164,22 @@ export function ContentEdit({
   useEffect(() => {
     if (onItemClickData) {
       const quizCategories = onItemClickData?.quizCategoryList.map(
-        (item) => item.quizCategory,
+        (item) => item?.quizCategory,
       );
 
+      // 기존 카테고리 데이터
+      const quizCategoryList = onItemClickData.quizCategoryList;
+      const categoriesWithoutSources = quizCategoryList.filter(
+        (item) => !item.quizCategory?.sources,
+      );
+
+      // 클래스 타입이 아닌 추가 등록 카테고리
+      console.log(
+        '리스트 선택 시 기존값 셋팅--- categoriesWithoutSources------------',
+        categoriesWithoutSources,
+        categoriesWithoutSources[0]?.quizCategory,
+      );
+      setCategories(categoriesWithoutSources[0]?.quizCategory);
       console.log('리스트 선택 시 기존값 셋팅-------------', quizCategories);
 
       if (quizCategories) {
@@ -278,134 +286,183 @@ export function ContentEdit({
         }
       });
 
+      // 에디터 값이 리스트에 담김
+      console.log('itemDataList 각 데이터를 배열에 담음', itemDataList);
       setQuizItemList(itemDataList);
     }
   }, [editorData]);
 
-  useEffect(() => {
-    // console.log('quizItemList', quizItemList);
-    //문항 리스트에 추가
-    if (quizItemList.length > 0) {
-      setQuizItemArrList((prevArrList) => [...prevArrList, quizItemList]);
+  // 이미지 태그 src 축출
+  const extractImgSrc = (htmlString: string) => {
+    // <img> 태그와 src 속성 값을 캡처하는 정규 표현식
+    const imgSrcRegex = /<img[^>]+src="([^">]+)"/g;
+    const srcArray = [];
+    let match;
+
+    while ((match = imgSrcRegex.exec(htmlString)) !== null) {
+      // match[1]에는 src 속성 값이 포함됩니다.
+      srcArray.push(match[1]);
     }
-  }, [quizItemList]);
 
-  useEffect(() => {
-    // console.log('quizItemArrList', quizItemArrList);
-    // console.log('quizIdx', quizIdx);
-
-    // 등록될 값
-    const newQuestionList = quizItemArrList.map((quizItems, idx) => ({
-      commandCode: 1,
-      quizIdx: quizIdx[idx] as number, //문항 idx
-      articleList: [
-        //에디터 이미지 값
-      ],
-      quizItemList: quizItems,
-      quizClassList: quizClassList,
-    }));
-    setAddQuestionList(newQuestionList);
-  }, [quizItemArrList]);
-
-  useEffect(() => {
-    console.log('selectedQuestionType 문항타입', selectedQuestionType);
-    console.log('selectedDifficulty 난이도', selectedDifficulty);
-    //출처
-    console.log('selectedSource 출처', selectedSource);
-    //카테고리 값
-    console.log('onItemClickData카테고리', onItemClickData?.quizCategoryList);
-
-    // 특정 필드를 제외하는 유틸리티 함수
-    const omitFields = (quizCategory: QuizCategory): QuizCategory => {
-      const { sources, 난이도, 문항타입, ...rest } = quizCategory;
-      return rest; // 나머지 필드만 반환
-    };
-
-    // 카테고리 값을 매핑하는 함수
-    const mapQuizCategoryList = (
-      quizCategoryList: QuizCategoryList[] | undefined,
-    ): { type: string; quizCategory: QuizCategory }[] => {
-      if (quizCategoryList && Array.isArray(quizCategoryList)) {
-        return quizCategoryList
-          .map((item) => {
-            if (item.quizCategory && typeof item.quizCategory === 'object') {
-              const newQuizCategory = omitFields(item.quizCategory);
-              // Return the item only if it has valid keys
-              if (Object.keys(newQuizCategory).length > 0) {
-                return {
-                  type: 'CATEGORY',
-                  quizCategory: newQuizCategory,
-                };
-              }
-            }
-            // Instead of returning null, return undefined
-            return undefined; // This will be filtered out
-          })
-          .filter(
-            (item): item is { type: string; quizCategory: QuizCategory } =>
-              item !== undefined,
-          ); // Filter out undefined entries
-      }
-      return []; // Return an empty array if input is not valid
-    };
-
-    // 카테고리 매핑
-    const category = mapQuizCategoryList(onItemClickData?.quizCategoryList);
-    // console.log('매핑된 카테고리값 ----', category);
-
-    const quizClassList: QuestionClassListType = [
-      {
-        type: 'CLASS',
-        quizCategory: {
-          sources: selectedSource,
-          난이도: selectedDifficulty,
-          문항타입: selectedQuestionType,
-          난이도공통: selectedDifficultyCommon,
-        },
-      },
-      ...category.filter(
-        (cat) => cat.quizCategory && Object.keys(cat.quizCategory).length > 0,
-      ), // 추가된 카테고리도 유효한 경우에만 추가
-    ];
-
-    // 빈 객체 또는 빈 배열이 아닌 경우에만 quizClassList에 추가
-    const filteredQuizClassList = quizClassList.filter((item) => {
-      // item이 null이 아닌 경우, 객체가 비어있지 않거나 배열이 비어있지 않은 경우
-      if (item) {
-        // Type assertion to inform TypeScript of the expected types
-        if (typeof item === 'object') {
-          return Object.keys(item).length > 0; // Check if the object is not empty
-        }
-        // if (Array.isArray(item)) {
-        //   return item.length > 0; // Check if the array is not empty
-        // }
-      }
-      return false; // Return false for any other cases
-    });
-
-    console.log('최종적으로 담길 quizClassList ----', filteredQuizClassList);
-    // 필수 메타값 추가 및 변경
-    setQuizClassList(filteredQuizClassList);
-  }, [
-    selectedQuestionType,
-    selectedSource,
-    selectedDifficulty,
-    onItemClickData,
-    selectedList,
-  ]);
-
-  useEffect(() => {
-    if (addQuestionList.length) postQuizDataMutate();
-  }, [addQuestionList]);
-
-  // 문항 등록 후 메타데이터 수정 되게
-  const postQuiz = async () => {
-    const data = addQuestionList[addQuestionList.length - 1];
-
-    return await quizService.post(`/v1/quiz`, data);
+    // 배열 요소를 쉼표로 구분된 하나의 문자열로 결합하여 반환
+    return srcArray.join(',');
   };
 
-  const { data: postQuizData, mutate: postQuizDataMutate } = useMutation({
+  // useEffect(() => {
+  //   // console.log('quizItemList', quizItemList);
+  //   //문항 리스트에 추가
+  //   if (quizItemList.length > 0) {
+  //     setQuizItemArrList((prevArrList) => [...prevArrList, quizItemList]);
+  //   }
+  // }, [quizItemList]);
+
+  // useEffect(() => {
+  //   // console.log('quizItemArrList', quizItemArrList);
+  //   // console.log('quizIdx', quizIdx);
+
+  //   // 등록될 값
+  //   const newQuestionList = quizItemArrList.map((quizItems, idx) => ({
+  //     commandCode: 1,
+  //     quizIdx: quizIdx[idx] as number, //문항 idx
+  //     articleList: [
+  //       //에디터 이미지 값
+  //     ],
+  //     quizItemList: quizItems,
+  //     quizClassList: quizClassList,
+  //   }));
+  //   setAddQuestionList(newQuestionList);
+  // }, [quizItemArrList]);
+
+  // useEffect(() => {
+  // console.log('selectedQuestionType 문항타입', selectedQuestionType);
+  // console.log('selectedDifficulty 난이도', selectedDifficulty);
+  // //출처
+  // console.log('selectedSource 출처', selectedSource);
+  // //카테고리 값
+  // console.log('onItemClickData카테고리', onItemClickData?.quizCategoryList);
+
+  // // 특정 필드를 제외하는 유틸리티 함수
+  // const omitFields = (quizCategory: QuizCategory): QuizCategory => {
+  //   const { sources, 난이도, 문항타입, ...rest } = quizCategory;
+  //   return rest; // 나머지 필드만 반환
+  // };
+
+  // 카테고리 값을 매핑하는 함수
+  // const mapQuizCategoryList = (
+  //   quizCategoryList: QuizCategoryList[] | undefined,
+  // ): { type: string; quizCategory: QuizCategory }[] => {
+  //   if (quizCategoryList && Array.isArray(quizCategoryList)) {
+  //     return quizCategoryList
+  //       .map((item) => {
+  //         if (item.quizCategory && typeof item.quizCategory === 'object') {
+  //           const newQuizCategory = omitFields(item.quizCategory);
+  //           // Return the item only if it has valid keys
+  //           if (Object.keys(newQuizCategory).length > 0) {
+  //             return {
+  //               type: 'CATEGORY',
+  //               quizCategory: newQuizCategory,
+  //             };
+  //           }
+  //         }
+  //         // Instead of returning null, return undefined
+  //         return undefined; // This will be filtered out
+  //       })
+  //       .filter(
+  //         (item): item is { type: string; quizCategory: QuizCategory } =>
+  //           item !== undefined,
+  //       ); // Filter out undefined entries
+  //   }
+  //   return []; // Return an empty array if input is not valid
+  // };
+
+  // // 카테고리 매핑
+  // const category = mapQuizCategoryList(onItemClickData?.quizCategoryList);
+  // console.log('매핑된 카테고리값 ----', category);
+
+  //   const quizClassList: QuestionClassListType = [
+  //     {
+  //       type: 'CLASS',
+  //       quizCategory: {
+  //         sources: selectedSource,
+  //         난이도: selectedDifficulty,
+  //         문항타입: selectedQuestionType,
+  //         난이도공통: selectedDifficultyCommon,
+  //       },
+  //     },
+  //     ...category.filter(
+  //       (cat) => cat.quizCategory && Object.keys(cat.quizCategory).length > 0,
+  //     ), // 추가된 카테고리도 유효한 경우에만 추가
+  //   ];
+
+  //   // 빈 객체 또는 빈 배열이 아닌 경우에만 quizClassList에 추가
+  //   const filteredQuizClassList = quizClassList.filter((item) => {
+  //     // item이 null이 아닌 경우, 객체가 비어있지 않거나 배열이 비어있지 않은 경우
+  //     if (item) {
+  //       // Type assertion to inform TypeScript of the expected types
+  //       if (typeof item === 'object') {
+  //         return Object.keys(item).length > 0; // Check if the object is not empty
+  //       }
+  //       // if (Array.isArray(item)) {
+  //       //   return item.length > 0; // Check if the array is not empty
+  //       // }
+  //     }
+  //     return false; // Return false for any other cases
+  //   });
+
+  //   console.log('최종적으로 담길 quizClassList ----', filteredQuizClassList);
+  //   // 필수 메타값 추가 및 변경
+  //   setQuizClassList(filteredQuizClassList);
+  // }, [
+  //   selectedQuestionType,
+  //   selectedSource,
+  //   selectedDifficulty,
+  //   onItemClickData,
+  //   selectedList,
+  // ]);
+  // useEffect(() => {
+  //   if (addQuestionList.length) postQuizDataMutate();
+  // }, [addQuestionList]);
+
+  // 문항 등록 후 메타데이터 수정 되게
+
+  const postQuiz = async () => {
+    if (selectedSource.length > 0) {
+      const data = {
+        commandCode: 0,
+        quizIdx: null,
+        articleList: [],
+        quizItemList: quizItemList,
+        quizClassList: [
+          {
+            type: 'CLASS',
+            quizCategory: {
+              sources: selectedSource,
+              난이도: selectedDifficulty,
+              문항타입: selectedQuestionType,
+              난이도공통: selectedDifficultyCommon,
+            },
+          },
+          {
+            type: 'CATEGORY',
+            quizCategory: categories,
+          },
+        ],
+      };
+      console.log('최종 적으로 수정될 문항 data값', data);
+      const res = await quizService.post(`/v2/quiz`, data);
+      console.log('res문항 data값', res.data.data.quizList);
+      setQuizList([...quizList, ...res.data.data.quizList]);
+      // setQuestionList([...quizList, ...res.data.data.quizList]);
+
+      return res.data.data.quizList;
+    }
+  };
+
+  const {
+    data: postQuizData,
+    mutate: postQuizDataMutate,
+    isPending,
+  } = useMutation({
     mutationFn: postQuiz,
     onError: (context: {
       response: { data: { message: string; code: string } };
@@ -418,7 +475,7 @@ export function ContentEdit({
     onSuccess: (response) => {
       openToastifyAlert({
         type: 'success',
-        text: `문항이 수정 되었습니다 ${response.data.data.quiz.idx}`,
+        text: `문항이 수정 되었습니다 ${response[0]?.idx}`,
       });
       // 추가된 문항의 idx값을 배열에 넣기 전체리스트에서 idx값으로 찾아온뒤 필수 메타값넣고 등록
 
@@ -429,6 +486,35 @@ export function ContentEdit({
       });
     },
   });
+  // 분류 등록
+  useEffect(() => {
+    console.log(',selectedSourceList 전체 출처 리스트 ', selectedSource);
+  }, [selectedSource]);
+  useEffect(() => {
+    console.log(',selectedDifficulty 난이도 ', selectedDifficulty);
+  }, [selectedDifficulty]);
+  useEffect(() => {
+    console.log(
+      ',selectedDifficultyCommon 난이도공통 ',
+      selectedDifficultyCommon,
+    );
+  }, [selectedDifficultyCommon]);
+  useEffect(() => {
+    console.log(',selectedQuestionType 문항타입 ', selectedQuestionType);
+  }, [selectedQuestionType]);
+
+  const submitSave = () => {
+    setIsEditor(true);
+    // 버튼 누를 시 에디터 값 축출
+    saveHandler();
+  };
+  // 등록 버튼 입력시 에디터에서 문항값 축출 등록
+  useEffect(() => {
+    console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
+    // 등록 호출
+    if (isEditor && !isPending) postQuizDataMutate();
+  }, [quizItemList]);
+  // 등록이후 값 다시 불러오기 TODO:
 
   // 메뉴 목록 조회 api (셋팅값)
   const getMenuSetting = async () => {
@@ -629,19 +715,6 @@ export function ContentEdit({
     }
   };
 
-  const submitSave = () => {
-    // console.log('등록하려는 신규 문항에 대한 데이터 post 요청');
-    // console.log('신규 등록된 문항 리스트 get 요청 API');
-
-    // 등록 api
-    // console.log('selectedSubject 교과', selectedSubject);
-    // console.log('selectedCourse 과목', selectedCourse);
-    console.log('selectedQuestionType 문항타입', selectedQuestionType);
-    console.log('selectedDifficulty 난이도', selectedDifficulty);
-    //출처
-    console.log('selectedSource 난이도', selectedSource);
-    saveHandler();
-  };
   const saveHandler = async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
@@ -679,15 +752,15 @@ export function ContentEdit({
     }
   }, [data]);
 
-  // useEffect(() => {
-  //   if (onItemClickData && onItemClickData.quizItemList) {
-  //     setData(onItemClickData.quizItemList);
-  //     // 선택 데이터 바뀔시 초기화
-  //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //     // @ts-expect-error
-  //     window.tinymce.activeEditor.setContent('');
-  //   }
-  // }, [onItemClickData]);
+  useEffect(() => {
+    if (onItemClickData && onItemClickData.quizItemList) {
+      setData(onItemClickData.quizItemList);
+      // 선택 데이터 바뀔시 초기화
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      window.tinymce.activeEditor.setContent('');
+    }
+  }, [onItemClickData]);
 
   // useEffect(() => {
   //   if (data) {
