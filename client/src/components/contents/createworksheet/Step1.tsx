@@ -87,7 +87,10 @@ export function Step1() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
   >([]);
-
+  //세분류 리스트
+  const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
+  //단원.유형별 세분류 검색색
+  const [searchValue, setSearchValue] = useState<string>('');
   //문항 설정 값
   const [inputValue, setInputValue] = useState<string>('');
   const [questionNum, setQuestionNum] = useState<string | null>(null);
@@ -97,207 +100,179 @@ export function Step1() {
   //배점
   const [equalScore, setEqualScore] = useState<number | null>(null);
   const selectEqualScore = (newValue: number | null) => {
-    if (newValue === null) {
-      setRemainderContent(0);
-      setNextRemainderContent(0);
-      setQuotient(0);
-      setMinQuotient(0);
-      setMaxQuotient(0);
-    }
     setEqualScore(newValue);
   };
-  //배점 모달 띄우는 값
-  const [isEqualScoreModal, setIsEqualScoreModal] = useState<boolean>(false);
-  //총 배점
-  const [equalTotalValue, setEqualTotlaValue] = useState('0');
-  // 문항당 배점
-  const [isSaveEqualValue, setIsSaveEqualValue] = useState<boolean>(false);
-  //나머지 시작 컨텐츠
-  const [remainderContent, setRemainderContent] = useState<number>();
-  //나머지 시작 전 컨텐츠
-  const [nextRemainderContent, setNextRemainderContent] = useState<number>();
-  //문항당 배점
-  const [quotient, setQuotient] = useState<number>(0);
-  const [remainder, setRemainder] = useState<number>();
   //문항수 확인
   const [receivedQuizCount, setReceivedQuizCount] = useState<number | null>(
     null,
   );
-  //최소점수
-  const [minQuotient, setMinQuotient] = useState<number>();
-  //최대점수
-  const [maxQuotient, setMaxQuotient] = useState<number>();
-  //문항 재배점
-  const [isResaveEqualValue, setIsResaveEqualValue] = useState(false);
-  //최종 확인
-  const [isConfirm, setIsConfirm] = useState(false);
 
   // 균등배점 모달 닫기
-  const closeEqualScoreSettingModal = () => {
-    setIsEqualScoreModal(false);
-  };
+  // const closeEqualScoreSettingModal = () => {
+  //   setIsEqualScoreModal(false);
+  // };
   //균등배점 저장
-  const saveEqualScoreSettingModal = () => {
-    if (isSaveEqualValue) {
-      //재균등배점
-      if (isResaveEqualValue) {
-        setIsConfirm(true);
-        closeEqualScoreSettingModal();
-        //로컬에 배점 저장하기
-        saveLocalQutientData();
-      } else {
-        closeEqualScoreSettingModal();
-        saveLocalQutientData();
-      }
-    } else {
-      if (equalTotalValue) {
-        openToastifyAlert({
-          type: 'error',
-          text: '저장을 눌러주세요.',
-        });
-      } else {
-        openToastifyAlert({
-          type: 'error',
-          text: '배점을 입력해주세요.',
-        });
-      }
-    }
-  };
+  // const saveEqualScoreSettingModal = () => {
+  //   if (isSaveEqualValue) {
+  //     //재균등배점
+  //     if (isResaveEqualValue) {
+  //       setIsConfirm(true);
+  //       closeEqualScoreSettingModal();
+  //       //로컬에 배점 저장하기
+  //       //saveLocalQutientData();
+  //     } else {
+  //       closeEqualScoreSettingModal();
+  //       //saveLocalQutientData();
+  //     }
+  //   } else {
+  //     if (equalTotalValue) {
+  //       openToastifyAlert({
+  //         type: 'error',
+  //         text: '저장을 눌러주세요.',
+  //       });
+  //     } else {
+  //       openToastifyAlert({
+  //         type: 'error',
+  //         text: '배점을 입력해주세요.',
+  //       });
+  //     }
+  //   }
+  // };
   //균등배점 취소
-  const cancelEqualScoreSettingModal = () => {
-    closeEqualScoreSettingModal();
-    setEqualScore(null);
-    setEqualTotlaValue('0');
-    setRemainderContent(0);
-    setNextRemainderContent(0);
-    setQuotient(0);
-    setMinQuotient(0);
-    setMaxQuotient(0);
-  };
+  // const cancelEqualScoreSettingModal = () => {
+  //   closeEqualScoreSettingModal();
+  //   setEqualScore(null);
+  //   setEqualTotlaValue('0');
+  //   setRemainderContent(0);
+  //   setNextRemainderContent(0);
+  //   setQuotient(0);
+  //   setMinQuotient(0);
+  //   setMaxQuotient(0);
+  // };
   //직접 점수 입력
-  const changeEqualInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let equalTotalValue = e.target.value;
-    // 정규표현식을 사용하여 숫자 이외의 문자 제거
-    equalTotalValue = equalTotalValue.replace(/[^0-9]/g, '');
+  // const changeEqualInputValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   let equalTotalValue = e.target.value;
+  //   // 정규표현식을 사용하여 숫자 이외의 문자 제거
+  //   equalTotalValue = equalTotalValue.replace(/[^0-9]/g, '');
 
-    const parsedValue = parseInt(equalTotalValue, 10);
+  //   const parsedValue = parseInt(equalTotalValue, 10);
 
-    setEqualTotlaValue(parsedValue >= 200 ? '200' : equalTotalValue);
-  };
+  //   setEqualTotlaValue(parsedValue >= 200 ? '200' : equalTotalValue);
+  // };
 
   //서버에서 가져올 수 있는 문항 수를 줬을 때
-  useEffect(() => {
-    if (receivedQuizCount) {
-      setEqualTotlaValue(receivedQuizCount.toString());
-      //값초기화
-      setRemainderContent(0);
-      setNextRemainderContent(0);
-    }
-  }, [receivedQuizCount]);
+  // useEffect(() => {
+  //   if (receivedQuizCount) {
+  //     setEqualTotlaValue(receivedQuizCount.toString());
+  //     //값초기화
+  //     setRemainderContent(0);
+  //     setNextRemainderContent(0);
+  //   }
+  // }, [receivedQuizCount]);
 
   //배점 저장
-  const saveEqualInputValue = () => {
-    //받아온 문항 수 넘버타입 변경
-    const parsedreceivedQuiz = receivedQuizCount?.toString();
-    //받아온 문항 수 넘버타입 변경
-    const parsedreceivedQuizValue = parseInt(parsedreceivedQuiz as string, 10);
-    //총배점 타입 변경
-    const parsedValue = parseInt(equalTotalValue, 10);
+  // const saveEqualInputValue = () => {
+  //   //받아온 문항 수 넘버타입 변경
+  //   const parsedreceivedQuiz = receivedQuizCount?.toString();
+  //   //받아온 문항 수 넘버타입 변경
+  //   const parsedreceivedQuizValue = parseInt(parsedreceivedQuiz as string, 10);
+  //   //총배점 타입 변경
+  //   const parsedValue = parseInt(equalTotalValue, 10);
 
-    //선택된 문항 수
-    const questionNumValue =
-      tabVeiw === '시중교재' || tabVeiw === '기출'
-        ? questionNum
-          ? parseInt(questionNum, 10) * includeQuizList.length
-          : inputValue
-            ? parseInt(inputValue, 10) * includeQuizList.length
-            : 0
-        : parseInt(
-            questionNum ||
-              inputValue ||
-              (includeQuizList.length as unknown as string),
-            10,
-          );
+  //   //선택된 문항 수
+  //   const questionNumValue =
+  //     tabVeiw === '시중교재' || tabVeiw === '기출'
+  //       ? questionNum
+  //         ? parseInt(questionNum, 10) * includeQuizList.length
+  //         : inputValue
+  //           ? parseInt(inputValue, 10) * includeQuizList.length
+  //           : 0
+  //       : parseInt(
+  //           questionNum ||
+  //             inputValue ||
+  //             (includeQuizList.length as unknown as string),
+  //           10,
+  //         );
 
-    if (equalTotalValue === '') {
-      openToastifyAlert({
-        type: 'error',
-        text: '총 배점을 입력해주세요.',
-      });
-      setIsSaveEqualValue(false);
-      setEqualTotlaValue('0');
-      setQuotient(0);
-    } else if (
-      !receivedQuizCount &&
-      !parsedreceivedQuizValue &&
-      equalTotalValue &&
-      parsedValue < questionNumValue
-    ) {
-      openToastifyAlert({
-        type: 'error',
-        text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
-      });
-      setEqualTotlaValue(questionNumValue.toString());
-      setIsSaveEqualValue(false);
-    } else if (equalTotalValue && parsedValue < parsedreceivedQuizValue) {
-      openToastifyAlert({
-        type: 'error',
-        text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
-      });
-      if (receivedQuizCount) {
-        setEqualTotlaValue(receivedQuizCount.toString());
-      }
-      setIsSaveEqualValue(false);
-    } else {
-      openToastifyAlert({
-        type: 'success',
-        text: '저장되었습니다.',
-      });
-      setEqualTotlaValue(equalTotalValue);
-      setIsSaveEqualValue(true);
-    }
-  };
+  //   if (equalTotalValue === '') {
+  //     openToastifyAlert({
+  //       type: 'error',
+  //       text: '총 배점을 입력해주세요.',
+  //     });
+  //     setIsSaveEqualValue(false);
+  //     setEqualTotlaValue('0');
+  //     setQuotient(0);
+  //   } else if (
+  //     !receivedQuizCount &&
+  //     !parsedreceivedQuizValue &&
+  //     equalTotalValue &&
+  //     parsedValue < questionNumValue
+  //   ) {
+  //     openToastifyAlert({
+  //       type: 'error',
+  //       text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
+  //     });
+  //     setEqualTotlaValue(questionNumValue.toString());
+  //     setIsSaveEqualValue(false);
+  //   } else if (equalTotalValue && parsedValue < parsedreceivedQuizValue) {
+  //     openToastifyAlert({
+  //       type: 'error',
+  //       text: '총 배점은 총 문항수보다 크거나 같아야합니다.',
+  //     });
+  //     if (receivedQuizCount) {
+  //       setEqualTotlaValue(receivedQuizCount.toString());
+  //     }
+  //     setIsSaveEqualValue(false);
+  //   } else {
+  //     openToastifyAlert({
+  //       type: 'success',
+  //       text: '저장되었습니다.',
+  //     });
+  //     setEqualTotlaValue(equalTotalValue);
+  //     setIsSaveEqualValue(true);
+  //   }
+  // };
 
   //몇번부터 몇번까지 몇점 이후 몇점 설정값
-  useEffect(() => {
-    const parsedValue = parseInt(equalTotalValue, 10);
-    const questionNumValue = parseInt(
-      questionNum ||
-        inputValue ||
-        (includeQuizList.length as unknown as string),
-      10,
-    );
+  // useEffect(() => {
+  //   const parsedValue = parseInt(equalTotalValue, 10);
+  //   const questionNumValue = parseInt(
+  //     questionNum ||
+  //       inputValue ||
+  //       (includeQuizList.length as unknown as string),
+  //     10,
+  //   );
 
-    if (isSaveEqualValue && receivedQuizCount) {
-      const quotient = Math.floor(parsedValue / receivedQuizCount);
-      const remainder = parsedValue % receivedQuizCount;
-      setQuotient(quotient);
-      setRemainder(remainder);
-      if (quotient || remainder) {
-        const remainderContent = receivedQuizCount - remainder;
-        const minQuotient = quotient - 1;
-        const maxQuotient = quotient + 1;
-        setRemainderContent(remainderContent);
-        setNextRemainderContent(remainderContent + 1);
-        setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
-        setMaxQuotient(maxQuotient);
-      }
-    } else if (isSaveEqualValue && !receivedQuizCount) {
-      const quotient = Math.floor(parsedValue / questionNumValue);
-      const remainder = parsedValue % questionNumValue;
-      setQuotient(quotient);
-      setRemainder(remainder);
-      if (quotient || remainder) {
-        const remainderContent = questionNumValue - remainder;
-        const minQuotient = quotient - 1;
-        const maxQuotient = quotient + 1;
-        setRemainderContent(remainderContent);
-        setNextRemainderContent(remainderContent + 1);
-        setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
-        setMaxQuotient(maxQuotient);
-      }
-    }
-  }, [isSaveEqualValue, equalTotalValue, receivedQuizCount]);
+  //   if (isSaveEqualValue && receivedQuizCount) {
+  //     const quotient = Math.floor(parsedValue / receivedQuizCount);
+  //     const remainder = parsedValue % receivedQuizCount;
+  //     setQuotient(quotient);
+  //     setRemainder(remainder);
+  //     if (quotient || remainder) {
+  //       const remainderContent = receivedQuizCount - remainder;
+  //       const minQuotient = quotient - 1;
+  //       const maxQuotient = quotient + 1;
+  //       setRemainderContent(remainderContent);
+  //       setNextRemainderContent(remainderContent + 1);
+  //       setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
+  //       setMaxQuotient(maxQuotient);
+  //     }
+  //   } else if (isSaveEqualValue && !receivedQuizCount) {
+  //     const quotient = Math.floor(parsedValue / questionNumValue);
+  //     const remainder = parsedValue % questionNumValue;
+  //     setQuotient(quotient);
+  //     setRemainder(remainder);
+  //     if (quotient || remainder) {
+  //       const remainderContent = questionNumValue - remainder;
+  //       const minQuotient = quotient - 1;
+  //       const maxQuotient = quotient + 1;
+  //       setRemainderContent(remainderContent);
+  //       setNextRemainderContent(remainderContent + 1);
+  //       setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
+  //       setMaxQuotient(maxQuotient);
+  //     }
+  //   }
+  // }, [isSaveEqualValue, equalTotalValue, receivedQuizCount]);
 
   //문항 수 균등 배분
   const [isQuizEven, setIsQuizEven] = useState(false);
@@ -458,7 +433,6 @@ export function Step1() {
   };
 
   const [includeQuizList, setIncludeQuizList] = useState<string[]>([]);
-  //console.log(includeQuizList);
   // 선택된 문항 코드 넣기
   const toggleQuizCode = (quizCode: string | string[], isChecked: boolean) => {
     if (Array.isArray(quizCode)) {
@@ -592,39 +566,42 @@ export function Step1() {
     setIsAlertOpen(false);
     //선택된 값 초기화
     setQuestionNum('');
-    selectEqualScore(null);
     setQuestionLevel(null);
     setQuestionType([]);
     setContainMock(null);
     setIsQuizEven(false);
     setIsPriority(false);
-    setReceivedQuizCount(null);
-    setRemainderContent(0);
-    setNextRemainderContent(0);
-    setQuotient(0);
-    setMinQuotient(0);
-    setMaxQuotient(0);
-    setEqualTotlaValue('');
+    setUnitClassificationList([]);
+    setCheckedDepthList([]);
+    setSearchValue('');
+    //setReceivedQuizCount(null);
+    //setRemainderContent(0);
+    //setNextRemainderContent(0);
+    //setQuotient(0);
+    //setMinQuotient(0);
+    //setMaxQuotient(0);
+    //setEqualTotlaValue('');
   };
 
   //alert 진행클릭
   const keepGoingAlert = () => {
     //난이도 설정 다시 열기
-    if (equalScore === 2) {
-      setIsEqualScoreModal(true);
-      setIsAlertOpen(false);
-      setIsResaveEqualValue(true);
-      setIsSaveEqualValue(false);
-    } else {
-      navigate('/content-create/exam/step2');
-    }
+    // if (equalScore === 2) {
+    //   setIsEqualScoreModal(true);
+    //   setIsAlertOpen(false);
+    //   setIsResaveEqualValue(true);
+    //   setIsSaveEqualValue(false);
+    // } else {
+    //   navigate('/content-create/exam/step2');
+    // }
+    navigate('/content-create/exam/step2');
   };
 
-  useEffect(() => {
-    if (isConfirm) {
-      navigate('/content-create/exam/step2');
-    }
-  }, [isConfirm]);
+  // useEffect(() => {
+  //   if (isConfirm) {
+  //     navigate('/content-create/exam/step2');
+  //   }
+  // }, [isConfirm]);
 
   // step1 선택된 문항 불러오기 api
   const postWorkbookStep1 = async (data: any) => {
@@ -673,17 +650,15 @@ export function Step1() {
             filterQuizCount === Number(inputValue)
           ) {
             navigate('/content-create/exam/step2');
-            const itemCount =
-              Number(questionNum) ||
-              Number(inputValue) ||
-              Number(includeQuizList.length);
+            const itemCount = Number(questionNum) || Number(inputValue);
+            // ||
+            // Number(includeQuizList.length);
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           } else {
             setIsAlertOpen(true);
-            const itemCount =
-              Number(questionNum) ||
-              Number(inputValue) ||
-              Number(includeQuizList.length);
+            const itemCount = Number(questionNum) || Number(inputValue);
+            // ||
+            // Number(includeQuizList.length);
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
@@ -708,7 +683,10 @@ export function Step1() {
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           } else {
             setIsAlertOpen(true);
-            const itemCount = filterQuizCount;
+            //const itemCount = filterQuizCount;
+            const itemCount =
+              Number(questionNum) * Number(includeQuizList.length) ||
+              Number(inputValue) * Number(includeQuizList.length);
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
@@ -751,7 +729,10 @@ export function Step1() {
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           } else {
             setIsAlertOpen(true);
-            const itemCount = response.data.data.quizList.length;
+            //const itemCount = response.data.data.quizList.length;
+            const itemCount =
+              Number(questionNum) * Number(includeQuizList.length) ||
+              Number(inputValue) * Number(includeQuizList.length);
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
@@ -766,29 +747,32 @@ export function Step1() {
   };
 
   //useMemo를 사용하여 makingdata값을 기억하며 unitClassificationList가 변경될때 업데이트
-  const makingdata = useMemo(
-    () =>
-      unitClassificationList.map((item) => {
-        // 타입 가드로 RadioStateType인지 확인 후 title에 접근
-        const itemTreeKey = {
-          교육과정: isRadioStateType(item[0]) ? item[0].title : '',
-          학교급: isRadioStateType(item[1]) ? item[1].title : '',
-          학년: isRadioStateType(item[2]) ? item[2].title : '',
-          학기: isRadioStateType(item[3]) ? item[3].title : '',
-          교과: isRadioStateType(item[4]) ? item[4].title : '',
-          과목: isRadioStateType(item[5]) ? item[5].title : '',
-        };
-        // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
-        const itemTreeIdxList =
-          (item[6] as ItemTreeIdxListType).itemTreeIdxList || [];
+  const makingdata = useMemo(() => {
+    return unitClassificationList.map((item) => {
+      // itemTreeKey를 동적으로 생성
+      const itemTreeKey = item.reduce(
+        (acc, cur, index) => {
+          if (isRadioStateType(cur)) {
+            // RadioStateType인 경우에만 code를 사용
+            const code = cur.code || `key_${index}`; // `code`가 없을 경우 기본 키 사용
+            acc[code] = cur.title;
+          }
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
 
-        return {
-          itemTreeKey,
-          itemTreeIdxList,
-        };
-      }),
-    [unitClassificationList],
-  );
+      // ItemTreeIdxListType인지 확인 후 itemTreeIdxList에 접근
+      const lastItem = item[item.length - 1];
+      const itemTreeIdxList =
+        (lastItem as ItemTreeIdxListType)?.itemTreeIdxList || [];
+
+      return {
+        itemTreeKey,
+        itemTreeIdxList,
+      };
+    });
+  }, [unitClassificationList]);
 
   useEffect(() => {
     const allItemTreeIdxList = makingdata.flatMap(
@@ -893,8 +877,20 @@ export function Step1() {
                 );
                 groupItem.quizItemList = []; // Clear quizItemList for merged items
               }
+              if (groupItem !== textType) {
+                groupItem.quizCategoryList.forEach(
+                  (categoryItem: any, index: number) => {
+                    textType.quizCategoryList.push({
+                      ...categoryItem,
+                      quizIdx: groupItem.idx,
+                      quizCode: groupItem.code,
+                      sort: sortCounter++,
+                    });
+                  },
+                );
+                groupItem.quizCategoryList = []; // Clear quizItemList for merged items
+              }
             });
-            console.log('textType', textType);
             // Ensure textItem's own sort is set to 1
             textType.quizItemList = textType.quizItemList.map(
               (quizItem: any, index: number) => ({
@@ -914,6 +910,16 @@ export function Step1() {
                     : quizItem.isFavorite,
               }),
             );
+            textType.quizCategoryList = textType.quizCategoryList.map(
+              (quizItem: any, index: number) => ({
+                ...quizItem,
+                sort: index + 1,
+                quizIdx: !quizItem.quizIdx ? textType.idx : quizItem.quizIdx,
+                quizCode: !quizItem.quizCode
+                  ? textType.code
+                  : quizItem.quizCode,
+              }),
+            );
           }
         }
         return quiz;
@@ -928,23 +934,23 @@ export function Step1() {
     localStorage.setItem('sendCategoryData', JSON.stringify(categoryData));
   };
 
-  const saveLocalQutientData = () => {
-    const sendQuotientData = {
-      equalScore: equalScore,
-      equalTotalValue: equalTotalValue,
-      remainderContent: remainderContent,
-      quotient: quotient,
-      nextRemainderContent: nextRemainderContent,
-      minQuotient: minQuotient,
-      maxQuotient: maxQuotient,
-    };
-    if (equalScore === 2) {
-      localStorage.setItem(
-        'sendQuotientData',
-        JSON.stringify(sendQuotientData),
-      );
-    }
-  };
+  // const saveLocalQutientData = () => {
+  //   const sendQuotientData = {
+  //     equalScore: equalScore,
+  //     equalTotalValue: equalTotalValue,
+  //     remainderContent: remainderContent,
+  //     quotient: quotient,
+  //     nextRemainderContent: nextRemainderContent,
+  //     minQuotient: minQuotient,
+  //     maxQuotient: maxQuotient,
+  //   };
+  //   if (equalScore === 2) {
+  //     localStorage.setItem(
+  //       'sendQuotientData',
+  //       JSON.stringify(sendQuotientData),
+  //     );
+  //   }
+  // };
 
   const moveStep2 = () => {
     if (tabVeiw === '단원·유형별')
@@ -1041,7 +1047,6 @@ export function Step1() {
     setQuestionLevel(null);
     setQuestionType([]);
     setContainMock(null);
-    selectEqualScore(null);
     setIsQuizEven(false);
     setIsPriority(false);
     setUnitClassificationList([]);
@@ -1057,7 +1062,6 @@ export function Step1() {
     setQuestionNum('');
     setQuestionLevel(null);
     setQuestionType([]);
-    selectEqualScore(null);
     setIsQuizEven(false);
   }, [tabVeiw]);
 
@@ -1167,6 +1171,10 @@ export function Step1() {
                 setTabVeiw={setTabVeiw}
                 unitClassificationList={unitClassificationList}
                 setUnitClassificationList={setUnitClassificationList}
+                checkedDepthList={checkedDepthList}
+                setCheckedDepthList={setCheckedDepthList}
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
               ></UnitTypeTab>
               <SelectSection
                 tabVeiw={tabVeiw}
@@ -1550,137 +1558,12 @@ export function Step1() {
         top="calc(50% - 100px)"
         isAlertOpen={isAlertOpen}
         description={`가지고 올 수 있는 문항의 수가 ${receivedQuizCount}개 입니다.`}
-        subDescription={
-          equalScore === 2
-            ? '이대로 진행할 경우 균등 배점을 다시 설정해야합니다.'
-            : '이대로 진행하시겠습니까?'
-        }
+        subDescription={'이대로 진행하시겠습니까?'}
         action="진행"
         isWarning={true}
         onClick={keepGoingAlert}
         onClose={cancelAlert}
       />
-      {isEqualScoreModal && (
-        <Overlay>
-          <EqualScoreModalContainer>
-            <EqualScoreModalWrapper>
-              <EqualScoreModalTitleWrapper>
-                <Label
-                  value={`총 ${receivedQuizCount ? receivedQuizCount : tabVeiw === '시중교재' || tabVeiw === '기출' ? Number(questionNum) * Number(includeQuizList.length) || Number(inputValue) * Number(includeQuizList.length) : questionNum || inputValue || includeQuizList.length} 문항`}
-                  fontSize="25px"
-                  width="160px"
-                />
-                <EqualScoreModalOptionWrapper>
-                  <Label value="총 배점" fontSize="25px" width="89px" />
-                  <Input
-                    width="50px"
-                    height="34px"
-                    border="black"
-                    placeholderSize="16px"
-                    padding="10px"
-                    fontSize="16px"
-                    type="text"
-                    value={equalTotalValue}
-                    maxLength={10}
-                    minLength={2}
-                    onClick={() => {
-                      setEqualTotlaValue('');
-                      setIsSaveEqualValue(false);
-                      setRemainderContent(0);
-                      setNextRemainderContent(0);
-                    }}
-                    onChange={(e) => {
-                      changeEqualInputValue(e);
-                    }}
-                  ></Input>
-                  <Button
-                    buttonType="button"
-                    onClick={saveEqualInputValue}
-                    $padding="10px"
-                    height={'34px'}
-                    width={'100px'}
-                    fontSize="13px"
-                    $filled
-                    cursor
-                  >
-                    <span>저장</span>
-                  </Button>
-                </EqualScoreModalOptionWrapper>
-              </EqualScoreModalTitleWrapper>
-              <EqualScoreModalScript>
-                {remainder === 0 || (remainder === null && isSaveEqualValue) ? (
-                  <>
-                    {/* 나머지가 없는경우 */}
-                    <div>
-                      01번 문항부터
-                      {receivedQuizCount
-                        ? receivedQuizCount
-                        : questionNum || inputValue || includeQuizList.length}
-                      번 문항까지
-                      {quotient || 0}점
-                    </div>
-                    {isSaveEqualValue ? (
-                      <div className="pointsPerQuestion">
-                        문항당 배점 {minQuotient}점 ~ {quotient + 1}점
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {/* 나머지가 있는경우 */}
-                    <div>
-                      01번 문항부터
-                      {remainderContent}번 문항까지 {quotient || 0}점
-                    </div>
-                    <div>
-                      {nextRemainderContent}번 문항부터
-                      {receivedQuizCount
-                        ? receivedQuizCount
-                        : questionNum || inputValue || includeQuizList.length}
-                      번 문항까지 {quotient + 1 || 0}점
-                    </div>
-                    {isSaveEqualValue ? (
-                      <div className="pointsPerQuestion">
-                        문항당 배점 {minQuotient}점 ~ {maxQuotient}점
-                      </div>
-                    ) : (
-                      <></>
-                    )}
-                  </>
-                )}
-              </EqualScoreModalScript>
-              <EqualScoreModalButtonWrapper>
-                <Button
-                  buttonType="button"
-                  onClick={cancelEqualScoreSettingModal}
-                  $padding="10px"
-                  height={'100%'}
-                  width={'100%'}
-                  fontSize="13px"
-                  $normal
-                  cursor
-                >
-                  <span>취소</span>
-                </Button>
-                <Button
-                  buttonType="button"
-                  onClick={saveEqualScoreSettingModal}
-                  $padding="10px"
-                  height={'100%'}
-                  width={'100%'}
-                  fontSize="13px"
-                  $filled
-                  cursor
-                >
-                  <span>확인</span>
-                </Button>
-              </EqualScoreModalButtonWrapper>
-            </EqualScoreModalWrapper>
-          </EqualScoreModalContainer>
-        </Overlay>
-      )}
     </Container>
   );
 }
