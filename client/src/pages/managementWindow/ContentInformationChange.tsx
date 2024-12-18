@@ -560,11 +560,12 @@ export function ContentInformationChange() {
       content: (
         <EditModal
           sortedQuizList={sortedQuizList}
-          searchedValue={searchValue}
           openFormula={openFormula}
           change={setChangeValue}
           // refetch={refetch}
           idxNamePairs={idxNamePairs}
+          beforeText={searchValue}
+          state={state}
         />
       ),
     });

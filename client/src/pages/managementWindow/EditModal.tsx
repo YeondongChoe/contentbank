@@ -36,27 +36,33 @@ interface CategoryItem {
 
 export function EditModal({
   sortedQuizList,
-  searchedValue,
   openFormula,
   change,
   idxNamePairs,
+  beforeText,
+  state,
 }: {
   sortedQuizList: QuizListType[];
-  searchedValue: string;
   openFormula: (state: unknown) => void;
   change: React.Dispatch<any>;
   idxNamePairs: IdxNamePair[];
+  beforeText: string;
+  state: '수정' | '복제' | null;
 }) {
   const { closeModal } = useModal();
 
-  const [errorMessage, setErrorMessage] = useState('');
+  const [isCheckedArr, setIsCheckedArr] = useState<boolean[]>([]);
   const [changeValue, setChangeValue] = useState<string>('');
+  const [selectedIdx, setSelectedIdx] = useState<string>('');
 
   const [educationCurriculumList, setEducationCurriculumList] = useState<any[]>(
     [],
   );
   //최초 1뎁스
   const [listDepth1, setListDepth1] = useState<CategoryItem[]>([]);
+  //다음 뎁스 아이템들
+  const [childItems, setChildItems] = useState<CategoryItem | null>(null);
+
   const [tagCheckList, setTagCheckList] = useState<number[]>([]);
   const searchEditDivRef = useRef<HTMLDivElement | null>(null);
 
@@ -68,10 +74,24 @@ export function EditModal({
 
   // 변경 버튼
   const changeEdit = () => {
-    onSearchList();
+    const idxList = sortedQuizList.map((el) => el.idx);
+    // 변경된값 최종적으로 저장
+    // 해당  텍스트 수정의 경우 비필수로
+    // 필수인 카테고리 수정이 일어날때 추가로 호출
+    const data = {
+      idxList: idxList,
+      before: beforeText,
+      after: changeValue,
+    };
 
-    closeModal();
+    console.log('최종 변경될 값 data -------', data);
+    // onSearchList();
+
+    // closeModal();
   };
+
+  // 문항 텍스트 일괄 변경
+  // `/v1/quiz/change/text`
 
   const onSearchList = () => {
     if (searchEditDivRef.current) {
@@ -111,7 +131,7 @@ export function EditModal({
   }, [idxNamePairs]);
 
   // 첫번째 맵핑 리스트 조회
-  const getCategoryMap = async () => {
+  const getCategoryMapDepth1 = async () => {
     if (idxNamePairs) {
       const res = await classificationInstance.get(
         `/v1/category/map/${idxNamePairs[0].idx}`,
@@ -124,7 +144,7 @@ export function EditModal({
 
   const { data: mappingData, refetch: mappingDataRefetch } = useQuery({
     queryKey: ['get-categoryMap'], // 쿼리 키를 unique하게 설정
-    queryFn: getCategoryMap, // groupIdx 추출
+    queryFn: getCategoryMapDepth1, // groupIdx 추출
     enabled: !!idxNamePairs,
     meta: {
       errorMessage: 'get-categoryMap 에러 메세지',
@@ -135,6 +155,7 @@ export function EditModal({
   useEffect(() => {
     if (mappingData) {
       // children 속성을 제외한 새로운 배열 생성
+      // TODO : api 변경시 내부 구조도 변경
       const processedData = (mappingData as CategoryItem[]).map(
         ({ children, ...rest }) => rest,
       );
@@ -143,7 +164,70 @@ export function EditModal({
       setListDepth1(processedData);
     }
   }, [mappingData]);
+  useEffect(() => {
+    console.log('listDepth1 -----', listDepth1);
+    // 첫번째 배열의 길이만큼 체크박스 상태값
+    const isCheckedArrArray = listDepth1.map(() => false);
+    // isCheckedArr 상태값 설정
+    setIsCheckedArr(isCheckedArrArray);
+  }, [listDepth1]);
+
+  // 다음 뎁스 맵핑 api 호출
+  const getCategoryMap = async () => {
+    if (selectedIdx) {
+      const res = await classificationInstance.get(
+        `/v1/category/map/${selectedIdx}`,
+      );
+      const list = res.data.data.mapList;
+      return list;
+    }
+  };
+
+  const { data: childItemsData, refetch: fetchChildItems } = useQuery({
+    queryKey: ['get-categoryMap', selectedIdx],
+    queryFn: getCategoryMap, // 선택된 idx로 API 호출
+    enabled: selectedIdx !== '', // 초기에는 비활성화
+    meta: {
+      errorMessage: `get-categoryMap 에러 메세지-${selectedIdx}`,
+    },
+  });
+
   // 클릭시 다음 단계 리스트가 조회된후 하단으로 펼침
+  const toggleAccordion = async (
+    e: React.MouseEvent<HTMLButtonElement>,
+    index: number,
+  ) => {
+    const id = e.currentTarget.id;
+    setSelectedIdx(id);
+
+    const target = e.target as HTMLInputElement;
+    const ischeck = target.checked;
+    console.log(ischeck);
+    const isCheckedArrCopy = [...isCheckedArr];
+    // 클릭된 index의 값을 ischeck로 변경
+    isCheckedArrCopy[index] = ischeck;
+
+    setIsCheckedArr(isCheckedArrCopy);
+
+    // 자식 데이터 로드
+    if (childItemsData) {
+      console.log('childItemsData[index] ----- ', childItemsData[index]);
+      const items = childItemsData[index];
+
+      setChildItems(items);
+    }
+  };
+
+  useEffect(() => {
+    // console.log('isCheckedArr ---------- ', isCheckedArr);
+  }, [isCheckedArr]);
+
+  useEffect(() => {
+    console.log('selectedIdx ----- ', selectedIdx);
+    if (selectedIdx == '') fetchChildItems();
+  }, [selectedIdx]);
+
+  useEffect(() => {}, [childItemsData, childItems]);
 
   const handleCheckboxChange = (idx: number) => {
     setTagCheckList((prev) =>
@@ -158,6 +242,33 @@ export function EditModal({
     });
   }, [changeValue, tagCheckList]);
 
+  const renderChildren = (children: CategoryItem[] | undefined) => {
+    if (!children || children.length === 0) return null;
+
+    return (
+      <div className="child-items">
+        {children.map((child) => (
+          <div
+            key={child.idx}
+            className="child-item"
+            style={{ paddingLeft: `${child.depth * 10}px` }}
+          >
+            <label>
+              <input
+                type="checkbox"
+                checked={tagCheckList.includes(child.idx)}
+                onChange={() => handleCheckboxChange(child.idx)}
+              />
+              {child.name}
+            </label>
+            {/* 재귀적으로 하위 children 렌더링 */}
+            {renderChildren(child.children)}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <Container>
       <AlertBar
@@ -167,27 +278,37 @@ export function EditModal({
         message={'정상 처리되었습니다.'}
       />
 
-      <Title>문항 수정</Title>
+      <Title>문항 수정{state == '복제' && ' 후 복제'}</Title>
       <p className="sub_title">총 {sortedQuizList.length}문항에 대해</p>
       <p>변경할 분류</p>
       <TagMappingList>
-        {listDepth1.map((item) => (
-          <span key={`${item.idx}`} className="tag_item">
-            <label>
-              <input
-                type="checkbox"
-                checked={tagCheckList.includes(item.idx)}
-                onChange={() => handleCheckboxChange(item.idx)}
-              />
-              {item.name}
-            </label>
-          </span>
+        {listDepth1.map((item, index) => (
+          <div key={`${item.idx}`}>
+            <button
+              type="button"
+              id={`${item.idx}`}
+              className="tag_item"
+              onClick={(e) => toggleAccordion(e, index)}
+            >
+              <label>
+                <input
+                  type="checkbox"
+                  checked={tagCheckList.includes(item.idx)}
+                  onChange={() => handleCheckboxChange(item.idx)}
+                />
+                {item.name}
+              </label>
+            </button>
+            {isCheckedArr[index] &&
+              childItems &&
+              renderChildren(childItems.children)}
+          </div>
         ))}
       </TagMappingList>
       <p>
         변경할 내용 (현재 검색어 :
-        {searchedValue.length ? (
-          <span dangerouslySetInnerHTML={{ __html: searchedValue }}></span>
+        {beforeText.length ? (
+          <span dangerouslySetInnerHTML={{ __html: beforeText }}></span>
         ) : (
           '없음'
         )}
@@ -258,7 +379,7 @@ export function EditModal({
           취소
         </Button>
         <Button $filled onClick={() => changeEdit()}>
-          확인
+          확인{state == '복제' && '(복제)'}
         </Button>
       </ButtonWrapper>
     </Container>
@@ -280,6 +401,11 @@ const Container = styled.div`
     font-weight: 400;
     padding: 5px 0;
   }
+
+  .child-items {
+    max-height: 300px;
+    overflow-y: auto;
+  }
 `;
 
 const Title = styled.strong`
@@ -299,10 +425,15 @@ const TagMappingList = styled.div`
   border-radius: 10px;
   display: flex;
   flex-direction: column;
+  max-height: 500px;
+  overflow-y: auto;
 
   .tag_item {
     padding: 5px;
     display: flex;
+    width: fit-content;
+    border: none;
+    background-color: transparent;
 
     > input {
       display: inline-block;
