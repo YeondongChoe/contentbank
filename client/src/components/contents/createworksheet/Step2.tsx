@@ -100,7 +100,6 @@ export function Step2() {
     useState<WorkbookCategoryData | null>(null);
   const [getEditData, setGetEditData] = useState<EditWorkbookData | null>(null);
   const [getItemCountData, setGetItemCountData] = useState<number | null>(null);
-  const [isDone, setIsDone] = useState<boolean>(false);
   const [initialItems, setInitialItems] = useState<QuizList[]>([]);
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
   const [isAlert, setIsAlert] = useState<boolean>(false);
@@ -146,6 +145,7 @@ export function Step2() {
 
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
   const [categoryNameList, setCategoryNameList] = useState<string>('');
+  const [isDone, setIsDone] = useState<boolean>(false);
 
   useEffect(() => {
     if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
@@ -186,14 +186,14 @@ export function Step2() {
       );
       const avgScore = totalScore / workbookData?.data.data.quizList.length;
       //setQuotient(avgScore === 0 ? null : avgScore);
-      setQuotient(avgScore);
-      setMinQuotient(avgScore > 1 ? avgScore - 1 : avgScore);
-      setMaxQuotient(avgScore + 1);
-      setEqualTotalValue(totalScore.toString());
-      setTotalEqualScore(totalScore);
-      setRemainderContent(workbookData?.data.data.quizList.length);
-      setNextRemainderContent(workbookData?.data.data.quizList.length + 1);
-      setEqualScore(2);
+      //setQuotient(avgScore);
+      //setMinQuotient(avgScore > 1 ? avgScore - 1 : avgScore);
+      //setMaxQuotient(avgScore + 1);
+      //setEqualTotalValue(totalScore.toString());
+      //setTotalEqualScore(totalScore);
+      //setRemainderContent(workbookData?.data.data.quizList.length);
+      //setNextRemainderContent(workbookData?.data.data.quizList.length + 1);
+      //setEqualScore(2);
       setInitialItems(workbookData?.data.data.quizList);
       setNameValue(workbookData?.data.data.name);
       setGradeValue(workbookData?.data.data.grade);
@@ -207,6 +207,7 @@ export function Step2() {
       setIsDate(workbookData?.data.data.templateList[0].isDate);
       setIsQuizType(workbookData?.data.data.templateList[0].isQuizType);
       setItemType(workbookData?.data.data.templateList[0].itemType);
+      setIsDone(true);
       //window.opener.localStorage.clear();
     }
   }, [workbookData]);
@@ -253,7 +254,7 @@ export function Step2() {
   useEffect(() => {
     if (getQuotientLocalData) {
       setEqualScore(getQuotientLocalData.equalScore);
-      setEqualTotalValue(getQuotientLocalData.equalTotalValue);
+      //setEqualTotalValue(getQuotientLocalData.equalTotalValue);
       setRemainderContent(getQuotientLocalData.remainderContent);
       setNextRemainderContent(getQuotientLocalData.nextRemainderContent);
       setQuotient(getQuotientLocalData.quotient);
@@ -495,7 +496,6 @@ export function Step2() {
     if (getLocalData) {
       setIsEditWorkbook(getLocalData.data.isEditWorkbook);
       setInitialItems(getLocalData.data.quizList);
-      setIsDone(true);
     }
   }, [getLocalData]);
 
@@ -1668,26 +1668,18 @@ export function Step2() {
         // initialItems의 quizItemList 배열을 순회하여 code 값에 맞는 항목을 삭제
         const updatedItems = initialItems.map((item) => ({
           ...item,
+          quizCategoryList: item.quizCategoryList.filter(
+            (quizItem) => quizItem.quizCode !== code,
+          ),
           quizItemList: item.quizItemList.filter(
             (quizItem) => quizItem.quizCode !== code,
           ),
         }));
 
-        // quizItemList에 문항이 하나 남고 그 문항의 type이 "BIG"인 경우 처리
-        // const finalItems = updatedItems.filter((item) => {
-        //   if (
-        //     item.quizItemList.length === 1 &&
-        //     item.quizItemList[0].type === 'BIG'
-        //   ) {
-        //     return item.type !== 'TEXT'; // 해당 항목을 제외
-        //   }
-        //   return true; // 유지
-        // });
-
         const finalItems = updatedItems.filter((item) => {
           const types = item.quizItemList.map((el) => el.type); // quizItemList의 모든 type을 가져옴
           const uniqueTypes = [...new Set(types)]; // 중복을 제거하여 고유한 type만 가져옴
-          console.log('uniqueTypes', uniqueTypes);
+
           // 'BIG'과 'TEXT'만 있는 경우 제외 (길이가 1이거나 2인 경우)
           if (uniqueTypes.length <= 2 && uniqueTypes.includes('BIG')) {
             return false; // 제외
@@ -2246,140 +2238,33 @@ export function Step2() {
     }
   };
 
-  //문항 추가 후 그룹 코드 별로 가공
-  useEffect(() => {
-    if (!initialItems || initialItems.length === 0) return; // 데이터 없을 때 방어 코드
-    console.log('작동');
-    const groupedItems = initialItems.reduce(
-      (acc, item) => {
-        if (!acc[item.groupCode]) {
-          acc[item.groupCode] = [];
-        }
-        acc[item.groupCode].push(item);
-        return acc;
-      },
-      {} as Record<string, typeof initialItems>,
-    );
-
-    console.log('groupedItems', groupedItems);
-    const processedItems = Object.values(groupedItems).flatMap((group) => {
-      const textItem = group.find((item) => item.type === 'TEXT');
-      const nonTextItems = group.filter((item) => item.type !== 'TEXT');
-
-      if (textItem) {
-        let updatedNonTextQuizItems = nonTextItems.flatMap((item) =>
-          (item.quizItemList || []).map((quizItem) => ({
-            ...quizItem,
-            quizIdx: item.idx ?? 0, // 기본값 처리
-            quizCode: item.code ?? '', // 기본값 처리
-          })),
-        );
-
-        // 중복 제거: quizIdx와 quizCode를 기준으로 중복 제거
-        updatedNonTextQuizItems = updatedNonTextQuizItems.filter(
-          (item, index, self) =>
-            index ===
-            self.findIndex(
-              (t) => t.quizIdx === item.quizIdx && t.quizCode === item.quizCode,
-            ),
-        );
-
-        // textItem.quizItemList에 중복 없이 추가
-        textItem.quizItemList = [
-          ...(textItem.quizItemList || []),
-          ...updatedNonTextQuizItems,
-        ];
-
-        // 중복된 항목들까지 처리되었으므로 최종적으로 textItem만 반환
-        return [textItem];
-      }
-
-      // textItem이 없으면 기존 group 반환
-      return group;
-    });
-    console.log('processedItems', processedItems);
-    setInitialItems(processedItems); // 중복 제거된 데이터로 상태 갱신
-  }, [similarItems, newQuizItems]);
-
-  console.log('isDone', isDone);
-  useEffect(() => {
-    if (!initialItems || initialItems.length === 0) return; // 데이터 없을 때 방어 코드
-
-    const groupedItems = initialItems.reduce(
-      (acc, item) => {
-        if (!acc[item.groupCode]) {
-          acc[item.groupCode] = [];
-        }
-        acc[item.groupCode].push(item);
-        return acc;
-      },
-      {} as Record<string, typeof initialItems>,
-    );
-
-    const processedItems = Object.values(groupedItems).flatMap((group) => {
-      const textItem = group.find((item) => item.type === 'TEXT');
-      const nonTextItems = group.filter((item) => item.type !== 'TEXT');
-
-      if (textItem) {
-        let updatedNonTextQuizItems = nonTextItems.flatMap((item) =>
-          (item.quizItemList || []).map((quizItem) => ({
-            ...quizItem,
-            quizIdx: item.idx ?? 0, // 기본값 처리
-            quizCode: item.code ?? '', // 기본값 처리
-          })),
-        );
-
-        // 중복 제거: quizIdx와 quizCode를 기준으로 중복 제거
-        updatedNonTextQuizItems = updatedNonTextQuizItems.filter(
-          (item, index, self) =>
-            index ===
-            self.findIndex(
-              (t) => t.quizIdx === item.quizIdx && t.quizCode === item.quizCode,
-            ),
-        );
-
-        // textItem.quizItemList에 중복 없이 추가
-        textItem.quizItemList = [
-          ...(textItem.quizItemList || []),
-          ...updatedNonTextQuizItems,
-        ];
-
-        // 중복된 항목들까지 처리되었으므로 최종적으로 textItem만 반환
-        return [textItem];
-      }
-
-      // textItem이 없으면 기존 group 반환
-      return group;
-    });
-
-    setInitialItems(processedItems); // 중복 제거된 데이터로 상태 갱신
-  }, []);
-
+  //즐겨찾기 문항 추가 여부
   const [isAdded, setIsAdded] = useState(false);
 
-  useEffect(() => {
-    // 누적 `num` 값을 유지할 변수
-    let currentNum = 1;
+  // useEffect(() => {
+  //   // 누적 `num` 값을 유지할 변수
+  //   let currentNum = 1;
 
-    // `initialItems` 순회
-    const updatedItems = initialItems.map((item) => {
-      const updatedQuizItemList = item.quizItemList.map((quizItem) => {
-        if (quizItem.type === 'QUESTION') {
-          return {
-            ...quizItem,
-            num: currentNum++, // `num` 값을 부여하고 증가
-          };
-        }
-        return quizItem; // `QUESTION`이 아니면 그대로 반환
-      });
+  //   // `initialItems` 순회
+  //   const updatedItems = initialItems.map((item) => {
+  //     const updatedQuizItemList = item.quizItemList.map((quizItem) => {
+  //       if (quizItem.type === 'QUESTION') {
+  //         return {
+  //           ...quizItem,
+  //           num: currentNum++, // `num` 값을 부여하고 증가
+  //         };
+  //       }
+  //       return quizItem; // `QUESTION`이 아니면 그대로 반환
+  //     });
 
-      return {
-        ...item,
-        quizItemList: updatedQuizItemList,
-      };
-    });
-    setInitialItems(updatedItems);
-  }, [similarItems, newQuizItems, isAdded]);
+  //     return {
+  //       ...item,
+  //       quizItemList: updatedQuizItemList,
+  //     };
+  //   });
+
+  //   setInitialItems(updatedItems);
+  // }, [similarItems, newQuizItems, isAdded]);
 
   const clickAddFavoriteQuizItem = (code: string) => {
     // 즐겨찾기 리스트
@@ -2446,6 +2331,140 @@ export function Step2() {
     }
   };
 
+  //문항 추가 후 그룹 코드 별로 가공
+  useEffect(() => {
+    if (!initialItems || initialItems.length === 0) return; // 데이터 없을 때 방어 코드
+
+    const groupedItems = initialItems.reduce(
+      (acc, item) => {
+        if (!acc[item.groupCode]) {
+          acc[item.groupCode] = [];
+        }
+        acc[item.groupCode].push(item);
+        return acc;
+      },
+      {} as Record<string, typeof initialItems>,
+    );
+
+    const processedItems = Object.values(groupedItems).flatMap((group) => {
+      const textItem = group.find((item) => item.type === 'TEXT');
+      const nonTextItems = group.filter((item) => item.type !== 'TEXT');
+
+      if (textItem) {
+        // quizItemList 가공
+        let updatedNonTextQuizItems = nonTextItems.flatMap((item) =>
+          (item.quizItemList || []).map((quizItem) => ({
+            ...quizItem,
+            quizIdx: item.idx ?? 0, // 기본값 처리
+            quizCode: item.code ?? '', // 기본값 처리
+          })),
+        );
+
+        // 중복 제거: quizIdx와 quizCode를 기준으로 중복 제거
+        updatedNonTextQuizItems = updatedNonTextQuizItems.filter(
+          (item, index, self) =>
+            index ===
+            self.findIndex((t) => t.idx === item.idx && t.code === item.code),
+        );
+
+        // quizCategoryList 가공
+        const updatedNonTextQuizCategories = nonTextItems.flatMap((item) =>
+          (item.quizCategoryList || []).map((category) => ({
+            ...category,
+            quizIdx: item.idx ?? 0, // 기본값 처리
+            quizCode: item.code ?? '', // 기본값 처리
+          })),
+        );
+
+        // textItem에 quizItemList와 quizCategoryList 병합
+        textItem.quizItemList = [
+          ...(textItem.quizItemList || []),
+          ...updatedNonTextQuizItems,
+        ];
+
+        textItem.quizCategoryList = [
+          ...(textItem.quizCategoryList || []),
+          ...updatedNonTextQuizCategories,
+        ];
+
+        // 중복된 항목들까지 처리되었으므로 최종적으로 textItem만 반환
+        return [textItem];
+      }
+
+      // textItem이 없으면 기존 group 반환
+      return group;
+    });
+
+    setInitialItems(processedItems); // 중복 제거된 데이터로 상태 갱신
+  }, [similarItems, newQuizItems, isAdded]);
+
+  //수정, 복제 후 수정으로 들어왔을때 그룹끼리 묶기기
+  useEffect(() => {
+    if (!initialItems || initialItems.length === 0) return; // 데이터 없을 때 방어 코드
+
+    const groupedItems = initialItems.reduce(
+      (acc, item) => {
+        if (!acc[item.groupCode]) {
+          acc[item.groupCode] = [];
+        }
+        acc[item.groupCode].push(item);
+        return acc;
+      },
+      {} as Record<string, typeof initialItems>,
+    );
+
+    const processedItems = Object.values(groupedItems).flatMap((group) => {
+      const textItem = group.find((item) => item.type === 'TEXT');
+      const nonTextItems = group.filter((item) => item.type !== 'TEXT');
+
+      if (textItem) {
+        // quizItemList 가공
+        let updatedNonTextQuizItems = nonTextItems.flatMap((item) =>
+          (item.quizItemList || []).map((quizItem) => ({
+            ...quizItem,
+            quizIdx: item.idx ?? 0, // 기본값 처리
+            quizCode: item.code ?? '', // 기본값 처리
+          })),
+        );
+
+        // 중복 제거: quizIdx와 quizCode를 기준으로 중복 제거
+        updatedNonTextQuizItems = updatedNonTextQuizItems.filter(
+          (item, index, self) =>
+            index ===
+            self.findIndex((t) => t.idx === item.idx && t.code === item.code),
+        );
+
+        // quizCategoryList 가공
+        const updatedNonTextQuizCategories = nonTextItems.flatMap((item) =>
+          (item.quizCategoryList || []).map((category) => ({
+            ...category,
+            quizIdx: item.idx ?? 0, // 기본값 처리
+            quizCode: item.code ?? '', // 기본값 처리
+          })),
+        );
+
+        // textItem에 quizItemList와 quizCategoryList 병합
+        textItem.quizItemList = [
+          ...(textItem.quizItemList || []),
+          ...updatedNonTextQuizItems,
+        ];
+
+        textItem.quizCategoryList = [
+          ...(textItem.quizCategoryList || []),
+          ...updatedNonTextQuizCategories,
+        ];
+
+        // 중복된 항목들까지 처리되었으므로 최종적으로 textItem만 반환
+        return [textItem];
+      }
+
+      // textItem이 없으면 기존 group 반환
+      return group;
+    });
+
+    setInitialItems(processedItems); // 중복 제거된 데이터로 상태 갱신
+  }, [isDone]);
+
   //리스트 문항 교체하기 버그 발견/해결요망
   const clickSwapQuizItem = (
     similarItems: SimilarQuizList | undefined,
@@ -2469,16 +2488,13 @@ export function Step2() {
       //문항 번호 넣어주기
       newSimilarItems[similarItemIndex] = {
         ...newInitialItems[initialItemIndex],
-        num: similarItemIndex,
+        //num: similarItemIndex,
       };
 
       newInitialItems[initialItemIndex] = {
         ...temp,
-        num: newInitialItems[initialItemIndex].num,
-        score: temp.score, //기존의 배점 넣어주기
+        //num: newInitialItems[initialItemIndex].num,
       };
-      //console.log('newSimilarItems;', newSimilarItems);
-      //console.log('newInitialItems;', newInitialItems);
 
       setSimilarItems({
         ...similarItems,
@@ -2549,11 +2565,8 @@ export function Step2() {
 
   function createNewItems(initialItems: QuizList[]) {
     let numCounter = 1; // 'QUESTION' 타입의 항목에 대한 순차 번호
-    //console.log('initialItems', initialItems);
     const divideItems = initialItems.filter((item) => item.type === 'TEXT');
     const asidedItems = initialItems.filter((item) => item.type !== 'TEXT');
-    console.log('divideItems', divideItems);
-    console.log('asidedItems', asidedItems);
 
     // quizCategoryList를 quizCode별로 그룹화
     const groupedCategoryItems = divideItems.reduce(
@@ -2579,11 +2592,8 @@ export function Step2() {
         list.quizItemList.forEach((item) => {
           if (item.quizCode) {
             // 그룹화할 때 quizCode를 키로 사용
-            console.log(`Processing item with quizCode: ${item.quizCode}`); // 디버깅용 로그
-
             if (!acc[item.quizCode]) {
               acc[item.quizCode] = [];
-              console.log(`Created new array for quizCode: ${item.quizCode}`); // 디버깅용 로그
             }
 
             // 각 quizCode별로 groupCode와 함께 항목을 저장
@@ -2592,12 +2602,6 @@ export function Step2() {
               groupType: item.type,
               ...item,
             });
-            console.log(
-              `Added item to quizCode ${item.quizCode}`,
-              acc[item.quizCode],
-            ); // 디버깅용 로그
-          } else {
-            console.log(`Skipping item without quizCode`); // 디버깅용 로그
           }
         });
         return acc;
@@ -2607,7 +2611,6 @@ export function Step2() {
         (QuizItemList & { groupCode: string; groupType: string })[]
       >,
     );
-    console.log('groupedItems', groupedItems);
 
     const newQuizListItems = Object.keys(groupedItems).map((quizCode, idx) => {
       const groupedItem = groupedItems[quizCode];
@@ -2652,8 +2655,6 @@ export function Step2() {
       return newQuizList;
     });
 
-    console.log('newQuizListItems', newQuizListItems);
-
     // `newQuizListItems`와 `asidedItems`를 합쳐서 새로운 배열로 반환
     const combinedItems = [...newQuizListItems, ...asidedItems].map((item) => {
       const score =
@@ -2686,7 +2687,6 @@ export function Step2() {
       return item;
     });
 
-    console.log('combinedItems', combinedItems);
     return combinedItems; // 합쳐진 배열을 반환
   }
 
@@ -2737,7 +2737,6 @@ export function Step2() {
         });
       }
     }
-
     // 상태 업데이트
     setInitialItems((prev) => {
       const newItems = prev.map((list) => ({
@@ -2869,14 +2868,13 @@ export function Step2() {
           return quizItem;
         }),
       }));
-
       setInitialItems(updatedQuizList);
     }
 
     //알람 열기기
     setIsAlert(true);
   };
-  console.log('initialItems', initialItems);
+
   //문항 배점 설정 함수
   const selectEqualScore = (newValue: number | null) => {
     if (newValue === null) {
@@ -2952,23 +2950,23 @@ export function Step2() {
   useEffect(() => {
     const parsedValue = parseInt(equalTotalValue, 10);
     //const questionNumValue = parseInt(receivedQuizCount, 10);
-    console.log('parsedValue', parsedValue);
-    console.log('receivedQuizCount', receivedQuizCount);
-    console.log('isSaveEqualValue', isSaveEqualValue);
+    //console.log('parsedValue', parsedValue);
+    //console.log('receivedQuizCount', receivedQuizCount);
+    //console.log('isSaveEqualValue', isSaveEqualValue);
     if (isSaveEqualValue && receivedQuizCount) {
       const quotient = Math.floor(parsedValue / receivedQuizCount);
       const remainder = parsedValue % receivedQuizCount;
-      console.log('quotient', quotient);
-      console.log('remainder', remainder);
+      //console.log('quotient', quotient);
+      //console.log('remainder', remainder);
       setQuotient(quotient);
       setRemainder(remainder);
       if (quotient || remainder) {
         const remainderContent = receivedQuizCount - remainder;
         const minQuotient = quotient - 1;
         const maxQuotient = quotient + 1;
-        console.log('remainderContent', remainderContent);
-        console.log('minQuotient', minQuotient);
-        console.log('maxQuotient', maxQuotient);
+        //console.log('remainderContent', remainderContent);
+        //console.log('minQuotient', minQuotient);
+        //console.log('maxQuotient', maxQuotient);
         setRemainderContent(remainderContent);
         setNextRemainderContent(remainderContent + 1);
         setMinQuotient(minQuotient <= 0 ? 1 : minQuotient);
@@ -3007,6 +3005,12 @@ export function Step2() {
       </ButtonWrapper>
     ));
   };
+
+  // useEffect(() => {
+  //   if (equalScore === null) {
+  //     setTotalEqualScore(0);
+  //   }
+  // }, [equalScore === null]);
 
   const moveStep3 = () => {
     const createdItems = createNewItems(initialItems);
@@ -3047,6 +3051,7 @@ export function Step2() {
         saveLocalData(data);
         //localStorage.setItem('sendQuotientData', JSON.stringify(quotientData));
         navigate('/content-create/exam/step3');
+        setTotalEqualScore(0);
       } else {
         openToastifyAlert({
           type: 'error',
@@ -3117,11 +3122,11 @@ export function Step2() {
                           <AddNewContensWrapper>
                             {similarItems?.quizList.map((item, i) => {
                               const quizCategoryType =
-                                item.quizCategoryList.find(
+                                item.quizCategoryList?.find(
                                   (quizCategoryItem: any) =>
                                     quizCategoryItem.quizCategory.문항타입,
                                 )?.quizCategory;
-                              const quizCategory = item.quizCategoryList.find(
+                              const quizCategory = item.quizCategoryList?.find(
                                 (quizCategoryItem: any) =>
                                   quizCategoryItem.quizCategory.유형,
                               )?.quizCategory;
@@ -3140,7 +3145,7 @@ export function Step2() {
                                   data={item}
                                   index={item.idx}
                                   //title={quizCategory?.유형 || 'N/A'}
-                                  category={quizCategoryType}
+                                  //category={quizCategoryType}
                                   quizNum={item.num}
                                   selectedCardIndex={selectedCardIndex}
                                   onSelectCard={setSelectedCardIndex}

@@ -14,7 +14,6 @@ import { COLOR } from '../../constants';
 import { WorkbookMathViewer } from '../../mathViewer';
 
 type AccordionProps = {
-  onClick: (code: string, index: number, type: string) => void;
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
   title?: string;
@@ -32,7 +31,6 @@ type AccordionProps = {
 };
 
 function Accordion({
-  onClick,
   title,
   quizNum,
   children,
@@ -353,7 +351,6 @@ export function MathviewerAccordionStep2({
 
   return (
     <Accordion
-      onClick={onClick}
       changeQuizitem={changeQuizitem}
       addQuizItem={addQuizItem}
       title={title}

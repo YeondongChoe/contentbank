@@ -324,13 +324,13 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    i as number,
+                                                    quiz.idx,
                                                     data.type,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    i,
+                                                    quiz.idx,
                                                     data.type,
                                                   )
                                             }
@@ -360,13 +360,13 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    i as number,
+                                                    quiz.idx,
                                                     data.type,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    i,
+                                                    quiz.idx,
                                                     data.type,
                                                   )
                                             }
@@ -399,13 +399,13 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    i as number,
+                                                    quiz.idx,
                                                     data.type,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    i,
+                                                    quiz.idx,
                                                     data.type,
                                                   )
                                             }
@@ -433,13 +433,13 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    i as number,
+                                                    quiz.idx,
                                                     data.type,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    i,
+                                                    quiz.idx,
                                                     data.type,
                                                   )
                                             }
