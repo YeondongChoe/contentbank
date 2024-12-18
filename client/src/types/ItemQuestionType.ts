@@ -42,6 +42,7 @@ export type QuizListType = {
   groupCode?: string | null;
   createdAt: string;
   createdBy: string;
+  currentStep?: number;
   idx: number;
   isDelete: boolean;
   isUse: boolean;

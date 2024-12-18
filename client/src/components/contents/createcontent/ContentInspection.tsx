@@ -50,6 +50,7 @@ export function ContentInspection({
   const [inspectionArea, setInspectionArea] = useState<string>('');
   const [inspectionReason, setInspectionReason] = useState<string>('');
   const [status, setStatus] = useState<string | null>(null);
+  const [comment, setComment] = useState<string>('');
 
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
@@ -97,7 +98,6 @@ export function ContentInspection({
     const idxArray = parsedStoredQuizList.map((list) => list.idx);
     const idxList = idxArray.join(',');
     const res = await quizService.get(`/v1/process/${idxList}`);
-    console.log(res);
     return res.data.data.quizList;
   };
   const { data: inspectionQuizData, refetch: inspectionQuizDataRefetch } =
@@ -109,7 +109,6 @@ export function ContentInspection({
       },
       enabled: parsedStoredQuizList.length > 0,
     });
-  console.log('inspectionQuizData', inspectionQuizData);
 
   useEffect(() => {
     if (parsedStoredQuizList.length > 0) inspectionQuizDataRefetch();
@@ -124,10 +123,10 @@ export function ContentInspection({
 
   const postProcess = async () => {
     const data = {
-      idx: 1,
-      currentStep: 2,
+      idx: inspectionQuizData[0].processInfo.idx,
+      currentStep: inspectionQuizData[0].currentStep,
       status: status,
-      comment: '빨리빨리',
+      comment: comment,
     };
     return await quizService.put(`/v1/process`, data);
   };
@@ -284,7 +283,8 @@ export function ContentInspection({
                               {worker.account ? (
                                 <li>
                                   {myInfoData?.data.data.name ===
-                                  worker.account.name ? (
+                                    worker.account.name &&
+                                  process.currentStep === step.stepSort ? (
                                     <button className="active">
                                       <span className="name">
                                         {`${worker.account.name}(${worker.account.id})`}
@@ -307,7 +307,8 @@ export function ContentInspection({
                               ) : worker.authority ? (
                                 <li>
                                   {myInfoData?.data.data.authority.name ===
-                                  worker.authority.name ? (
+                                    worker.authority.name &&
+                                  process.currentStep === step.stepSort ? (
                                     <button className="active">
                                       <span className="name">
                                         {worker.authority.name}
@@ -467,6 +468,7 @@ export function ContentInspection({
                     type={'보류'}
                     item={onItemClickData}
                     onClick={postProcessData}
+                    setComment={setComment}
                   />
                 ),
               });
@@ -487,6 +489,7 @@ export function ContentInspection({
                     type={'반려'}
                     item={onItemClickData}
                     onClick={postProcessData}
+                    setComment={setComment}
                   />
                 ),
               });
@@ -509,6 +512,7 @@ export function ContentInspection({
                     type={'승인'}
                     item={onItemClickData}
                     onClick={postProcessData}
+                    setComment={setComment}
                   />
                 ),
               });

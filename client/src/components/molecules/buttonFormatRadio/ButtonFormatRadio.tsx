@@ -36,37 +36,39 @@ export function ButtonFormatRadio({
           {titleText && <strong>{titleText}</strong>}
 
           <ButtonFormatRadioList $overFlow={overFlow}>
-            {list.map((item: ItemCategoryType) => (
-              <li key={`${item.idx} ${item.name} ${item.code}`}>
-                <label
-                  htmlFor={
-                    branchValue
-                      ? `${branchValue}_${item.idx.toString()}`
-                      : item.idx.toString()
-                  }
-                >
-                  <input
-                    type="radio"
-                    defaultChecked={defaultChecked}
-                    name={item.name as string}
-                    id={
+            {list
+              .sort((a, b) => a.idx - b.idx)
+              .map((item: ItemCategoryType) => (
+                <li key={`${item.idx} ${item.name} ${item.code}`}>
+                  <label
+                    htmlFor={
                       branchValue
                         ? `${branchValue}_${item.idx.toString()}`
                         : item.idx.toString()
                     }
-                    value={item.idx}
-                    onChange={onChange}
-                    checked={selected == item.name}
-                    className={item.code}
-                  />
-                  <span
-                    className={`label ${selected == item.name ? 'on' : ''}`}
                   >
-                    {item.name}
-                  </span>
-                </label>
-              </li>
-            ))}
+                    <input
+                      type="radio"
+                      defaultChecked={defaultChecked}
+                      name={item.name as string}
+                      id={
+                        branchValue
+                          ? `${branchValue}_${item.idx.toString()}`
+                          : item.idx.toString()
+                      }
+                      value={item.idx}
+                      onChange={onChange}
+                      checked={selected == item.name}
+                      className={item.code}
+                    />
+                    <span
+                      className={`label ${selected == item.name ? 'on' : ''}`}
+                    >
+                      {item.name}
+                    </span>
+                  </label>
+                </li>
+              ))}
           </ButtonFormatRadioList>
         </>
       ) : (
