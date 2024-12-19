@@ -58,6 +58,10 @@ type UnitTypeTabProps = {
   setUnitClassificationList: React.Dispatch<
     React.SetStateAction<UnitClassificationType[][]>
   >;
+  checkedDepthList: number[];
+  setCheckedDepthList: React.Dispatch<React.SetStateAction<number[]>>;
+  searchValue: string;
+  setSearchValue: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export function UnitTypeTab({
@@ -66,6 +70,10 @@ export function UnitTypeTab({
   setTabVeiw,
   unitClassificationList,
   setUnitClassificationList,
+  checkedDepthList,
+  setCheckedDepthList,
+  searchValue,
+  setSearchValue,
 }: UnitTypeTabProps) {
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
   const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
@@ -73,9 +81,6 @@ export function UnitTypeTab({
     [{ code: '', idx: 0, name: '' }],
   ]);
   const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
-  const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
-  //검색
-  const [searchValue, setSearchValue] = useState<string>('');
   //하이라이트
   const [highlightIndex, setHighlightIndex] = useState<number>(-1);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -328,6 +333,8 @@ export function UnitTypeTab({
       ...prevList.slice(0, idx),
       ...prevList.slice(idx + 1),
     ]);
+    setCheckedDepthList([]);
+    setSearchValue('');
   };
 
   //분류 리스트 리셋
@@ -347,12 +354,12 @@ export function UnitTypeTab({
     // categoryList와 selectedList를 업데이트합니다.
     setCategoryList(resetCategoryList);
     setSelectedList(resetSelectedList);
+    setCheckedDepthList([]);
   };
 
   // 수정
   const changeUnitClassification = async (idx: number) => {
     onResetList();
-    console.log('unitClassificationList[idx]', unitClassificationList[idx]);
     const transformedList = unitClassificationList[idx]
       .map((item) => {
         // RadioStateType일 경우
@@ -594,7 +601,7 @@ export function UnitTypeTab({
                   list={categoryList[index] || []}
                   selected={
                     selectedList.find((item) => item.name === list.name)
-                      ?.selected || ''
+                      ?.selectedName || ''
                   }
                   onChange={(e) => handleRadioCheck(e)}
                   $margin={`5px 0 0 0`}

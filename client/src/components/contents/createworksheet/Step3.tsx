@@ -285,10 +285,10 @@ export function Step3() {
     window.opener.localStorage.removeItem('sendQuotientData');
 
     saveLocalData(data);
-    localStorage.setItem(
-      'sendQuotientData',
-      JSON.stringify(getQuotientLocalData),
-    );
+    // localStorage.setItem(
+    //   'sendQuotientData',
+    //   JSON.stringify(getQuotientLocalData),
+    // );
     navigate('/content-create/exam/step2');
   };
 
@@ -300,7 +300,7 @@ export function Step3() {
       name: nameValue,
       examiner: contentAuthor,
       grade: gradeValue,
-      quizCnt: newInitialItems?.length,
+      quizCnt: newInitialItems?.map((item) => item.type === 'QUESTION').length,
       tag: tag,
       isAutoGrade: true,
       article: {
@@ -562,7 +562,10 @@ export function Step3() {
       setItemHeights(itemAnswerHeightArray);
     }
   }, [commentary, itemAnswerHeightArray]);
-  console.log('initialItems?.length', initialItems?.length);
+  console.log(
+    'initialItems?.length',
+    newInitialItems?.map((item) => item.type === 'QUESTION').length,
+  );
 
   //commentary '문제+해설같이' 문항수 만큼 넣어주기
   useEffect(() => {

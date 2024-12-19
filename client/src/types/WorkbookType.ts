@@ -19,6 +19,7 @@ export interface QuizItemList {
   quizFavorite?: boolean;
   num?: number;
   groupType?: string;
+  score?: number;
 }
 
 export interface QuizCategory {
@@ -28,13 +29,16 @@ export interface QuizCategory {
   };
   난이도: string;
   문항타입: string;
-  교과: string;
+  교과: { code: string; name: string }[];
   학교급: string;
-  유형?: string;
+  유형?: { code: string; name: string }[];
 }
 
 export interface QuizCategoryList {
   quizCategory: QuizCategory;
+  quizCode?: string;
+  quizIdx?: number;
+  sort?: number;
 }
 
 export interface QuizList {

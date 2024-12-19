@@ -399,13 +399,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         >
                                           {isQuizType && (
                                             <ContentTitleA>
-                                              |
-                                              {
-                                                quizCategory?.유형?.split(
-                                                  '^^^',
-                                                )[0]
-                                              }
-                                              |
+                                              |{quizCategory?.유형?.[0].name}|
                                             </ContentTitleA>
                                           )}
                                           <EachMathViewerA>
@@ -424,6 +418,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                           ? '문제+해설같이'
                                                           : '문제만'
                                                 }
+                                                isPdfModal
                                               ></WorkbookMathViewer>
                                               {quizItemList.score &&
                                               quizItemList.score !== 0 ? (
@@ -478,13 +473,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         >
                                           {isQuizType && (
                                             <ContentTitleA>
-                                              |
-                                              {
-                                                quizCategory?.유형?.split(
-                                                  '^^^',
-                                                )[0]
-                                              }
-                                              |
+                                              |{quizCategory?.유형?.[0].name}|
                                             </ContentTitleA>
                                           )}
                                           <EachMathViewerA>
@@ -503,6 +492,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                           ? '문제+해설같이'
                                                           : '문제만'
                                                 }
+                                                isPdfModal
                                               ></WorkbookMathViewer>
                                               {quizItemList.score &&
                                               quizItemList.score !== 0 ? (
@@ -663,6 +653,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                 <WorkbookMathViewer
                                                   data={quizItemList}
                                                   isSetp3
+                                                  isPdfModal
                                                   answerCommentary={'해설별도'}
                                                 ></WorkbookMathViewer>
                                                 {/* {quizItemList.score &&
@@ -729,6 +720,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                 <WorkbookMathViewer
                                                   data={quizItemList}
                                                   isSetp3
+                                                  isPdfModal
                                                   answerCommentary={'해설별도'}
                                                 ></WorkbookMathViewer>
                                                 {/* {quizItemList.score &&
@@ -877,13 +869,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         >
                                           {isQuizType && (
                                             <ContentTitleB>
-                                              |
-                                              {
-                                                quizCategory?.유형?.split(
-                                                  '^^^',
-                                                )[0]
-                                              }
-                                              |
+                                              |{quizCategory?.유형?.[0].name}|
                                             </ContentTitleB>
                                           )}
                                           <EachMathViewerB>
@@ -902,6 +888,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                           ? '문제+해설같이'
                                                           : '문제만'
                                                 }
+                                                isPdfModal
                                               ></WorkbookMathViewer>
                                               {quizItemList.score !== 0 && (
                                                 <ScoreWrapper>
@@ -953,13 +940,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         >
                                           {isQuizType && (
                                             <ContentTitleB>
-                                              |
-                                              {
-                                                quizCategory?.유형?.split(
-                                                  '^^^',
-                                                )[0]
-                                              }
-                                              |
+                                              |{quizCategory?.유형?.[0].name}|
                                             </ContentTitleB>
                                           )}
                                           <EachMathViewerB>
@@ -978,6 +959,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                           ? '문제+해설같이'
                                                           : '문제만'
                                                 }
+                                                isPdfModal
                                               ></WorkbookMathViewer>
                                               {quizItemList.score !== 0 && (
                                                 <ScoreWrapper>
@@ -1124,6 +1106,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                 <WorkbookMathViewer
                                                   data={quizItemList}
                                                   isSetp3
+                                                  isPdfModal
                                                   answerCommentary={'해설별도'}
                                                 ></WorkbookMathViewer>
                                                 {/* {quizItemList.score !== 0 && (
@@ -1187,6 +1170,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                 <WorkbookMathViewer
                                                   data={quizItemList}
                                                   isSetp3
+                                                  isPdfModal
                                                   answerCommentary={'해설별도'}
                                                 ></WorkbookMathViewer>
                                                 {/* {quizItemList.score !== 0 && (

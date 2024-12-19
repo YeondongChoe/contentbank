@@ -17,9 +17,15 @@ type InspectionModalProps = {
   item: any;
   type: string;
   onClick: () => void;
+  setComment: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export function InspectionModal({ item, type, onClick }: InspectionModalProps) {
+export function InspectionModal({
+  item,
+  type,
+  onClick,
+  setComment,
+}: InspectionModalProps) {
   const { closeModal } = useModal();
 
   // const getQuiz = async () => {
@@ -47,7 +53,7 @@ export function InspectionModal({ item, type, onClick }: InspectionModalProps) {
         {type == '반려' && '반려사유 *'}
         {type == '승인' && '검수의견'}
       </Title>
-      <Textarea></Textarea>
+      <Textarea onChange={(e) => setComment(e.currentTarget.value)}></Textarea>
       <ButtonWrapper>
         <Button width="100px" height="40px" onClick={() => closeModal()}>
           취소

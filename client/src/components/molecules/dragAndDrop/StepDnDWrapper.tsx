@@ -57,7 +57,6 @@ export const StepDnDWrapper = ({
   //console.log('currentItems', currentItems);
   // console.log('currentItemScore', currentItemScore);
   // console.log('quotient', quotient);
-
   useEffect(() => {
     if (currentItems) {
       setCurrentItemScore(currentItems.map((item) => item.score));
