@@ -3118,71 +3118,78 @@ export function Step2() {
                         </SimilarIconWrapper>
                       </SimilarTitleWrapper>
                       {!similarDataPending ? (
-                        <SimilarContentsWrapper>
-                          <AddNewContensWrapper>
-                            {similarItems?.quizList.map((item, i) => {
-                              const quizCategoryType =
-                                item.quizCategoryList?.find(
-                                  (quizCategoryItem: any) =>
-                                    quizCategoryItem.quizCategory.문항타입,
-                                )?.quizCategory;
-                              const quizCategory = item.quizCategoryList?.find(
-                                (quizCategoryItem: any) =>
-                                  quizCategoryItem.quizCategory.유형,
-                              )?.quizCategory;
-                              return (
-                                //<></>
-                                <MathviewerAccordion
-                                  key={item.idx}
-                                  componentWidth="650px"
-                                  width="600px"
-                                  componentHeight="150px"
-                                  onClick={() => {}}
-                                  isBorder={true}
-                                  isNewQuiz={true}
-                                  isSimilarQuiz={true}
-                                  isFavorite={item.isFavorite}
-                                  data={item}
-                                  index={item.idx}
-                                  //title={quizCategory?.유형 || 'N/A'}
-                                  //category={quizCategoryType}
-                                  quizNum={item.num}
-                                  selectedCardIndex={selectedCardIndex}
-                                  onSelectCard={setSelectedCardIndex}
-                                  reportQuizitem={() =>
-                                    openReportProcess(item.idx)
-                                  }
-                                  changeQuizitem={() =>
-                                    clickSwapQuizItem(
-                                      similarItems,
-                                      i,
-                                      initialItems,
-                                      similarItemIndex as number,
-                                    )
-                                  }
-                                  addQuizItem={() =>
-                                    clickAddSimilarQuizItem(item.code)
-                                  }
-                                  favoriteQuizItem={(e) =>
-                                    item.isFavorite
-                                      ? handleFavorite(
-                                          e,
-                                          item.idx,
-                                          true,
-                                          item.type,
+                        <>
+                          {similarItems && similarItems?.quizList.length > 0 ? (
+                            <SimilarContentsWrapper>
+                              <AddNewContensWrapper>
+                                {similarItems?.quizList.map((item, i) => {
+                                  const quizCategoryType =
+                                    item.quizCategoryList?.find(
+                                      (quizCategoryItem: any) =>
+                                        quizCategoryItem.quizCategory.문항타입,
+                                    )?.quizCategory;
+                                  const quizCategory =
+                                    item.quizCategoryList?.find(
+                                      (quizCategoryItem: any) =>
+                                        quizCategoryItem.quizCategory.유형,
+                                    )?.quizCategory;
+                                  return (
+                                    //<></>
+                                    <MathviewerAccordion
+                                      key={item.idx}
+                                      componentWidth="650px"
+                                      width="600px"
+                                      componentHeight="150px"
+                                      onClick={() => {}}
+                                      isBorder={true}
+                                      isNewQuiz={true}
+                                      isSimilarQuiz={true}
+                                      isFavorite={item.isFavorite}
+                                      data={item}
+                                      index={item.idx}
+                                      //title={quizCategory?.유형 || 'N/A'}
+                                      //category={quizCategoryType}
+                                      quizNum={item.num}
+                                      selectedCardIndex={selectedCardIndex}
+                                      onSelectCard={setSelectedCardIndex}
+                                      reportQuizitem={() =>
+                                        openReportProcess(item.idx)
+                                      }
+                                      changeQuizitem={() =>
+                                        clickSwapQuizItem(
+                                          similarItems,
+                                          i,
+                                          initialItems,
+                                          similarItemIndex as number,
                                         )
-                                      : handleFavorite(
-                                          e,
-                                          item.idx,
-                                          false,
-                                          item.type,
-                                        )
-                                  }
-                                ></MathviewerAccordion>
-                              );
-                            })}
-                          </AddNewContensWrapper>
-                        </SimilarContentsWrapper>
+                                      }
+                                      addQuizItem={() =>
+                                        clickAddSimilarQuizItem(item.code)
+                                      }
+                                      favoriteQuizItem={(e) =>
+                                        item.isFavorite
+                                          ? handleFavorite(
+                                              e,
+                                              item.idx,
+                                              true,
+                                              item.type,
+                                            )
+                                          : handleFavorite(
+                                              e,
+                                              item.idx,
+                                              false,
+                                              item.type,
+                                            )
+                                      }
+                                    ></MathviewerAccordion>
+                                  );
+                                })}
+                              </AddNewContensWrapper>
+                            </SimilarContentsWrapper>
+                          ) : (
+                            <ValueNone textOnly info="유사문항이 없습니다" />
+                          )}
+                        </>
                       ) : (
                         <>
                           <Loader width="50px" />
@@ -3877,61 +3884,74 @@ export function Step2() {
                                 </AddNewContensWrapper>
                               ) : (
                                 <AddNewContensWrapper>
-                                  {newQuizItems?.quizList.map((item, i) => {
-                                    const quizCategoryType =
-                                      item.quizCategoryList.find(
-                                        (quizCategoryItem: any) =>
-                                          quizCategoryItem.quizCategory
-                                            .문항타입,
-                                      )?.quizCategory;
-                                    const quizCategory =
-                                      item.quizCategoryList.find(
-                                        (quizCategoryItem: any) =>
-                                          quizCategoryItem.quizCategory.유형,
-                                      )?.quizCategory;
-                                    return (
-                                      <MathviewerAccordion
-                                        key={item.idx}
-                                        componentWidth="650px"
-                                        width="600px"
-                                        componentHeight="150px"
-                                        onClick={() => {}}
-                                        isBorder={true}
-                                        isNewQuiz={true}
-                                        isFavorite={item.isFavorite}
-                                        data={item}
-                                        index={item.idx}
-                                        // title={
-                                        //   quizCategory?.유형 || 'N/A'
-                                        // }
-                                        category={quizCategoryType}
-                                        quizNum={item.num}
-                                        selectedCardIndex={selectedCardIndex}
-                                        onSelectCard={setSelectedCardIndex}
-                                        reportQuizitem={() =>
-                                          openReportProcess(item.idx)
-                                        }
-                                        addQuizItem={() =>
-                                          clickAddNewQuizItem(item.code)
-                                        }
-                                        favoriteQuizItem={(e) =>
-                                          item.isFavorite
-                                            ? handleFavorite(
-                                                e,
-                                                item.idx,
-                                                true,
-                                                item.type,
-                                              )
-                                            : handleFavorite(
-                                                e,
-                                                item.idx,
-                                                false,
-                                                item.type,
-                                              )
-                                        }
-                                      ></MathviewerAccordion>
-                                    );
-                                  })}
+                                  {newQuizItems &&
+                                  newQuizItems?.quizList.length > 0 ? (
+                                    <>
+                                      {newQuizItems?.quizList.map((item, i) => {
+                                        const quizCategoryType =
+                                          item.quizCategoryList.find(
+                                            (quizCategoryItem: any) =>
+                                              quizCategoryItem.quizCategory
+                                                .문항타입,
+                                          )?.quizCategory;
+                                        const quizCategory =
+                                          item.quizCategoryList.find(
+                                            (quizCategoryItem: any) =>
+                                              quizCategoryItem.quizCategory
+                                                .유형,
+                                          )?.quizCategory;
+                                        return (
+                                          <MathviewerAccordion
+                                            key={item.idx}
+                                            componentWidth="650px"
+                                            width="600px"
+                                            componentHeight="150px"
+                                            onClick={() => {}}
+                                            isBorder={true}
+                                            isNewQuiz={true}
+                                            isFavorite={item.isFavorite}
+                                            data={item}
+                                            index={item.idx}
+                                            // title={
+                                            //   quizCategory?.유형 || 'N/A'
+                                            // }
+                                            category={quizCategoryType}
+                                            quizNum={item.num}
+                                            selectedCardIndex={
+                                              selectedCardIndex
+                                            }
+                                            onSelectCard={setSelectedCardIndex}
+                                            reportQuizitem={() =>
+                                              openReportProcess(item.idx)
+                                            }
+                                            addQuizItem={() =>
+                                              clickAddNewQuizItem(item.code)
+                                            }
+                                            favoriteQuizItem={(e) =>
+                                              item.isFavorite
+                                                ? handleFavorite(
+                                                    e,
+                                                    item.idx,
+                                                    true,
+                                                    item.type,
+                                                  )
+                                                : handleFavorite(
+                                                    e,
+                                                    item.idx,
+                                                    false,
+                                                    item.type,
+                                                  )
+                                            }
+                                          ></MathviewerAccordion>
+                                        );
+                                      })}
+                                    </>
+                                  ) : (
+                                    <ValueNone
+                                      textOnly
+                                      info="등록된 문항이 없습니다"
+                                    />
+                                  )}
                                 </AddNewContensWrapper>
                               )}
                             </>

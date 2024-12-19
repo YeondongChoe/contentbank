@@ -206,7 +206,6 @@ export function Inspection() {
     idx: number,
   ) => {
     const selectedValue = event.currentTarget.value;
-    console.log(selectedValue);
 
     setSelectedList((prevList) =>
       prevList.map((item) => {
