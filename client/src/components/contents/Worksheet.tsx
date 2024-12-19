@@ -150,7 +150,6 @@ export function Worksheet() {
   const [onSearch, setOnSearch] = useState<boolean>(false);
 
   // 학습지 리스트 불러오기 api
-  //TODO 들어가는 값에 따라서 바꿔줘야 함.
   const getWorkbookList = async () => {
     if (tabVeiw == '즐겨찾는 학습지') {
       const res = await workbookInstance.get(

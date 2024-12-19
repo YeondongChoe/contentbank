@@ -48,6 +48,7 @@ export function Step3() {
     window.close();
   };
 
+  console.log('initialItems', initialItems);
   console.log('newInitialItems', newInitialItems);
 
   //학습지 수정 상태관리
@@ -93,13 +94,11 @@ export function Step3() {
   //로컬스토리지에서 데이타를 가져온 후 문항 번호를 넣어서 저장
   useEffect(() => {
     if (getLocalData) {
-      const itemsWithNum = getLocalData.data.map(
-        (item: QuizList, index: number) => ({
-          ...item,
-          num: index + 1,
-          height: 1,
-        }),
-      );
+      const itemsWithNum = getLocalData.data.map((item: QuizList) => ({
+        ...item,
+        height: 1,
+      }));
+      console.log('itemsWithNum', itemsWithNum);
       setInitialItems(itemsWithNum);
       setIsEditWorkbook(getLocalData.isEditWorkbook);
       setWorkSheetIdx(getLocalData.workSheetIdx);
@@ -229,43 +228,54 @@ export function Step3() {
             group.forEach((groupItem: any) => {
               if (groupItem !== textType) {
                 // Add items to textItem's quizItemList with appropriate sort value
-                groupItem.quizItemList.forEach(
-                  (quizItem: any, index: number) => {
-                    textType.quizItemList.push({
-                      ...quizItem,
-                      quizIdx: groupItem.idx,
-                      quizCode: groupItem.code,
-                      quizFavorite: groupItem.isFavorite,
-                      sort: sortCounter++,
-                    });
-                  },
-                );
+                groupItem.quizItemList.forEach((quizItem: any) => {
+                  const { score, num, ...remainingQuizItem } = quizItem; // score와 num 제거
+                  textType.quizItemList.push({
+                    ...quizItem,
+                    quizIdx: groupItem.idx,
+                    quizCode: groupItem.code,
+                    quizFavorite: groupItem.isFavorite,
+                    sort: sortCounter++,
+                  });
+                });
                 groupItem.quizItemList = []; // Clear quizItemList for merged items
               }
             });
-            console.log('textType', textType);
+
             // Ensure textItem's own sort is set to 1
             textType.quizItemList = textType.quizItemList.map(
-              (quizItem: any, index: number) => ({
-                ...quizItem,
-                sort: index + 1,
-                quizIdx:
-                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
-                    ? textType.idx
-                    : quizItem.quizIdx,
-                quizCode:
-                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
-                    ? textType.code
-                    : quizItem.quizCode,
-                quizFavorite:
-                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
-                    ? textType.isFavorite
-                    : quizItem.isFavorite,
-              }),
+              (quizItem: any, index: number) => {
+                const { score, num, ...remainingQuizItem } = quizItem; // score와 num 제거
+
+                return {
+                  ...quizItem,
+                  sort: index + 1,
+                  quizIdx:
+                    quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                      ? textType.idx
+                      : quizItem.quizIdx,
+                  quizCode:
+                    quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                      ? textType.code
+                      : quizItem.quizCode,
+                  quizFavorite:
+                    quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                      ? textType.isFavorite
+                      : quizItem.isFavorite,
+                };
+              },
             );
           }
         }
-        return quiz;
+        // quizItemList에서 score와 num 제거
+        quiz.quizItemList = quiz.quizItemList.map(
+          ({ score, num, ...remainingQuizItem }: any) => remainingQuizItem,
+        );
+
+        // quiz 객체에서 score와 num 제거
+        const { score, num, ...remainingQuiz } = quiz;
+
+        return remainingQuiz;
       });
 
       return result.filter((item: any) => item.quizItemList.length > 0);
@@ -474,7 +484,7 @@ export function Step3() {
       const filteredHeights = heights.filter((height) => height > 0);
       const addHeight = filteredHeights.map((height) => height + 50);
       const commentaryHeight = filteredHeights.map((height) => height + 200);
-      console.log(commentaryHeight);
+      //console.log(commentaryHeight);
 
       if (commentary === '문제만') {
         setCommentary('문제만');
@@ -562,10 +572,6 @@ export function Step3() {
       setItemHeights(itemAnswerHeightArray);
     }
   }, [commentary, itemAnswerHeightArray]);
-  console.log(
-    'initialItems?.length',
-    newInitialItems?.map((item) => item.type === 'QUESTION').length,
-  );
 
   //commentary '문제+해설같이' 문항수 만큼 넣어주기
   useEffect(() => {
@@ -574,15 +580,15 @@ export function Step3() {
         0,
         initialItems?.length,
       );
-      console.log('sliceItemQuestion', sliceItemQuestion);
+      //console.log('sliceItemQuestion', sliceItemQuestion);
       const array = sliceItemQuestion.map((item) => item[0]);
-      console.log('array', array);
+      //console.log('array', array);
       setItemCommenteryHeightArray(array);
       originalHeightsRef.current = array;
     }
   }, [itemCommenteryHeight]);
-  console.log('itemCommenteryHeight', itemCommenteryHeight);
-  console.log('itemCommenteryHeightArray', itemCommenteryHeightArray);
+  //console.log('itemCommenteryHeight', itemCommenteryHeight);
+  //console.log('itemCommenteryHeightArray', itemCommenteryHeightArray);
   //commentary '문제+해설같이' 높이값 넣어주기
   useEffect(() => {
     if (commentary === '문제+해설같이') {
