@@ -82,7 +82,7 @@ export function Step3MathViewer({
   const createMarkup = (data: string) => {
     return { __html: data || '' };
   };
-
+  //console.log('data', data);
   // useEffect(() => {
   //   if (mathJax) {
   //     // Typesetting 완료 이벤트 등록
@@ -188,6 +188,22 @@ export function Step3MathViewer({
               {commentary === '문제+해설별도' && (
                 <>
                   {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'BIG')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'TEXT')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                  {data?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
                     .map((quiz) => (
                       <ContentQuestion
@@ -236,6 +252,22 @@ export function Step3MathViewer({
                 commentary === '문제+정답+해설') && (
                 <>
                   {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'BIG')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'TEXT')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                  {data?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
                     .map((quiz) => (
                       <ContentQuestion
@@ -278,6 +310,22 @@ export function Step3MathViewer({
               )}
               {commentary === '문제+정답' && (
                 <>
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'BIG')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
+                  {data?.quizItemList
+                    .filter((quiz) => quiz.type === 'TEXT')
+                    .map((quiz) => (
+                      <ContentQuestion
+                        key={quiz.idx}
+                        dangerouslySetInnerHTML={createMarkup(quiz.content)}
+                      ></ContentQuestion>
+                    ))}
                   {data?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
                     .map((quiz) => (
