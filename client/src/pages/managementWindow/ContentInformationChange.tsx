@@ -239,10 +239,7 @@ export function ContentInformationChange() {
     // 그룹 ID로 부모 요소 생성
     questionList.forEach((item) => {
       if (item.groupCode) {
-        if (
-          !groupMap[item.groupCode] &&
-          !document.getElementById(item.groupCode)
-        ) {
+        if (!groupMap[item.groupCode]) {
           const parentDiv = document.createElement('div') as HTMLElement;
           parentDiv.id = item.groupCode;
           parentDiv.className = `groupedItemsContainer`;
@@ -269,19 +266,29 @@ export function ContentInformationChange() {
     // 동일한 그룹 ID를 가진 리스트 요소를 이동
     questionList.forEach((item) => {
       if (item.groupCode) {
+        console.log('Item Code:', item.code);
         const element = document.getElementById(item.code);
+
         console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
+        if (!element) {
+          console.warn(`Element with ID ${item.code} not found.`);
+          return;
+        }
+
         const target =
           element &&
           (element.parentNode?.parentNode?.parentNode?.parentNode
             ?.parentNode as HTMLElement);
 
-        console.log('target이동될 타겟', target);
+        console.log('target 이동될 타겟', target);
 
         const parentDiv = groupMap[item.groupCode];
 
         if (parentDiv && target && target instanceof HTMLElement) {
           parentDiv.appendChild(target); // 기존 요소를 새 부모로 이동
+        } else {
+          // 이동될 타겟이 없는경우
+          removeGroupedContainers();
         }
       }
     });
@@ -336,19 +343,35 @@ export function ContentInformationChange() {
     };
   }, [checkList]);
 
-  useEffect(() => {
-    console.log('questionList/----------*', questionList);
-  }, [questionList]);
   useLayoutEffect(() => {
-    // 그룹 코드로 묶기
-    // 동적 렌더링이 끝난 후 실행
+    console.log('questionList ----------*', questionList);
+  }, [questionList]);
+  // 그룹화 작업
+  useLayoutEffect(() => {
     setTimeout(() => {
       groupElementsByCode();
-    }, 0);
+    }, 100);
   }, [questionList]);
+
+  const removeGroupedContainers = () => {
+    const listWrapper = listWrapperRef.current;
+    const groupedContainers = document.querySelectorAll(
+      '.groupedItemsContainer',
+    );
+
+    if (groupedContainers && listWrapper) {
+      groupedContainers.forEach((container) => {
+        listWrapper.removeChild(container);
+      });
+    }
+  };
+
+  useEffect(() => {}, [page]);
 
   // 데이터 변경시 리랜더링
   useEffect(() => {
+    removeGroupedContainers();
+
     searchCategoryDataMutate();
 
     setCheckList([]);
@@ -535,7 +558,11 @@ export function ContentInformationChange() {
     setTimeout(() => {
       const element = document.querySelector(`.${state}`) as HTMLElement;
       if (element) {
-        const newValue = element.innerHTML;
+        let newValue = element.innerHTML;
+
+        // <br> 태그 제거 로직 추가
+        newValue = newValue.replace(/<br>/g, '');
+
         if (state === 'first_area_test') {
           setSearchValue(newValue);
         }
@@ -544,7 +571,11 @@ export function ContentInformationChange() {
   };
 
   const handleSearchValueChange = (e: React.FormEvent<HTMLDivElement>) => {
-    const newValue = e.currentTarget.innerHTML;
+    let newValue = e.currentTarget.innerHTML;
+
+    // <br> 태그 제거 로직 추가
+    newValue = newValue.replace(/<br>/g, '');
+
     if (newValue !== searchValue) {
       setSearchValue(newValue);
     }
@@ -647,7 +678,9 @@ export function ContentInformationChange() {
     }
   };
 
-  useEffect(() => {}, [searchValue, changeValue]);
+  useEffect(() => {
+    console.log('searchValue --------- ', searchValue);
+  }, [searchValue, changeValue]);
 
   useEffect(() => {
     // 드롭다운 리스트 값
