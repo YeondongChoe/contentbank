@@ -41,7 +41,7 @@ export function QuizCreateList() {
   const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
-  const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  const [questionList, setQuestionList] = useState<QuizListType[] | null>([]);
 
   const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
@@ -379,8 +379,10 @@ export function QuizCreateList() {
   // };
 
   useEffect(() => {
-    if (quizData) {
-      setQuestionList(quizData.quizList);
+    if (quizData && quizData?.quizList === null) {
+      setQuestionList(null);
+    } else {
+      setQuestionList(quizData?.quizList);
     }
     // console.log('questionList', questionList);
   }, [quizData]);
@@ -634,11 +636,11 @@ export function QuizCreateList() {
             /> */}
           </SelectWrapper>
 
-          {quizData && questionList.length > 0 ? (
+          {quizData && questionList && questionList.length > 0 ? (
             <>
               <ContentList
                 key={key}
-                list={questionList}
+                list={questionList as QuizListType[]}
                 selectedList={selectedList}
                 quizDataRefetch={quizDataRefetch}
                 tabVeiw={tabVeiw}
