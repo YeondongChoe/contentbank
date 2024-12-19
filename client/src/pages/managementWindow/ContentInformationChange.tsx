@@ -1472,7 +1472,7 @@ export function ContentInformationChange() {
                 </>
               ) : (
                 <ButtonApplyWrapper>
-                  <Button
+                  {/* <Button
                     $filled
                     disabled={buttonSubmitDisabled}
                     width="80px"
@@ -1481,12 +1481,12 @@ export function ContentInformationChange() {
                     onClick={() => {}}
                   >
                     적용
-                  </Button>
+                  </Button> */}
                   <p>
                     {`${
                       state == '수정'
-                        ? `총 ${editQuizList.length}문항 변경된 내용으로`
-                        : `복제된 총 ${coppyQuizList.length}문항 변경된 내용으로`
+                        ? `총 ${editQuizList.length}문항 변경된 내용으로 적용`
+                        : `복제된 총 ${coppyQuizList.length}문항 변경된 내용으로 적용`
                     }`}
                   </p>
                 </ButtonApplyWrapper>
