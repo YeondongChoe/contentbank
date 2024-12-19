@@ -36,6 +36,8 @@ export function ContentInspection({
   type: string;
 }) {
   const { openModal } = useModal();
+  const { closeModal } = useModal();
+
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
     QuizListType[]
@@ -148,14 +150,12 @@ export function ContentInspection({
       //성공 시 리스트 리패치
       //processNameListRefetch();
       //저장 알람
-      openToastifyAlert({
-        type: 'success',
-        text: '저장되었습니다.',
-      });
+      // openToastifyAlert({
+      //   type: 'success',
+      //   text: '저장되었습니다.',
+      // });
       setIsSuccessAlertOpen(true);
-      //setProcessCode(null);
-      //setProcessIdxList([]);
-      //closeModal();
+      closeModal();
     },
   });
 
@@ -530,7 +530,7 @@ export function ContentInspection({
         type="success"
         isAlertOpen={isSuccessAlertOpen}
         closeAlert={closeSuccessAlert}
-        message={'검수작업이이 완료되었습니다'}
+        message={'검수작업이 완료되었습니다'}
       ></AlertBar>
     </Container>
   );
