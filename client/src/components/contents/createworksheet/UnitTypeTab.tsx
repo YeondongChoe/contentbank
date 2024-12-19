@@ -354,6 +354,7 @@ export function UnitTypeTab({
     // categoryList와 selectedList를 업데이트합니다.
     setCategoryList(resetCategoryList);
     setSelectedList(resetSelectedList);
+    setCheckedDepthList([]);
   };
 
   // 수정
