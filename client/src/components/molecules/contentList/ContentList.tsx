@@ -34,6 +34,7 @@ import { myAuthorityAtom } from '../../../store/myAuthorityAtom';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { pageAtom } from '../../../store/utilAtom';
 import { QuizListType } from '../../../types';
+import { selectedListType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
@@ -50,6 +51,7 @@ type ContentListProps = {
     options?: RefetchOptions | undefined,
   ) => Promise<QueryObserverResult<any, Error>>;
   key?: number;
+  selectedList: selectedListType[];
 };
 
 export type selectedListProps = {
@@ -68,6 +70,7 @@ export function ContentList({
   setCheckListOn,
   deleteQuizIsSuccess,
   quizDataRefetch,
+  selectedList,
 }: ContentListProps) {
   const { openModal } = useModal();
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
@@ -82,7 +85,7 @@ export function ContentList({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const [selectedList, setSelectedList] = useState<selectedListProps[]>([]);
+  //const [selectedList, setSelectedList] = useState<selectedListProps[]>([]);
 
   const dropDownList: DropDownItemProps[] = [
     {
@@ -574,6 +577,47 @@ export function ContentList({
           </ButtonWrapper>
         </InputWrapper>
       </ListButtonWrapper>
+      <List margin={`10px 0 5px 0`} height="none">
+        <ListItem isChecked={false} columnTitle marginBottom="0px">
+          <CheckBoxI
+            id={''}
+            value={''}
+            $margin={`0 5px 0 0`}
+            checked={false}
+            readOnly
+          />
+          <ItemLayout>
+            {selectedList.map((list) => {
+              if (list.view === true) {
+                return (
+                  <>
+                    <span key={list.name} className="width_10 item_wrapper">
+                      <strong>{list.name}</strong>
+                    </span>
+                    <i className="line"></i>
+                  </>
+                );
+              }
+              return null;
+            })}
+            <span className="width_10 item_wrapper">
+              <strong>담당자</strong>
+            </span>
+            <i className="line"></i>
+            <span className="width_10 item_wrapper">
+              <strong>등록일자</strong>
+            </span>
+            <i className="line"></i>
+            <span className="width_10 item_wrapper">
+              <strong>오픈여부</strong>
+            </span>
+            <i className="line"></i>
+            <span className="width_10 item_wrapper">
+              <strong>상태</strong>
+            </span>
+          </ItemLayout>
+        </ListItem>
+      </List>
       <ListWrapper ref={backgroundRef}>
         <List margin={`10px 0`}>
           {questionList.map((item: QuizListType) => (
@@ -617,7 +661,105 @@ export function ContentList({
                 />
               )}
               <ItemLayout>
-                <span
+                {selectedList.map((list) => {
+                  const matchedCategory = item.quizCategoryList.find(
+                    (category) =>
+                      Object.keys(category.quizCategory).some(
+                        (key) => key === list.name,
+                      ),
+                  );
+                  if (matchedCategory && list.view === true) {
+                    const matchedKey = Object.keys(
+                      matchedCategory.quizCategory,
+                    ).find((key) => key === list.name);
+
+                    const codeValue =
+                      matchedKey &&
+                      Array.isArray(
+                        (
+                          matchedCategory.quizCategory as Record<
+                            string,
+                            Array<{ name: string }>
+                          >
+                        )[matchedKey],
+                      ) &&
+                      (
+                        matchedCategory.quizCategory as Record<
+                          string,
+                          Array<{ name: string }>
+                        >
+                      )[matchedKey][0]?.name;
+
+                    return (
+                      <>
+                        <span className="width_10 item_wrapper">
+                          <span className="ellipsis">{codeValue}</span>
+                        </span>
+                        <i className="line"></i>
+                      </>
+                    );
+                  } else {
+                    if (list.view === true) {
+                      return (
+                        <>
+                          <span className="width_10 item_wrapper">
+                            <span className="ellipsis"></span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    }
+                  }
+                })}
+                <span className="width_10 item_wrapper">
+                  <strong className="title">당담자</strong>
+                  <span className="tag ellipsis">{item.createdBy}</span>
+                </span>
+                <i className="line"></i>
+                <span className="width_10 item_wrapper">
+                  <strong className="title">등록일자</strong>
+                  <span className="tag">{item.createdAt}</span>
+                </span>
+                <i className="line"></i>
+                <span className="width_10 item_wrapper">
+                  <strong className="title">오픈여부</strong>
+                  <span className="width_5 item_wrapper tag_icon">
+                    {item.isUse ? (
+                      <Icon
+                        width={`18px`}
+                        $margin={'0 0 0 12px'}
+                        src={`/images/icon/lock_open_${
+                          checkList.length
+                            ? checkList.includes(item.idx)
+                              ? 'on'
+                              : 'off'
+                            : 'off'
+                        }.svg`}
+                        disabled={true}
+                      />
+                    ) : (
+                      <Icon
+                        width={`18px`}
+                        $margin={'0 0 0 12px'}
+                        src={`/images/icon/lock_${
+                          checkList.length
+                            ? checkList.includes(item.idx)
+                              ? 'on'
+                              : 'off'
+                            : 'off'
+                        }.svg`}
+                        disabled={true}
+                      />
+                    )}
+                  </span>
+                </span>
+
+                <i className="line"></i>
+                <span className="width_10 item_wrapper">
+                  <strong className="title">상태</strong>
+                  <span className="tag">{item.process?.state}</span>
+                </span>
+                {/* <span
                   className="width_80px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
@@ -1187,7 +1329,8 @@ export function ContentList({
                   {item ? (
                     <span className="tag ellipsis" ref={textRef}>
                       {item.process ? (
-                        <span key={` ${item.process}`}>{item.process}</span>
+                        // <span key={` ${item.process}`}>{item.process}</span>
+                        <span></span>
                       ) : (
                         <span></span>
                       )}
@@ -1225,7 +1368,7 @@ export function ContentList({
                       disabled={true}
                     />
                   )}
-                </span>
+                </span> */}
               </ItemLayout>
             </ListItem>
           ))}
@@ -1307,7 +1450,7 @@ const ItemLayout = styled.span`
   width: 100%;
   min-height: 40px;
   justify-content: space-around;
-  align-items: self-start;
+  align-content: center;
   flex-wrap: wrap;
 
   .tooltip_wrapper item_wrapper {
@@ -1322,6 +1465,7 @@ const ItemLayout = styled.span`
     min-width: 30px;
     max-width: 150px;
     font-weight: normal;
+    align-content: center;
   }
 
   /* 두줄 이상 ellipsis 처리  */

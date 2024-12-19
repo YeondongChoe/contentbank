@@ -34,6 +34,7 @@ import {
 // import { ListWrapper } from '../../../components/molecules/sortBox/';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
+  CategoryGroup,
   IdxNamePair,
   ItemCategoryType,
   ItemTreeListType,
@@ -101,42 +102,6 @@ export function ClassificationEdit({
   const [itemHeight, setItemHeight] = useState<string | undefined>('300px');
   useEffect(() => {}, [columnsCount, itemHeight]);
 
-  const [radio1depthCheck, setRadio1depthCheck] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
-  // const [radio2depthCheck, setRadio2depthCheck] = useState<RadioStateType>({
-  //   title: '',
-  //   checkValue: 0,
-  //   code: '',
-  //   key: '',
-  // });
-  // const [radio3depthCheck, setRadio3depthCheck] = useState<RadioStateType>({
-  //   title: '',
-  //   checkValue: 0,
-  //   code: '',
-  //   key: '',
-  // });
-  // const [radio4depthCheck, setRadio4depthCheck] = useState<RadioStateType>({
-  //   title: '',
-  //   checkValue: 0,
-  //   code: '',
-  //   key: '',
-  // });
-  // const [radio5depthCheck, setRadio5depthCheck] = useState<RadioStateType>({
-  //   title: '',
-  //   checkValue: 0,
-  //   code: '',
-  //   key: '',
-  // });
-  // const [radio6depthCheck, setRadio6depthCheck] = useState<RadioStateType>({
-  //   title: '',
-  //   checkValue: 0,
-  //   code: '',
-  //   key: '',
-  // });
   const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
   const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
 
@@ -146,35 +111,9 @@ export function ClassificationEdit({
   const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string[]>([
     '',
   ]);
-  const [selected1depth, setSelected1depth] = useState<string>('');
-  // const [selected2depth, setSelected2depth] = useState<string>('');
-  // const [selected3depth, setSelected3depth] = useState<string>('');
-  // const [selected4depth, setSelected4depth] = useState<string>('');
-  // const [selected5depth, setSelected5depth] = useState<string>('');
-  // const [selected6depth, setSelected6depth] = useState<string>('');
-  // const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string[]>([
-  //   '',
-  // ]);
-  // const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string[]>([
-  //   '',
-  // ]);
+
   const [checkedList, setCheckedList] = useState<string[]>([]);
   const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
-  // const [nextList1depth, setNextList1depth] = useState([
-  //   { code: '', idx: 0, name: '' },
-  // ]);
-  // const [nextList2depth, setNextList2depth] = useState([
-  //   { code: '', idx: 0, name: '' },
-  // ]);
-  // const [nextList3depth, setNextList3depth] = useState([
-  //   { code: '', idx: 0, name: '' },
-  // ]);
-  // const [nextList4depth, setNextList4depth] = useState([
-  //   { code: '', idx: 0, name: '' },
-  // ]);
-  // const [nextList5depth, setNextList5depth] = useState([
-  //   { code: '', idx: 0, name: '' },
-  // ]);
 
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
@@ -269,7 +208,7 @@ export function ClassificationEdit({
           const searchList = menuDetail?.searchList?.split(',');
           const viewList = menuDetail?.viewList?.split(',');
 
-          if (menuDetail.groupCode == 'DD') {
+          if (menuDetail.groupCode == 'MOREINFO') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -349,6 +288,7 @@ export function ClassificationEdit({
     {},
   );
   const [nextLists, setNextLists] = useState<Record<string, any>>({});
+  const [prevSelectedDepth, setPrevSelectedDepth] = useState<string[]>([]);
   // 라디오 버튼 설정
   const handleRadioCheck = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const depth =
@@ -438,7 +378,79 @@ export function ClassificationEdit({
 
   useEffect(() => {
     console.log('selectedDepth -----', selectedDepth);
+    //이전 뎁스의 값이 변경될시 다음뎁스의 값 초기화
+    // 모든 선택된 뎁스를 배열로 변환
+    const depthKeys = Object.keys(selectedDepth);
+    const currentSelectedDepthValues = depthKeys.map(
+      (key) => selectedDepth[key],
+    );
+
+    // 변경점 찾기
+    let changedIndex = -1;
+    for (let i = 0; i < currentSelectedDepthValues.length; i++) {
+      if (prevSelectedDepth[i] !== currentSelectedDepthValues[i]) {
+        changedIndex = i;
+        break;
+      }
+    }
+
+    // 변경된 뎁스 이후로 초기화
+    if (changedIndex !== -1) {
+      const lastDepthIndex = changedIndex + 1;
+
+      setNextLists((prev) => {
+        const updated = Object.keys(prev).reduce(
+          (acc, key) => {
+            const keyDepthIndex = parseInt(key.replace('depth', ''), 10);
+            if (keyDepthIndex <= lastDepthIndex) {
+              acc[key] = prev[key]; // 현재 뎁스와 이전 뎁스만 유지
+            }
+            return acc;
+          },
+          {} as Record<string, any>,
+        );
+        return updated;
+      });
+
+      setRadioChecks((prev) => {
+        const updated = Object.keys(prev).reduce(
+          (acc, key) => {
+            const keyDepthIndex = parseInt(key.replace('depth', ''), 10);
+            if (keyDepthIndex <= lastDepthIndex) {
+              acc[key] = prev[key]; // 현재 뎁스와 이전 뎁스만 유지
+            }
+            return acc;
+          },
+          {} as Record<string, any>,
+        );
+        return updated;
+      });
+
+      setSelectedDepth((prev) => {
+        const updated = Object.keys(prev).reduce(
+          (acc, key) => {
+            const keyDepthIndex = parseInt(key.replace('depth', ''), 10);
+            if (keyDepthIndex <= lastDepthIndex) {
+              acc[key] = prev[key]; // 현재 뎁스와 이전 뎁스만 유지
+            }
+            return acc;
+          },
+          {} as Record<string, string>,
+        );
+        return updated;
+      });
+
+      console.log(`States reset after depth index: ${changedIndex}`);
+    }
+
+    // 현재 선택 상태를 이전 선택 상태로 업데이트
+    setPrevSelectedDepth([...currentSelectedDepthValues]);
   }, [selectedDepth]);
+
+  // 라디오버튼 값 변경점 있을시 유형(아이템 트리) 초기화
+  useEffect(() => {
+    setItemTree([]);
+  }, [prevSelectedDepth]);
 
   // 다중 라디오 버튼 설정
   const handleMultiRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -517,9 +529,183 @@ export function ClassificationEdit({
         break;
     }
   };
+
+  // 카테고리 선택후 아이템트리
+  // 아이템 트리 불러오기 api
+  const postCategoryItemTree = async () => {
+    const queryParams = Object.keys(nextLists).reduce<Record<string, string>>(
+      (acc, depthKey) => {
+        const list = nextLists[depthKey]; // 각 depth의 배열 가져오기
+        const code = list?.[0]?.code || depthKey; // 배열의 첫 번째 아이템의 code 사용
+        const value = selectedDepth[depthKey] || ''; // selectedDepth에서 해당 depth의 값 가져오기
+        if (code && value) {
+          acc[code] = value; // 값이 존재할 경우 쿼리 파라미터에 추가
+        }
+        return acc;
+      },
+      {},
+    );
+
+    console.log('Generated Query Params:', queryParams);
+
+    // 모든 라디오가 선택되지 않은 경우 처리
+    // const allSelected = Object.values(queryParams).length === nextLists.length;
+    // if (!allSelected) {
+    // 	console.warn('모든 라디오 버튼이 선택되지 않았습니다.');
+    // 	throw new Error('모든 라디오 버튼이 선택되지 않았습니다.');
+    // }
+
+    // 쿼리 스트링 생성
+    const queryString = Object.entries(queryParams)
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+      )
+      .join('&');
+
+    const url = `/v2/item?${queryString}`;
+
+    const res = await classificationInstance.get(url);
+    console.log('반환된 아이템 트리 ---- ', res);
+    return res;
+  };
+
+  const {
+    data: categoryItemTreeData,
+    mutate: categoryItemTreeDataMutate,
+    isPending,
+  } = useMutation({
+    mutationFn: postCategoryItemTree,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data?.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
+      // setItemTreeList(res.data.data[0].itemTreeList);
+      setItemTree(response.data.data);
+    },
+  });
+
+  const saveCheckItems = () => {
+    console.log(
+      'radioEtc1Check,radioEtc2Check',
+      radioEtc1Check,
+      radioEtc2Check,
+    );
+
+    // 동적으로 라디오 버튼 상태를 가져옴
+    const dynamicChecks = Object.keys(radioChecks).map(
+      (key) => radioChecks[key],
+    );
+
+    // 새로운 교과정보 생성
+    const newClassification: UnitClassificationType[] = [
+      ...dynamicChecks.flat(),
+      radioEtc1Check,
+      radioEtc2Check,
+      ...checkedItems,
+    ];
+
+    if (checkedDepthList.length > 0) {
+      newClassification.splice(6, 0, { itemTreeIdxList: checkedDepthList });
+    }
+
+    if (unitClassificationList.length < 6) {
+      setUnitClassificationList((prevList) => [...prevList, newClassification]);
+    } else {
+      openToastifyAlert({
+        type: 'error',
+        text: '교과정보는 최대 5개 까지 저장 가능합니다',
+      });
+    }
+    //선택정보 저장과 함께 체크상태 초기화
+    //저장 성공 후
+    // onResetList();
+  };
+
+  //삭제
+  const deleteUnitClassification = (idx: number) => {
+    setUnitClassificationList((prevList) => [
+      ...prevList.slice(0, idx),
+      ...prevList.slice(idx + 1),
+    ]);
+
+    setCheckedItems([]);
+  };
+
+  const sortedArr = (): CategoryGroup[] => {
+    console.log('아이템트리키 들어가야할 목록', unitClassificationList);
+
+    const quizCategory: CategoryGroup = {};
+
+    unitClassificationList.forEach((classification) => {
+      classification.forEach((item) => {
+        if (Array.isArray(item)) {
+          // 배열 처리 (예: 난이도, 문항타입)
+          item.forEach((nestedItem) => {
+            if (
+              typeof nestedItem === 'object' &&
+              typeof nestedItem.code === 'string' &&
+              typeof nestedItem.title === 'string'
+            ) {
+              if (!quizCategory[nestedItem.code]) {
+                quizCategory[nestedItem.code] = [];
+              }
+              quizCategory[nestedItem.code]?.push({
+                code: nestedItem.code,
+                name: nestedItem.title,
+              });
+            }
+          });
+        } else if (
+          typeof item === 'object' &&
+          'code' in item &&
+          'title' in item
+        ) {
+          // 일반적인 객체 처리
+          const typedItem = item as { code: string; title: string };
+          if (!quizCategory[typedItem.code]) {
+            quizCategory[typedItem.code] = [];
+          }
+          quizCategory[typedItem.code]?.push({
+            code: typedItem.code,
+            name: typedItem.title,
+          });
+        }
+      });
+    });
+
+    // CategoryGroup[]로 변환
+    const categoryList: CategoryGroup[] = [quizCategory];
+    return categoryList;
+  };
+  // 분류 등록 버튼
+  const onSubmit = () => {
+    // 최종적으로 전송 될 데이터
+    console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
+
+    const categoryListArr: CategoryGroup[] = sortedArr();
+    console.log('categoryList 들어가야할 목록------', categoryListArr);
+
+    const data: QuizClassificationData = {
+      commandCode: 1,
+      quizCodeList: checkedList,
+      categoryList: categoryListArr,
+    };
+    console.log('최종 전송 데이터 형태', data);
+    mutateChangeClassification(data);
+  };
+
   // 분류 바꾸기 (등록) api
   const putClassification = async (data: QuizClassificationData) => {
-    const res = await classificationInstance.put(`/v1/item`, data);
+    const res = await quizService.put(`/v1/item`, data);
     console.log('데이터 최종 등록 후 리턴값 --- ', res);
     return res;
   };
@@ -694,10 +880,27 @@ export function ClassificationEdit({
 
   // 전역으로 저장한 추가된 문항 데이터들 불러오기
   // 화면 진입시 문항 데이터들 리스트ui에넣기
+  // (그룹데이터 업데이트된 상테로 다시 불러오기)
+  const getQuiz = async () => {
+    const idxArray = quizList.map((list) => list.idx);
+    const idxList = idxArray.join(',');
+    const res = await quizService.get(`/v1/quiz/${idxList}`);
+    return res.data.data.quizList;
+  };
+  const { data: quizData, refetch: quizDataRefetch } = useQuery({
+    queryKey: ['get-idx-quizList'],
+    queryFn: getQuiz,
+    meta: {
+      errorMessage: 'get-idx-quizList 에러 메세지',
+    },
+    enabled: quizList.length > 0,
+  });
   useEffect(() => {
-    console.log('quizList-----------', quizList);
-    setQuestionList(quizList);
-  }, []);
+    console.log('quizData-----------', quizData);
+    // 퀴즈리스트 idx 값으로 최신 리스트 다시불러오기
+    if (quizData) setQuestionList(quizData);
+  }, [quizData]);
+
   useEffect(() => {
     groupElementsByCode();
   }, [questionList]);
@@ -830,10 +1033,17 @@ export function ClassificationEdit({
   };
 
   useEffect(() => {
-    // console.log('checkedList------------', checkedList);
-    setUnitClassificationList([]);
+    console.log('checkedList------------', checkedList);
+
     sortList();
+    // 체크값 변경시 초기화
+    setUnitClassificationList([]);
+    setRadioButtonList([]);
+    setRadioButtonArr([]);
+    setItemTree([]);
   }, [checkedList]);
+
+  useEffect(() => {}, [radioButtonArr]);
 
   // 수정시 체크된 리스트의 카테고리값에서 메타값 속아내기
   useEffect(() => {
@@ -852,26 +1062,16 @@ export function ClassificationEdit({
           const value = category.quizCategory[
             key as keyof UnitClassificationType
           ] as any;
+          const title =
+            Array.isArray(value) &&
+            value.map((item: { name: any }) => item.name).join(', ');
+
           console.log('value key----', value);
-          // 행동요소1, 행동요소2인 경우 객체 배열로 추가
-          if ((value.key as string) === '행동요소1') {
-            console.log('typedKey key---- in ', value);
-            actionElement1.push({
-              title: value.title as string,
-              checkValue: value.checkValue,
-              code: value.code,
-              key: value.key,
-            });
-          } else if ((value.key as string) === '행동요소2') {
-            actionElement2.push({
-              title: value.title as string,
-              checkValue: value.checkValue,
-              code: value.code,
-              key: value.key,
-            });
-          } else {
+          console.log('title: title', title);
+
+          if (title) {
             list.push({
-              title: value as string,
+              title: title,
               checkValue: 0,
               code: key,
               key: key,
@@ -920,15 +1120,15 @@ export function ClassificationEdit({
 
         console.log('push on list ----', finalList);
         //idx 리스트 재구축
-        const idxList = finalList
-          .map((item) => {
-            if (typeof item.title === 'string' && item.title.includes('^^^')) {
-              const parts = item.title.split('^^^');
-              return parseInt(parts[1], 10); // ^^^ 뒤의 숫자를 추출하여 정수로 변환
-            }
-            return null; // ^^^이 포함되지 않은 경우 null 반환
-          })
-          .filter((number) => number !== null);
+        // const idxList = finalList
+        //   .map((item) => {
+        //     if (typeof item.title === 'string' && item.title.includes('^^^')) {
+        //       const parts = item.title.split('^^^');
+        //       return parseInt(parts[1], 10); // ^^^ 뒤의 숫자를 추출하여 정수로 변환
+        //     }
+        //     return null; // ^^^이 포함되지 않은 경우 null 반환
+        //   })
+        //   .filter((number) => number !== null);
 
         // 새로운 배열 생성
         const newFinalList: RadioStateType[] = [];
@@ -954,24 +1154,24 @@ export function ClassificationEdit({
           if (items.length > 0) {
             // 찾은 모든 요소를 newFinalList에 추가
             newFinalList.push(...items);
-          } else if (key === 'itemTreeIdxList') {
-            // itemTreeIdxList 일때 배열로 값추가
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push({ itemTreeIdxList: idxList });
-          } else if (key === '행동요소1') {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push([...items]);
-          } else if (key === '행동요소2') {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push([...items]);
-          } else {
+            // } else if (key === 'itemTreeIdxList') {
+            //   // itemTreeIdxList 일때 배열로 값추가
+            //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //   // @ts-expect-error
+            //   newFinalList.push({ itemTreeIdxList: idxList });
+            // } else if (key === '행동요소1') {
+            //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //   // @ts-expect-error
+            //   newFinalList.push([...items]);
+            // } else if (key === '행동요소2') {
+            //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //   // @ts-expect-error
+            //   newFinalList.push([...items]);
+            // } else {
             // 행동요소가 없을 경우 빈 배열 추가
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push([]);
+
+            // newFinalList.push([]);
           }
         });
 
@@ -1027,50 +1227,50 @@ export function ClassificationEdit({
     // 타이틀 값에 맞는 체크밸류 찾기
     console.log('radioButtonList ---------', radioButtonList);
 
-    const newClassificationLists = radioButtonList
-      .map((buttonList, index) => {
-        if (buttonList[0].key === '교육과정') {
-          const newClassification: UnitClassificationType[] = [
-            buttonList[0],
-            buttonList[1],
-            buttonList[2],
-            buttonList[3],
-            // buttonList[4],
-            // buttonList[5],
-            ...buttonList.filter((item) => item.key === '행동요소1'),
-            ...buttonList.filter((item) => item.key === '행동요소2'),
-          ];
+    // const newClassificationLists = radioButtonList
+    //   .map((buttonList, index) => {
+    //     if (buttonList[0]?.key === '교육과정') {
+    //       const newClassification: UnitClassificationType[] = [
+    //         buttonList[0],
+    //         buttonList[1],
+    //         buttonList[2],
+    //         buttonList[3],
+    //         // buttonList[4],
+    //         // buttonList[5],
+    //         ...buttonList.filter((item) => item.key === '행동요소1'),
+    //         ...buttonList.filter((item) => item.key === '행동요소2'),
+    //       ];
 
-          if (checkedDepthList.length > 0) {
-            newClassification.splice(6, 0, {
-              itemTreeIdxList: checkedDepthList,
-            });
-          }
+    //       if (checkedDepthList.length > 0) {
+    //         newClassification.splice(6, 0, {
+    //           itemTreeIdxList: checkedDepthList,
+    //         });
+    //       }
 
-          // 라디오 배열값 초기화
-          setRadioButtonList([]);
-          return newClassification;
-        }
-        return null; // 조건을 만족하지 않는 경우 null 반환
-      })
-      .filter((item) => item !== null); // null 값 필터링
+    //       // 라디오 배열값 초기화
+    //       setRadioButtonList([]);
+    //       return newClassification;
+    //     }
+    //     return null; // 조건을 만족하지 않는 경우 null 반환
+    //   })
+    //   .filter((item) => item !== null); // null 값 필터링
 
-    console.log('newClassificationLists ---------', newClassificationLists);
+    // console.log('newClassificationLists ---------', newClassificationLists);
 
-    // 최대 5개의 UnitClassificationType 배열만 추가
-    if (unitClassificationList.length + newClassificationLists.length < 6) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      setUnitClassificationList((prevList) => [
-        // ...prevList,
-        ...newClassificationLists,
-      ]);
-    } else {
-      openToastifyAlert({
-        type: 'error',
-        text: '교과정보는 최대 5개 까지 저장 가능합니다',
-      });
-    }
+    // // 최대 5개의 UnitClassificationType 배열만 추가
+    // if (unitClassificationList.length + newClassificationLists.length < 6) {
+    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   setUnitClassificationList((prevList) => [
+    //     // ...prevList,
+    //     ...newClassificationLists,
+    //   ]);
+    // } else {
+    //   openToastifyAlert({
+    //     type: 'error',
+    //     text: '교과정보는 최대 5개 까지 저장 가능합니다',
+    //   });
+    // }
 
     // onResetList();
   }, [radioButtonList]);
@@ -1107,44 +1307,44 @@ export function ClassificationEdit({
   // });
 
   // 카테고리의 그룹 유형 조회 (추가정보)
-  const getAddInfoGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/group/B');
-    return response.data.data.typeList;
-  };
-  const { data: addInfoData } = useQuery({
-    queryKey: ['get-add-info-groups'],
-    queryFn: getAddInfoGroups,
-    // enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-add-info-groups 에러 메세지',
-    },
-  });
-  useEffect(() => {
-    if (addInfoData) {
-      fetchAddInfoItems(addInfoData);
-    }
-  }, [addInfoData]);
+  // const getAddInfoGroups = async () => {
+  //   const response = await classificationInstance.get('/v1/category/group/B');
+  //   return response.data.data.typeList;
+  // };
+  // const { data: addInfoData } = useQuery({
+  //   queryKey: ['get-add-info-groups'],
+  //   queryFn: getAddInfoGroups,
+  //   // enabled: !!categoryData,
+  //   meta: {
+  //     errorMessage: 'get-add-info-groups 에러 메세지',
+  //   },
+  // });
+  // useEffect(() => {
+  //   if (addInfoData) {
+  //     fetchAddInfoItems(addInfoData);
+  //   }
+  // }, [addInfoData]);
 
-  // 카테고리의 그룹 아이템 조회 (추가정보)
-  const fetchAddInfoItems = async (typeList: string) => {
-    const typeIds = typeList.split(',');
-    try {
-      const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/class/${id}`),
-      );
-      const responses = await Promise.all(requests);
-      const itemsList = responses.map(
-        (res) => res?.data?.data?.categoryClassList,
-      );
-      setCategoryAddInfoList(itemsList);
-    } catch (error: any) {
-      console.error('Error fetching next list: ', error?.data?.code);
-      if (error.response?.data?.code == 'GE-002') {
-        postRefreshToken();
-        // groupsDataRefetch();
-      }
-    }
-  };
+  // // 카테고리의 그룹 아이템 조회 (추가정보)
+  // const fetchAddInfoItems = async (typeList: string) => {
+  //   const typeIds = typeList.split(',');
+  //   try {
+  //     const requests = typeIds.map((id) =>
+  //       classificationInstance.get(`/v1/category/class/${id}`),
+  //     );
+  //     const responses = await Promise.all(requests);
+  //     const itemsList = responses.map(
+  //       (res) => res?.data?.data?.categoryClassList,
+  //     );
+  //     setCategoryAddInfoList(itemsList);
+  //   } catch (error: any) {
+  //     console.error('Error fetching next list: ', error?.data?.code);
+  //     if (error.response?.data?.code == 'GE-002') {
+  //       postRefreshToken();
+  //       // groupsDataRefetch();
+  //     }
+  //   }
+  // };
 
   // const saveCheckItems = () => {
   //   console.log(
@@ -1183,14 +1383,6 @@ export function ClassificationEdit({
   // };
 
   //삭제
-  const deleteUnitClassification = (idx: number) => {
-    setUnitClassificationList((prevList) => [
-      ...prevList.slice(0, idx),
-      ...prevList.slice(idx + 1),
-    ]);
-
-    setCheckedItems([]);
-  };
 
   //분류 리스트 리셋
   // const onResetList = () => {
@@ -1247,59 +1439,6 @@ export function ClassificationEdit({
   }, [unitClassificationList]);
 
   useEffect(() => {}, [questionList]);
-
-  const sortedArr = () => {
-    console.log('아이템트리키 들어가야할 목록', unitClassificationList);
-    const arr = unitClassificationList.map((classification) => {
-      const itemTreeKey = classification.reduce(
-        (acc: Record<string, string | string[]>, curr) => {
-          if ('key' in curr && curr.title) {
-            if (curr.key === '행동요소1' || curr.key === '행동요소2') {
-              // 행동요소1 또는 행동요소2인 경우 배열로 처리
-              if (acc[curr.key]) {
-                // 이미 해당 키가 존재하는 경우 배열에 추가
-                (acc[curr.key] as string[]).push(curr.title);
-              } else {
-                // 새로 배열을 생성하여 추가
-                acc[curr.key] = [curr.title];
-              }
-            } else {
-              // 일반적인 키 처리
-              acc[curr.key] = curr.title;
-            }
-          } else if (typeof curr === 'object' && !('itemTreeIdxList' in curr)) {
-            // checkedItems 객체 병합
-            Object.assign(acc, curr);
-          }
-          return acc;
-        },
-        {} as Record<string, string | string[]>,
-      );
-
-      const itemTreeIdxList =
-        classification.find(
-          (item): item is ItemTreeIdxListType => 'itemTreeIdxList' in item,
-        )?.itemTreeIdxList || [];
-
-      // 등록시 앞쪽에서 등록한 필수 메타값도 함께 등록
-      const requiredMetacategory =
-        sortedList[sortedList.length - 1].quizCategoryList[0].quizCategory;
-
-      console.log('itemTreeKey------', itemTreeKey);
-      console.log('requiredMetacategory------', requiredMetacategory);
-      const mergedItemTreeKey = {
-        ...itemTreeKey,
-        ...requiredMetacategory,
-      };
-      return {
-        itemTreeKey: mergedItemTreeKey,
-        itemTreeIdxList,
-        quizCategory: {},
-      };
-    });
-
-    return arr;
-  };
 
   // 분류 등록 버튼
   // const onSubmit = () => {
@@ -1514,7 +1653,7 @@ export function ClassificationEdit({
                 총 {`${questionList.length} 건`} 전체선택
               </span>
             </div>
-            <p>총 {`${questionList.length} 건`} 중 5건 분류없음</p>
+            {/* <p>총 {`${questionList.length} 건`} 중 5건 분류없음</p> */}
           </TopButtonWrapper>
           <TopButtonWrapper>
             {/* <Select
@@ -1665,14 +1804,46 @@ export function ClassificationEdit({
                     >
                       <PerfectScrollbar>
                         <div className="class_wrap">
-                          {quiz.quizCategoryList.some(
-                            (item) => item.quizCategory?.교육과정,
+                          {quiz.quizCategoryList.some((item) =>
+                            Array.isArray(item.quizCategory?.교육과정),
                           ) ? (
-                            quiz.quizCategoryList.map((item, idx) => (
-                              <span key={idx}>
-                                {`${item.quizCategory?.교육과정}/${item.quizCategory?.과목}/${item.quizCategory?.교과}/${item.quizCategory?.학년}/${item.quizCategory?.학기}`}
-                              </span>
-                            ))
+                            quiz.quizCategoryList.map((item, idx) => {
+                              const 교육과정 =
+                                Array.isArray(item.quizCategory?.교육과정) &&
+                                item.quizCategory.교육과정
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 과목 =
+                                Array.isArray(item.quizCategory?.과목) &&
+                                item.quizCategory.과목
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 교과 =
+                                Array.isArray(item.quizCategory?.교과) &&
+                                item.quizCategory.교과
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 학년 =
+                                Array.isArray(item.quizCategory?.학년) &&
+                                item.quizCategory.학년
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 학기 =
+                                Array.isArray(item.quizCategory?.학기) &&
+                                item.quizCategory.학기
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              return (
+                                <span key={idx}>
+                                  {`${교육과정 || ''}/${과목 || ''}/${교과 || ''}/${학년 || ''}/${학기 || ''}`}
+                                </span>
+                              );
+                            })
                           ) : (
                             <span>(분류없음)</span>
                           )}
@@ -1703,7 +1874,7 @@ export function ClassificationEdit({
                           height="35px"
                           textAlign="left"
                           $padding="0 50px 0 10px"
-                          onClick={() => changeUnitClassification(idx)}
+                          // onClick={() => changeUnitClassification(idx)}
                         >
                           <span>
                             {el
@@ -1791,227 +1962,212 @@ export function ClassificationEdit({
               <p className="line"></p>
 
               {/* 교과정보 아코디언 리스트  */}
-              {radio1depthCheck?.code !== '' ? (
-                <></>
-              ) : (
-                // <AccordionWrapper>
-                //   <Accordion
-                //     defaultChecked={isModifying}
-                //     title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}학기/${radio5depthCheck.title}/${radio6depthCheck.title}`}
-                //     id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}학기/${radio5depthCheck.title}/${radio6depthCheck.title}`}
-                //   >
-                //     <RowListWrapper>
-                //       <Search
-                //         height={'30px'}
-                //         value={searchValue}
-                //         onClick={(e) => filterSearchValue(e)}
-                //         onKeyDown={(e) => filterSearchValueEnter(e)}
-                //         onChange={(e) => {
-                //           setSearchValue(e.target.value);
-                //         }}
-                //         placeholder="검색어를 입력해주세요.(두글자 이상)"
-                //         maxLength={20}
-                //       />
-                //       {searchValue.length > 1 && (
-                //         <p className="line bottom_text">
-                //           {`총
-                // 							${
-                //                 categoryItemTreeData && itemTree.length
-                //                   ? itemTree.reduce(
-                //                       (total, el) =>
-                //                         total +
-                //                         el.itemTreeList.filter((item) =>
-                //                           item.name.includes(searchValue),
-                //                         ).length,
-                //                       0,
-                //                     )
-                //                   : 0
-                //               }
-                // 							건`}
-                //           <ArrowButtonWrapper>
-                //             <button onClick={() => prevHighlight()}>
-                //               <IoMdArrowDropup />
-                //             </button>
-                //             <button onClick={() => nextHighlight()}>
-                //               <IoMdArrowDropdown />
-                //             </button>
-                //           </ArrowButtonWrapper>
-                //         </p>
-                //       )}
-                //       {isPending && (
-                //         <LoaderWrapper>
-                //           <Loader width="50px" />
-                //         </LoaderWrapper>
-                //       )}
-                //       <DepthBlockScrollWrapper>
-                //         <PerfectScrollbar>
-                //           {categoryItemTreeData ? (
-                //             <>
-                //               {itemTree.length ? (
-                //                 <div ref={contentRef} className="content">
-                //                   {searchValue.length > 0 ? (
-                //                     <>
-                //                       {itemTree.map((el) => (
-                //                         <div key={`${el.itemTreeKey}`}>
-                //                           {el.itemTreeList.map((item) => (
-                //                             <DepthBlock
-                //                               branchValue={`${item.name}`}
-                //                               highlightText={highlightText}
-                //                               defaultChecked
-                //                               key={`depthList${item?.idx} ${item.name}`}
-                //                               classNameList={`depth-${item.level}`}
-                //                               id={item?.idx}
-                //                               name={item.name}
-                //                               value={item?.idx}
-                //                               level={item?.level}
-                //                               onChange={(e) =>
-                //                                 handleSingleCheck(
-                //                                   e.target.checked,
-                //                                   item?.idx,
-                //                                   item?.level,
-                //                                   item.name,
-                //                                   findItemByIdx,
-                //                                   findChildItems,
-                //                                 )
-                //                               }
-                //                               checked={
-                //                                 checkedDepthList.includes(
-                //                                   item?.idx,
-                //                                 )
-                //                                   ? true
-                //                                   : false
-                //                               }
-                //                               searchValue={searchValue}
-                //                             >
-                //                               <span>{item.name}</span>
-                //                             </DepthBlock>
-                //                           ))}
-                //                         </div>
-                //                       ))}
-                //                     </>
-                //                   ) : (
-                //                     <>
-                //                       {itemTree.map((el) => (
-                //                         <div key={`${el.itemTreeKey}`}>
-                //                           {el.itemTreeList.map((item) => (
-                //                             <DepthBlock
-                //                               branchValue={`${item.name}`}
-                //                               defaultChecked
-                //                               key={`depthList${item?.idx} ${item.name}`}
-                //                               classNameList={`depth-${item.level}`}
-                //                               id={item?.code}
-                //                               name={item.name}
-                //                               value={item?.idx}
-                //                               level={item?.level}
-                //                               onChange={(e) =>
-                //                                 handleSingleCheck(
-                //                                   e.target.checked,
-                //                                   item?.idx,
-                //                                   item?.level,
-                //                                   item.name,
-                //                                   findItemByIdx,
-                //                                   findChildItems,
-                //                                 )
-                //                               }
-                //                               checked={
-                //                                 checkedDepthList.includes(
-                //                                   item?.idx,
-                //                                 )
-                //                                   ? true
-                //                                   : false
-                //                               }
-                //                               searchValue={searchValue}
-                //                             >
-                //                               <span>{item.name}</span>
-                //                             </DepthBlock>
-                //                           ))}
-                //                         </div>
-                //                       ))}
-                //                     </>
-                //                   )}
-                //                 </div>
-                //               ) : (
-                //                 <ValueNone
-                //                   textOnly
-                //                   info="등록된 데이터가 없습니다"
-                //                 />
-                //               )}
-                //             </>
-                //           ) : (
-                //             <Loader />
-                //           )}
-                //         </PerfectScrollbar>
-                //       </DepthBlockScrollWrapper>
-                //     </RowListWrapper>
-                //   </Accordion>
+              {sortedList.length > 0 && selectedDepth['1depth'] !== '' ? (
+                <AccordionWrapper>
+                  <Accordion
+                    defaultChecked={isModifying}
+                    title={Object.keys(selectedDepth)
+                      .filter((key) => selectedDepth[key]) // 선택된 값이 있는 키만 포함
+                      .map((key) => selectedDepth[key]) // 선택된 값을 추출
+                      .join('/')} // '/'로 연결
+                    id={Object.keys(selectedDepth)
+                      .filter((key) => selectedDepth[key]) // 선택된 값이 있는 키만 포함
+                      .map((key) => selectedDepth[key]) // 선택된 값을 추출
+                      .join('/')}
+                  >
+                    <RowListWrapper>
+                      <Search
+                        height={'30px'}
+                        value={searchValue}
+                        onClick={(e) => filterSearchValue(e)}
+                        onKeyDown={(e) => filterSearchValueEnter(e)}
+                        onChange={(e) => {
+                          setSearchValue(e.target.value);
+                        }}
+                        placeholder="검색어를 입력해주세요.(두글자 이상)"
+                        maxLength={20}
+                      />
+                      {searchValue.length > 1 && (
+                        <p className="line bottom_text">
+                          {`총 
+															${
+                                categoryItemTreeData && itemTree.length
+                                  ? itemTree.reduce(
+                                      (total, el) =>
+                                        total +
+                                        el.itemTreeList.filter((item) =>
+                                          item.name.includes(searchValue),
+                                        ).length,
+                                      0,
+                                    )
+                                  : 0
+                              } 
+															건`}
+                          <ArrowButtonWrapper>
+                            <button onClick={() => prevHighlight()}>
+                              <IoMdArrowDropup />
+                            </button>
+                            <button onClick={() => nextHighlight()}>
+                              <IoMdArrowDropdown />
+                            </button>
+                          </ArrowButtonWrapper>
+                        </p>
+                      )}
+                      {isPending && (
+                        <LoaderWrapper>
+                          <Loader width="50px" />
+                        </LoaderWrapper>
+                      )}
+                      <DepthBlockScrollWrapper>
+                        <PerfectScrollbar>
+                          {categoryItemTreeData ? (
+                            <>
+                              {itemTree.length ? (
+                                <div ref={contentRef} className="content">
+                                  {searchValue.length > 0 ? (
+                                    <>
+                                      {itemTree.map((el) => (
+                                        <div key={`${el.itemTreeKey}`}>
+                                          {el.itemTreeList.map((item) => (
+                                            <DepthBlock
+                                              branchValue={`${item.name}`}
+                                              highlightText={highlightText}
+                                              defaultChecked
+                                              key={`depthList${item?.idx} ${item.name}`}
+                                              classNameList={`depth-${item.level}`}
+                                              id={item?.idx}
+                                              name={item.name}
+                                              value={item?.idx}
+                                              level={item?.level}
+                                              onChange={(e) =>
+                                                handleSingleCheck(
+                                                  e.target.checked,
+                                                  item?.idx,
+                                                  item?.level,
+                                                  item.name,
+                                                  findItemByIdx,
+                                                  findChildItems,
+                                                )
+                                              }
+                                              checked={
+                                                checkedDepthList.includes(
+                                                  item?.idx,
+                                                )
+                                                  ? true
+                                                  : false
+                                              }
+                                              searchValue={searchValue}
+                                            >
+                                              <span>{item.name}</span>
+                                            </DepthBlock>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </>
+                                  ) : (
+                                    <>
+                                      {itemTree.map((el) => (
+                                        <div key={`${el.itemTreeKey}`}>
+                                          {el.itemTreeList.map((item) => (
+                                            <DepthBlock
+                                              branchValue={`${item.name}`}
+                                              defaultChecked
+                                              key={`depthList${item?.idx} ${item.name}`}
+                                              classNameList={`depth-${item.level}`}
+                                              id={item?.code}
+                                              name={item.name}
+                                              value={item?.idx}
+                                              level={item?.level}
+                                              onChange={(e) =>
+                                                handleSingleCheck(
+                                                  e.target.checked,
+                                                  item?.idx,
+                                                  item?.level,
+                                                  item.name,
+                                                  findItemByIdx,
+                                                  findChildItems,
+                                                )
+                                              }
+                                              checked={
+                                                checkedDepthList.includes(
+                                                  item?.idx,
+                                                )
+                                                  ? true
+                                                  : false
+                                              }
+                                              searchValue={searchValue}
+                                            >
+                                              <span>{item.name}</span>
+                                            </DepthBlock>
+                                          ))}
+                                        </div>
+                                      ))}
+                                    </>
+                                  )}
+                                </div>
+                              ) : (
+                                <ValueNone
+                                  textOnly
+                                  info="등록된 데이터가 없습니다"
+                                />
+                              )}
+                            </>
+                          ) : (
+                            <Loader />
+                          )}
+                        </PerfectScrollbar>
+                      </DepthBlockScrollWrapper>
+                    </RowListWrapper>
+                  </Accordion>
 
-                //   <Accordion
-                //     title={'추가정보'}
-                //     id={'추가정보'}
-                //     $margin={'4px 0 0 0 '}
-                //     defaultChecked={isModifying}
-                //   >
-                //     <RowListWrapper>
-                //       {categoryAddInfoList ? (
-                //         <>
-                //           {[
-                //             {
-                //               idx: 0,
-                //               name: '행동요소1',
-                //               code: '행동요소1',
-                //               type: 'SELECT',
-                //             },
-                //           ].map((item) => (
-                //             <div
-                //               id={`${item.name}`}
-                //               className={`etc1`}
-                //               key={`etc1 ${item.idx}`}
-                //             >
-                //               <ButtonFormatMultiRadio
-                //                 titleText={`${item.name}`}
-                //                 list={categoryAddInfoList[0]}
-                //                 selected={selectedCategoryEtc1}
-                //                 onChange={(e) => handleMultiRadioCheck(e)}
-                //                 checkedInputs={radioEtc1Check}
-                //                 branchValue={`etc1`}
-                //               />
-                //             </div>
-                //           ))}
-                //           {[
-                //             {
-                //               idx: 0,
-                //               name: '행동요소2',
-                //               code: '행동요소2',
-                //               type: 'SELECT',
-                //             },
-                //           ].map((item) => (
-                //             <div
-                //               id={`${item.name}`}
-                //               className={`etc2`}
-                //               key={`etc2 ${item.idx}`}
-                //             >
-                //               <ButtonFormatMultiRadio
-                //                 titleText={`${item.name}`}
-                //                 list={categoryAddInfoList[1]}
-                //                 selected={selectedCategoryEtc2}
-                //                 onChange={(e) => handleMultiRadioCheck(e)}
-                //                 checkedInputs={radioEtc2Check}
-                //                 branchValue={`etc2`}
-                //               />
-                //             </div>
-                //           ))}
-                //         </>
-                //       ) : (
-                //         <ValueNone textOnly info="등록된 데이터가 없습니다" />
-                //       )}
-                //     </RowListWrapper>
-                //   </Accordion>
-                // </AccordionWrapper>
+                  <Accordion
+                    title={'추가정보'}
+                    id={'추가정보'}
+                    $margin={'4px 0 0 0 '}
+                    defaultChecked={isModifying}
+                  >
+                    <RowListWrapper>
+                      {idxNamePairsDD[0] && idxNamePairsDD[0][0] && (
+                        <div
+                          id={idxNamePairsDD[0][0].idx}
+                          className={`${idxNamePairsDD[0][0].code}`}
+                          key={idxNamePairsDD[0][0].idx}
+                        >
+                          <ButtonFormatMultiRadio
+                            titleText={`${idxNamePairsDD[0][0].name}`}
+                            list={categoriesDD1}
+                            selected={selectedCategoryEtc1}
+                            onChange={(e) => handleMultiRadioCheck(e)}
+                            checkedInputs={radioEtc1Check}
+                            branchValue={`etc${1}`}
+                          />
+                        </div>
+                      )}
+                      {idxNamePairsDD[0] && idxNamePairsDD[0][1] && (
+                        <div
+                          id={idxNamePairsDD[0][1].idx}
+                          className={`${idxNamePairsDD[0][1].code}`}
+                          key={idxNamePairsDD[0][1].idx}
+                        >
+                          <ButtonFormatMultiRadio
+                            titleText={`${idxNamePairsDD[0][1].name}`}
+                            list={categoriesDD2}
+                            selected={selectedCategoryEtc2}
+                            onChange={(e) => handleMultiRadioCheck(e)}
+                            checkedInputs={radioEtc2Check}
+                            branchValue={`etc${2}`}
+                          />
+                        </div>
+                      )}
+                    </RowListWrapper>
+                  </Accordion>
+                </AccordionWrapper>
+              ) : (
                 <ValueNoneWrapper>
-                  <ValueNone
+                  {/* <ValueNone
                     textOnly
                     info="교육과정, 학교급, 학년, 학기를 선택해주세요"
-                  />
+                  /> */}
                 </ValueNoneWrapper>
               )}
             </PerfectScrollbar>
@@ -2036,7 +2192,7 @@ export function ClassificationEdit({
             disabled={unitClassificationList.length !== 0 ? false : true}
             cursor
             width={'calc(50% - 5px)'}
-            // onClick={() => onSubmit()}
+            onClick={() => onSubmit()}
           >
             {type === 'copyedit' ? '등록' : '수정'}
           </Button>

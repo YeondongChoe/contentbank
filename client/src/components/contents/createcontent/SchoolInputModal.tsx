@@ -5,7 +5,10 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-import { classificationInstance } from '../../../api/axios';
+import {
+  classificationInstance,
+  resourceServiceInstance,
+} from '../../../api/axios';
 import {
   Button,
   Input,
@@ -63,7 +66,7 @@ export function SchoolInputModal({
 
   // 학교 리스트 불러오기 api
   const getSchoolList = async () => {
-    const res = await classificationInstance.get(
+    const res = await resourceServiceInstance.get(
       `/v1/school?pageIndex=${page}&pageUnit=${4}&searchKeyword=${searchValue}`,
     );
     // console.log(`getSchoolList 결과값`, res);
@@ -80,7 +83,7 @@ export function SchoolInputModal({
 
   // 지역 리스트 불러오기 api
   const getCountries = async () => {
-    const res = await classificationInstance.get(`/v1/school/countries`);
+    const res = await resourceServiceInstance.get(`/v1/school/countries`);
     console.log(`getCountries 결과값`, res);
     return res.data.data.countryList;
   };

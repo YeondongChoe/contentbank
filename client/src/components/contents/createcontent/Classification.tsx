@@ -213,7 +213,7 @@ export function Classification({
           const searchList = menuDetail?.searchList?.split(',');
           const viewList = menuDetail?.viewList?.split(',');
 
-          if (menuDetail.groupCode == 'DD') {
+          if (menuDetail.groupCode == 'MOREINFO') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -1107,30 +1107,53 @@ export function Classification({
         const actionElement2: UnitClassificationType[] = [];
 
         // category를 순회하며 필요한 형태로 변환
+        // Object.keys(category.quizCategory).forEach((key) => {
+        //   const value = category.quizCategory[
+        //     key as keyof UnitClassificationType
+        //   ] as any;
+        //   console.log('value key----', value);
+        //   // 행동요소1, 행동요소2인 경우 객체 배열로 추가
+        //   if ((value.key as string) === '행동요소1') {
+        //     console.log('typedKey key---- in ', value);
+        //     actionElement1.push({
+        //       title: value.title,
+        //       checkValue: value.checkValue,
+        //       code: value.code,
+        //       key: value.key,
+        //     });
+        //   } else if ((value.key as string) === '행동요소2') {
+        //     actionElement2.push({
+        //       title: value.title,
+        //       checkValue: value.checkValue,
+        //       code: value.code,
+        //       key: value.key,
+        //     });
+        //   } else {
+        //     console.log('title: value', value);
+        //     const title = value.map((item: { name: any }) => item.name)[0];
+        //     list.push({
+        //       title: title as string,
+        //       checkValue: 0,
+        //       code: key,
+        //       key: key,
+        //     });
+        //   }
+        // });
+        // category를 순회하며 필요한 형태로 변환
         Object.keys(category.quizCategory).forEach((key) => {
           const value = category.quizCategory[
             key as keyof UnitClassificationType
           ] as any;
+          const title =
+            Array.isArray(value) &&
+            value.map((item: { name: any }) => item.name).join(', ');
+
           console.log('value key----', value);
-          // 행동요소1, 행동요소2인 경우 객체 배열로 추가
-          if ((value.key as string) === '행동요소1') {
-            console.log('typedKey key---- in ', value);
-            actionElement1.push({
-              title: value.title as string,
-              checkValue: value.checkValue,
-              code: value.code,
-              key: value.key,
-            });
-          } else if ((value.key as string) === '행동요소2') {
-            actionElement2.push({
-              title: value.title as string,
-              checkValue: value.checkValue,
-              code: value.code,
-              key: value.key,
-            });
-          } else {
+          console.log('title: title', title);
+
+          if (title) {
             list.push({
-              title: value as string,
+              title: title,
               checkValue: 0,
               code: key,
               key: key,
@@ -1179,15 +1202,15 @@ export function Classification({
 
         console.log('push on list ----', finalList);
         //idx 리스트 재구축
-        const idxList = finalList
-          .map((item) => {
-            if (typeof item.title === 'string' && item.title.includes('^^^')) {
-              const parts = item.title.split('^^^');
-              return parseInt(parts[1], 10); // ^^^ 뒤의 숫자를 추출하여 정수로 변환
-            }
-            return null; // ^^^이 포함되지 않은 경우 null 반환
-          })
-          .filter((number) => number !== null);
+        // const idxList = finalList
+        //   .map((item) => {
+        //     if (typeof item.title === 'string' && item.title) {
+        //       const parts = item.title;
+        //       return parseInt(parts[1], 10); // ^^^ 뒤의 숫자를 추출하여 정수로 변환
+        //     }
+        //     return null; // ^^^이 포함되지 않은 경우 null 반환
+        //   })
+        //   .filter((number) => number !== null);
 
         // 새로운 배열 생성
         const newFinalList: RadioStateType[] = [];
@@ -1213,20 +1236,17 @@ export function Classification({
           if (items.length > 0) {
             // 찾은 모든 요소를 newFinalList에 추가
             newFinalList.push(...items);
-          } else if (key === 'itemTreeIdxList') {
+            // } else if (key === 'itemTreeIdxList') {
             // itemTreeIdxList 일때 배열로 값추가
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push({ itemTreeIdxList: idxList });
-          } else if (key === '행동요소1') {
+            // newFinalList.push({ itemTreeIdxList: idxList });
+            // } else if (key === '행동요소1') {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push([...items]);
-          } else if (key === '행동요소2') {
+            //   newFinalList.push([...items]);
+            // } else if (key === '행동요소2') {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            newFinalList.push([...items]);
-          } else {
+            //   newFinalList.push([...items]);
+            // } else {
             // 행동요소가 없을 경우 빈 배열 추가
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
@@ -1287,46 +1307,46 @@ export function Classification({
     if (radioButtonList.length === 0) return;
     // 타이틀 값에 맞는 체크밸류 찾기
     console.log('radioButtonList ---------', radioButtonList);
-    const newClassificationLists = radioButtonList
-      .map((buttonList, index) => {
-        if (buttonList[0].key === '교육과정') {
-          const newClassification: UnitClassificationType[] = [
-            buttonList[0],
-            buttonList[1],
-            buttonList[2],
-            buttonList[3],
-            ...buttonList.filter((item) => item.key === '행동요소1'),
-            ...buttonList.filter((item) => item.key === '행동요소2'),
-          ];
+    // const newClassificationLists = radioButtonList
+    //   .map((buttonList, index) => {
+    //     if (buttonList[0].key === '교육과정') {
+    //       const newClassification: UnitClassificationType[] = [
+    //         buttonList[0],
+    //         buttonList[1],
+    //         buttonList[2],
+    //         buttonList[3],
+    //         ...buttonList.filter((item) => item.key === '행동요소1'),
+    //         ...buttonList.filter((item) => item.key === '행동요소2'),
+    //       ];
 
-          if (checkedDepthList.length > 0) {
-            newClassification.splice(4, 0, {
-              itemTreeIdxList: checkedDepthList,
-            });
-          }
+    //       if (checkedDepthList.length > 0) {
+    //         newClassification.splice(4, 0, {
+    //           itemTreeIdxList: checkedDepthList,
+    //         });
+    //       }
 
-          return newClassification;
-        }
-        return null; // 조건을 만족하지 않는 경우 null 반환
-      })
-      .filter((item) => item !== null); // null 값 필터링
+    //       return newClassification;
+    //     }
+    //     return null; // 조건을 만족하지 않는 경우 null 반환
+    //   })
+    //   .filter((item) => item !== null); // null 값 필터링
 
-    console.log('newClassificationLists ---------', newClassificationLists);
+    // console.log('newClassificationLists ---------', newClassificationLists);
 
-    // 최대 5개의 UnitClassificationType 배열만 추가
-    if (unitClassificationList.length + newClassificationLists.length < 6) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      setUnitClassificationList((prevList) => [
-        ...prevList,
-        ...newClassificationLists,
-      ]);
-    } else {
-      openToastifyAlert({
-        type: 'error',
-        text: '교과정보는 최대 5개 까지 저장 가능합니다',
-      });
-    }
+    // // 최대 5개의 UnitClassificationType 배열만 추가
+    // if (unitClassificationList.length + newClassificationLists.length < 6) {
+    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   setUnitClassificationList((prevList) => [
+    //     ...prevList,
+    //     ...newClassificationLists,
+    //   ]);
+    // } else {
+    //   openToastifyAlert({
+    //     type: 'error',
+    //     text: '교과정보는 최대 5개 까지 저장 가능합니다',
+    //   });
+    // }
 
     // onResetList();
   }, [radioButtonList]);
@@ -1665,14 +1685,46 @@ export function Classification({
                     <ScrollWrapper className={`height_class_wrap`}>
                       <PerfectScrollbar>
                         <div className="class_wrap">
-                          {quiz.quizCategoryList.some(
-                            (item) => item.quizCategory?.교육과정,
+                          {quiz.quizCategoryList.some((item) =>
+                            Array.isArray(item.quizCategory?.교육과정),
                           ) ? (
-                            quiz.quizCategoryList.map((item, idx) => (
-                              <span key={idx}>
-                                {`${item.quizCategory?.교육과정}/${item.quizCategory?.과목}/${item.quizCategory?.교과}/${item.quizCategory?.학년}/${item.quizCategory?.학기}`}
-                              </span>
-                            ))
+                            quiz.quizCategoryList.map((item, idx) => {
+                              const 교육과정 =
+                                Array.isArray(item.quizCategory?.교육과정) &&
+                                item.quizCategory.교육과정
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 과목 =
+                                Array.isArray(item.quizCategory?.과목) &&
+                                item.quizCategory.과목
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 교과 =
+                                Array.isArray(item.quizCategory?.교과) &&
+                                item.quizCategory.교과
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 학년 =
+                                Array.isArray(item.quizCategory?.학년) &&
+                                item.quizCategory.학년
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              const 학기 =
+                                Array.isArray(item.quizCategory?.학기) &&
+                                item.quizCategory.학기
+                                  .map((cat) => cat.name)
+                                  .join(', ');
+
+                              return (
+                                <span key={idx}>
+                                  {`${교육과정 || ''}/${과목 || ''}/${교과 || ''}/${학년 || ''}/${학기 || ''}`}
+                                </span>
+                              );
+                            })
                           ) : (
                             <span>(분류없음)</span>
                           )}

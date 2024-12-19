@@ -50,6 +50,8 @@ export function Options({
     return '';
   }, [initList, listItem.name]);
 
+  console.log('initList[listItem.name]', initList && initList[listItem?.name]);
+
   // initList에서 가져온 초기값으로 DOM 요소 상태 설정
   useEffect(() => {
     if (initValue) {
@@ -200,7 +202,11 @@ export function Options({
           <OtionsSelect
             width={'115px'}
             height={'30px'}
-            defaultValue={listItem.name}
+            defaultValue={
+              initList?.[listItem.name]
+                ? `${initList[listItem.name]}`
+                : `${listItem.name}`
+            }
             key={listItem.name}
             options={categoryItems}
             onSelect={(

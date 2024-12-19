@@ -48,7 +48,7 @@ export function Step3MathViewer({
   const [commentary, setCommentary] = useState<string>(
     answerCommentary as string,
   );
-  console.log('data', data);
+  //console.log('data', data);
   useEffect(() => {
     if (answerCommentary) {
       setCommentary(answerCommentary as string);

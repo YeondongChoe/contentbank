@@ -94,7 +94,6 @@ export function Login() {
 
       // JWT 디코드
       const decodedToken = jwtDecode(accessToken);
-
       const companyCode = decodedToken?.companyCode; // JWT 페이로드에 companyCode가 포함된 경우
       if (companyCode) {
         localStorage.setItem('companyCode', companyCode);

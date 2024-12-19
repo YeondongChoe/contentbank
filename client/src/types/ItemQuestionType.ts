@@ -42,6 +42,7 @@ export type QuizListType = {
   groupCode?: string | null;
   createdAt: string;
   createdBy: string;
+  currentStep?: number;
   idx: number;
   isDelete: boolean;
   isUse: boolean;
@@ -54,7 +55,39 @@ export type QuizListType = {
   quizCategoryList: QuizCategoryList[];
   quizItemList?: QuizType[];
   quizList: QuizType[];
-  process?: string;
+  process?: {
+    idx: number;
+    name: string;
+    state: string;
+    step: number;
+    totalStep: number;
+  };
+  processInfo?: {
+    code: string;
+    processName: string;
+    stepList: [
+      {
+        stepName: string;
+        stepSort: number;
+        workerList: {
+          idx: number;
+          workerSort: number;
+          createdBy: string;
+          createdAt: string;
+          account: {
+            idx: number;
+            id: string;
+            name: string;
+            authorityName: string;
+          };
+          authority: {
+            code: string;
+            name: string;
+          };
+        }[];
+      },
+    ];
+  };
   condition?: string;
   isChecked?: boolean;
 };
@@ -111,6 +144,26 @@ export type QuizCategory = {
   난이도?: string;
   난이도공통?: string;
   학교급?: string;
+  문항타입?: string;
+  행동요소1?: string[];
+  행동요소2?: string[];
+  대단원?: string; // 1뎁스
+  중단원?: string;
+  소단원?: string;
+  유형?: string; // 4뎁스
+  sources?: Source[] | any[];
+  categories?: Categorie[] | any[];
+};
+
+export type InspectionQuizCategory = {
+  교육과정?: { code: string; name: string }[];
+  교과?: { code: string; name: string }[];
+  과목?: { code: string; name: string }[];
+  학년?: { code: string; name: string }[];
+  학기?: { code: string; name: string }[];
+  난이도?: { code: string; name: string }[];
+  난이도공통?: string;
+  학교급?: { code: string; name: string }[];
   문항타입?: string;
   행동요소1?: string[];
   행동요소2?: string[];
@@ -204,7 +257,7 @@ export interface CategoryGroup {
 }
 export interface CategoryItems {
   code?: string;
-  name: string;
+  name: string | number;
 }
 // categoryList 아이템 타입 정의
 type CategoryItem = {

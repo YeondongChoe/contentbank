@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { IoSearch } from 'react-icons/io5';
@@ -82,10 +82,10 @@ export function ContentInformationChange() {
   const [idxNamePairs, setIdxNamePairs] = useState<IdxNamePair[]>([]);
   const searchDivRef = useRef<HTMLDivElement | null>(null);
   const changeDivRef = useRef<HTMLDivElement | null>(null);
+  // 그룹박스
+  const listWrapperRef = useRef<HTMLUListElement | null>(null);
   // 드롭박스 셀렉팅 값
-  const [components, setComponents] = useState<PairState[]>([
-    { selectedItems1: [], selectedItems2: [], includeType: 'includeOne' },
-  ]);
+  const [components, setComponents] = useState<PairState[]>([]);
   const [selectedItems1, setSelectedItems1] = useState<string[]>([]);
   const [selectedItems2, setSelectedItems2] = useState<string[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -150,7 +150,7 @@ export function ContentInformationChange() {
         name: names[index],
       }));
 
-      console.log('idxNamePairs----', pairs);
+      // console.log('idxNamePairs----', pairs);
       setIdxNamePairs(pairs);
     }
   }, [menuSettingData]);
@@ -230,12 +230,8 @@ export function ContentInformationChange() {
     }
   }, [searchCategoryData]);
 
-  useEffect(() => {
-    // 그룹 코드로 묶기
-    groupElementsByCode();
-  }, [questionList]);
   const groupElementsByCode = () => {
-    const listWrapper = document.querySelector('.list_wrapper');
+    const listWrapper = listWrapperRef.current;
     if (!listWrapper) return;
 
     const groupMap: Record<string, HTMLElement> = {};
@@ -339,6 +335,17 @@ export function ContentInformationChange() {
       document.removeEventListener('change', handleGroupCheckboxChange);
     };
   }, [checkList]);
+
+  useEffect(() => {
+    console.log('questionList/----------*', questionList);
+  }, [questionList]);
+  useLayoutEffect(() => {
+    // 그룹 코드로 묶기
+    // 동적 렌더링이 끝난 후 실행
+    setTimeout(() => {
+      groupElementsByCode();
+    }, 0);
+  }, [questionList]);
 
   // 데이터 변경시 리랜더링
   useEffect(() => {
@@ -557,6 +564,7 @@ export function ContentInformationChange() {
           openFormula={openFormula}
           change={setChangeValue}
           // refetch={refetch}
+          idxNamePairs={idxNamePairs}
         />
       ),
     });
@@ -677,15 +685,8 @@ export function ContentInformationChange() {
       tag: [],
       changeValue: '',
     });
-
-    // 그룹 다시 묶기
-    groupElementsByCode();
   };
   useEffect(() => {}, [state]);
-
-  useEffect(() => {
-    console.log('questionList/----------*', questionList);
-  }, [questionList]);
 
   // 체크박스 선택된 리스트값 있을시 버튼 노출
   useEffect(() => {
@@ -1027,7 +1028,10 @@ export function ContentInformationChange() {
               {state == null && (
                 <ScrollWrapper className="height">
                   <PerfectScrollbar>
-                    <ListWrapper className={`list_wrapper `}>
+                    <ListWrapper
+                      ref={listWrapperRef}
+                      className={`list_wrapper `}
+                    >
                       {questionList.map((quiz, index) => (
                         <ItemWrapper
                           key={quiz.idx}

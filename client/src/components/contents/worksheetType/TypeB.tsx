@@ -298,7 +298,9 @@ export const TypeB = ({
                         }
                       >
                         {isContentTypeTitle && quizCategory?.유형 && (
-                          <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
+                          <ContentTitle>
+                            |{quizCategory?.유형[0].name}|
+                          </ContentTitle>
                         )}
                         <EachMathViewer>
                           <MathJaxWrapper>
@@ -350,7 +352,9 @@ export const TypeB = ({
                         }
                       >
                         {isContentTypeTitle && quizCategory?.유형 && (
-                          <ContentTitle>|{quizCategory?.유형}|</ContentTitle>
+                          <ContentTitle>
+                            |{quizCategory?.유형[0].name}|
+                          </ContentTitle>
                         )}
                         <EachMathViewer>
                           <MathJaxWrapper>

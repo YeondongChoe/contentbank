@@ -676,10 +676,10 @@ export function ProcessAddModal({
   );
 }
 const Container = styled.div`
-  max-width: 700px;
-  min-width: 600px;
+  min-width: 650px;
   min-height: 850px;
-  overflow: hidden;
+  //max-height: 850px;
+  //overflow: hidden;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -705,6 +705,8 @@ const TabWrapper = styled.div`
 `;
 const ListWrapper = styled.div`
   padding: 0 20px;
+  max-height: 620px;
+  overflow-y: auto;
 `;
 const ItemLayout = styled.span`
   display: flex;

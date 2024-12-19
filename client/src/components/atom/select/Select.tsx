@@ -18,7 +18,7 @@ export type ItemSelectProps = {
 
 type SelectProps = {
   options?: ItemCategoryType[] | ItemCategoryType | ItemSelectProps[] | any[];
-  onClick?: () => void;
+  onClick?: (e?: any) => void;
   onSelect?: (
     event: React.MouseEvent<HTMLButtonElement>,
     code: string | undefined,

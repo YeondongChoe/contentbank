@@ -11,6 +11,7 @@ import { AxiosResponse } from 'axios';
 import { Controller, useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
+import { classificationInstance } from '../../api/axios';
 import {
   ItemSelectProps,
   AlertBar,
@@ -21,19 +22,30 @@ import {
 import { COLOR } from '../../components/constants';
 import { Alert } from '../../components/molecules/alert';
 import { useModal } from '../../hooks';
-import { QuizListType } from '../../types';
+import { IdxNamePair, QuizListType } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
+
+interface CategoryItem {
+  idx: number;
+  name: string;
+  code: string;
+  depth: number;
+  isUse: boolean;
+  children?: CategoryItem[];
+}
 
 export function EditModal({
   sortedQuizList,
   searchedValue,
   openFormula,
   change,
+  idxNamePairs,
 }: {
   sortedQuizList: QuizListType[];
   searchedValue: string;
   openFormula: (state: unknown) => void;
   change: React.Dispatch<any>;
+  idxNamePairs: IdxNamePair[];
 }) {
   const { closeModal } = useModal();
 
@@ -43,7 +55,9 @@ export function EditModal({
   const [educationCurriculumList, setEducationCurriculumList] = useState<any[]>(
     [],
   );
-  const [tagCheckList, setTagCheckList] = useState<string[]>([]);
+  //최초 1뎁스
+  const [listDepth1, setListDepth1] = useState<CategoryItem[]>([]);
+  const [tagCheckList, setTagCheckList] = useState<number[]>([]);
   const searchEditDivRef = useRef<HTMLDivElement | null>(null);
 
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
@@ -74,26 +88,66 @@ export function EditModal({
     }
   };
 
+  //TODO : 가져온 리스트에 해당하는 값은 최초에 체크된 상태로
+  // useEffect(() => {
+  //   if (sortedQuizList && sortedQuizList.length > 0) {
+  //     const extractedData = sortedQuizList
+  //       .flatMap((item) => item.quizCategoryList || [])
+  //       .filter((quizCategoryItem) => quizCategoryItem.quizCategory?.교육과정)
+  //       .flatMap(
+  //         (quizCategoryItem) =>
+  //           quizCategoryItem.quizCategory.교육과정 as string,
+  //       )
+  //       .map((curriculum: any) => curriculum.name); // Extract only 'name' field
+
+  //     setEducationCurriculumList(extractedData);
+  //   }
+  // }, [sortedQuizList]);
+
+  // 셋팅 idx, name 리스트
   useEffect(() => {
-    if (sortedQuizList && sortedQuizList.length > 0) {
-      const extractedData = sortedQuizList
-        .flatMap((item) => item.quizCategoryList || [])
-        .filter((quizCategoryItem) => quizCategoryItem.quizCategory?.교육과정)
-        .flatMap(
-          (quizCategoryItem) =>
-            quizCategoryItem.quizCategory.교육과정 as string,
-        )
-        .map((curriculum: any) => curriculum.name); // Extract only 'name' field
+    // 그룹 코드 호출
+    console.log('셋팅에서 가져온 그룹 idx, name ---- ', idxNamePairs);
+  }, [idxNamePairs]);
 
-      setEducationCurriculumList(extractedData);
+  // 첫번째 맵핑 리스트 조회
+  const getCategoryMap = async () => {
+    if (idxNamePairs) {
+      const res = await classificationInstance.get(
+        `/v1/category/map/${idxNamePairs[0].idx}`,
+      );
+      const list = res.data.data.mapList;
+      console.log('셋팅에서 가져온 idx로 맵핑리스트 조회 -----', list);
+      return list;
     }
-  }, [sortedQuizList]);
+  };
 
-  const handleCheckboxChange = (name: string) => {
+  const { data: mappingData, refetch: mappingDataRefetch } = useQuery({
+    queryKey: ['get-categoryMap'], // 쿼리 키를 unique하게 설정
+    queryFn: getCategoryMap, // groupIdx 추출
+    enabled: !!idxNamePairs,
+    meta: {
+      errorMessage: 'get-categoryMap 에러 메세지',
+    },
+  });
+
+  // 1차적으로 리스트 체크박스로 뿌려준 뒤
+  useEffect(() => {
+    if (mappingData) {
+      // children 속성을 제외한 새로운 배열 생성
+      const processedData = (mappingData as CategoryItem[]).map(
+        ({ children, ...rest }) => rest,
+      );
+
+      // listDepth1에 첫줄 체크박스
+      setListDepth1(processedData);
+    }
+  }, [mappingData]);
+  // 클릭시 다음 단계 리스트가 조회된후 하단으로 펼침
+
+  const handleCheckboxChange = (idx: number) => {
     setTagCheckList((prev) =>
-      prev.includes(name)
-        ? prev.filter((item) => item !== name)
-        : [...prev, name],
+      prev.includes(idx) ? prev.filter((item) => item !== idx) : [...prev, idx],
     );
   };
 
@@ -117,14 +171,16 @@ export function EditModal({
       <p className="sub_title">총 {sortedQuizList.length}문항에 대해</p>
       <p>변경할 분류</p>
       <TagMappingList>
-        {educationCurriculumList.map((name, index) => (
-          <span key={index}>
-            <input
-              type="checkbox"
-              checked={tagCheckList.includes(name)}
-              onChange={() => handleCheckboxChange(name)}
-            />
-            {name}
+        {listDepth1.map((item) => (
+          <span key={`${item.idx}`} className="tag_item">
+            <label>
+              <input
+                type="checkbox"
+                checked={tagCheckList.includes(item.idx)}
+                onChange={() => handleCheckboxChange(item.idx)}
+              />
+              {item.name}
+            </label>
           </span>
         ))}
       </TagMappingList>
@@ -241,6 +297,18 @@ const TagMappingList = styled.div`
   border: 1px solid #eee;
   padding: 15px;
   border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+
+  .tag_item {
+    padding: 5px;
+    display: flex;
+
+    > input {
+      display: inline-block;
+      padding: 5px;
+    }
+  }
 `;
 
 const InputWrapper = styled.div`

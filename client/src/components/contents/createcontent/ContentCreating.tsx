@@ -58,9 +58,9 @@ export function ContentCreating({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
 
-  const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]); // 교재
+  const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]); // 내신
+  const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]); // 기출
   const [content, setContent] = useState<string[]>([]);
   const [imagesSrc, setImagesSrc] = useState<string>('');
 
@@ -301,7 +301,7 @@ export function ContentCreating({
             viewList: viewList[index] === 'true',
           }));
 
-          if (menuDetail.groupCode == 'F') {
+          if (menuDetail.groupCode == 'MATERIALS') {
             setIdxNamePairsF((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
@@ -309,7 +309,7 @@ export function ContentCreating({
               return [...prev, ...uniquePairs];
             });
           }
-          if (menuDetail.groupCode == 'G') {
+          if (menuDetail.groupCode == 'INTERNAL') {
             setIdxNamePairsG((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
@@ -317,7 +317,7 @@ export function ContentCreating({
               return [...prev, ...uniquePairs];
             });
           }
-          if (menuDetail.groupCode == 'H') {
+          if (menuDetail.groupCode == 'EXAMS') {
             setIdxNamePairsH((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
@@ -325,7 +325,7 @@ export function ContentCreating({
               return [...prev, ...uniquePairs];
             });
           }
-          // if (menuDetail.groupCode == 'DD') {
+          // if (menuDetail.groupCode == 'MOREINFO') {
           //   setIdxNamePairsDD((prev) => {
           //     const uniquePairs = pairs.filter(
           //       (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
@@ -334,7 +334,7 @@ export function ContentCreating({
           //   });
           // }
 
-          if (menuDetail.groupCode == 'H') {
+          if (menuDetail.groupCode == 'EXAMS') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -344,7 +344,7 @@ export function ContentCreating({
               viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesH.push(categories);
-          } else if (menuDetail.groupCode == 'F') {
+          } else if (menuDetail.groupCode == 'MATERIALS') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -354,7 +354,7 @@ export function ContentCreating({
               viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesF.push(categories);
-          } else if (menuDetail.groupCode == 'G') {
+          } else if (menuDetail.groupCode == 'INTERNAL') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -364,7 +364,7 @@ export function ContentCreating({
               viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesG.push(categories);
-          } else if (menuDetail.groupCode == 'DD') {
+          } else if (menuDetail.groupCode == 'MOREINFO') {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
