@@ -44,7 +44,9 @@ export const TypeA = ({
   const [isNewInitialItems, setIsNewInitialItems] = useState<boolean>(false);
   //console.log('initialItems', initialItems);
   //console.log('newInitialItems', newInitialItems);
-  console.log('quizItemList:', quizItemList);
+  //console.log('quizItemList:', quizItemList);
+  //console.log(answerCommentary);
+
   useEffect(() => {
     if (newInitialItems.length > 0) {
       setQuizItemList(newInitialItems);
@@ -54,7 +56,6 @@ export const TypeA = ({
       setIsNewInitialItems(false);
     }
   }, [initialItems, newInitialItems]);
-  console.log(answerCommentary);
 
   const distributeItemsToPages = (
     items: QuizList[],
