@@ -64,7 +64,6 @@ export function InspectionList({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-
   // 문항 검수/수정 윈도우 열기
   const openCreateEditWindow = () => {
     saveLocalData();
@@ -208,7 +207,7 @@ export function InspectionList({
 
   useEffect(() => {
     setQuestionList(list);
-  }, []);
+  }, [list]);
 
   // 툴팁 토글
   const calculateTextWidth = (nodes: NodeList) => {
@@ -409,12 +408,12 @@ export function InspectionList({
                 <i className="line"></i>
                 <span className="width_10 item_wrapper">
                   <strong className="title">프로세스(단계)</strong>
-                  <span className="tag">{item.createdAt}</span>
+                  <span className="tag">{`${item.process?.step}/${item.process?.totalStep}(${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'APPROVAL' ? '승인' : ''})`}</span>
                 </span>
                 <i className="line"></i>
                 <span className="width_10 item_wrapper">
                   <strong className="title">상태</strong>
-                  <span className="tag">{item.process?.state}</span>
+                  <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'APPROVAL' ? '승인' : ''}`}</span>
                 </span>
                 {/* <span
                   className="width_80px tooltip_wrapper item_wrapper"

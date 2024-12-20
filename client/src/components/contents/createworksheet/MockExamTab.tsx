@@ -71,8 +71,8 @@ type MockExamTabProps = {
     label: string;
     value: string;
   }[];
-  tabVeiw: string;
-  setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
+  tabView: string;
+  setTabView: React.Dispatch<React.SetStateAction<string>>;
   //선택된 문항리스트
   includeQuizList: string[];
   setIncludeQuizList: React.Dispatch<React.SetStateAction<string[]>>;
@@ -87,8 +87,8 @@ type MockExamTabProps = {
 
 export function MockExamTab({
   menuList,
-  tabVeiw,
-  setTabVeiw,
+  tabView,
+  setTabView,
   includeQuizList,
   setIncludeQuizList,
   equalScore,
@@ -217,10 +217,10 @@ export function MockExamTab({
   });
 
   useEffect(() => {
-    if (tabVeiw === '수능/모의고사' && examData) {
+    if (tabView === '수능/모의고사' && examData) {
       fetchCategoryItems(examData, setCategoryList);
     }
-  }, [examData, tabVeiw]);
+  }, [examData, tabView]);
 
   //드롭박스 열기
   const openDropdown = () => {
@@ -1070,8 +1070,8 @@ export function MockExamTab({
             menu={menuList}
             width={'450px'}
             lineStyle
-            selected={tabVeiw}
-            setTabVeiw={setTabVeiw}
+            selected={tabView}
+            setTabView={setTabView}
           />
         </TabWrapper>
         <MockExamWrapper>

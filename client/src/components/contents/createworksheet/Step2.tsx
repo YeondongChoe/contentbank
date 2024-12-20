@@ -156,7 +156,7 @@ export function Step2() {
 
   const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
   //탭 값
-  const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
+  const [tabView, setTabView] = useState<string>('학습지 요약');
   //페이지 번호
   const [page, setPage] = useRecoilState(pageAtom);
   //드레그 여부부
@@ -220,8 +220,8 @@ export function Step2() {
     null,
   );
   const [similarItemCode, setSimilarItemCode] = useState<string>('');
-  const [similarItemIndex, setSimilarItemIndex] = useState<number | null>(null);
-  const [similarItemNumber, setSimilarItemNumber] = useState<number>();
+  const [initialItemOrder, setInitialItemOrder] = useState<number | null>(null);
+  const [initialItemIdx, setInitialItemIdx] = useState<number>();
   const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
     [],
   );
@@ -588,7 +588,7 @@ export function Step2() {
     });
 
   useEffect(() => {
-    if (tabVeiw === '새 문항 추가') {
+    if (tabView === '새 문항 추가') {
       const data = {
         itemTreeKeyList: isRangeSetting ? makingdata : getCategoryLocalData,
         count: 10,
@@ -603,7 +603,7 @@ export function Step2() {
       };
       postNewQuizData(data);
     }
-  }, [tabVeiw]);
+  }, [tabView]);
 
   //새로 불러오기
   const clickGetNewQuiz = () => {
@@ -651,7 +651,7 @@ export function Step2() {
 
   useEffect(() => {
     setIsRangeSetting(false);
-  }, [tabVeiw]);
+  }, [tabView]);
 
   //그룹 화면설정 정보 불러오기 api
   const getMenu = async () => {
@@ -1216,7 +1216,7 @@ export function Step2() {
       meta: {
         errorMessage: 'get-favoriteCategory 에러 메세지',
       },
-      enabled: tabVeiw == '즐겨찾는 문항',
+      enabled: tabView == '즐겨찾는 문항',
     });
 
   const [selectItemList, setSelectItemList] = useState<any[]>([]);
@@ -1269,7 +1269,7 @@ export function Step2() {
       meta: {
         errorMessage: 'get-favoriteQuizList 에러 메세지',
       },
-      enabled: tabVeiw == '즐겨찾는 문항',
+      enabled: tabView == '즐겨찾는 문항',
     },
   );
 
@@ -1457,10 +1457,10 @@ export function Step2() {
   });
 
   // 유사문항 버튼 클릭
-  const showSimilarContent = (code: string, index: number, type: string) => {
+  const showSimilarContent = (code: string, order: number, idx: number) => {
     setSimilarItemCode(code);
-    setSimilarItemIndex(index);
-    setSimilarItemNumber(index + 1);
+    setInitialItemOrder(order);
+    setInitialItemIdx(idx);
     if (isSimilar) {
       setIsSimilar(!isSimilar);
       setSimilarItems(null);
@@ -1866,37 +1866,61 @@ export function Step2() {
     setInitialItems(processedItems); // 중복 제거된 데이터로 상태 갱신
   }, [isDone]);
 
-  console.log('similarItems', similarItems);
-  console.log('initialItems', initialItems);
-  //리스트 문항 교체하기 버그 발견/해결요망
+  //console.log('similarItems', similarItems);
+  //console.log('initialItems', initialItems);
+  //리스트 문항 교체하기
   const clickSwapQuizItem = (
     similarItems: SimilarQuizList | undefined,
     similarItemIndex: number,
     initialItems: QuizList[],
-    initialItemIndex: number,
+    initialItemOrder: number,
   ) => {
-    console.log('similarItems;', similarItems);
-    console.log('similarItemIndex;', similarItemIndex);
-    console.log('initialItems;', initialItems);
-    console.log('initialItemIndex;', initialItemIndex);
+    //console.log('similarItems;', similarItems);
+    //console.log('similarItemIndex;', similarItemIndex);
+    //console.log('initialItems;', initialItems);
+    //console.log('initialItemOrder;', initialItemOrder);
+
     if (similarItems && initialItems) {
       const newSimilarItems = [...similarItems.quizList];
       const newInitialItems = [...initialItems];
-      //console.log('newSimilarItems;', newSimilarItems);
-      //console.log('newInitialItems;', newInitialItems);
+
+      // initialItems에서 quizItemList를 순회하며 order가 initialItemOrder와 같은 항목 찾기
+      let initialItemIndex = -1;
+      for (let i = 0; i < newInitialItems.length; i++) {
+        const quizItemIndex = newInitialItems[i].quizItemList.findIndex(
+          (quizItem: any) => quizItem.order === initialItemOrder,
+        );
+        if (quizItemIndex !== -1) {
+          initialItemIndex = i; // 해당 quizItem이 있는 initialItem의 index
+          break;
+        }
+      }
+
+      if (initialItemIndex === -1) {
+        console.error('Order not found in quizItemList');
+        return;
+      }
 
       // 교체할 항목을 임시 저장
       const temp = newSimilarItems[similarItemIndex];
 
-      //문항 번호 넣어주기
+      // newInitialItems에서 찾은 항목과 교체
       newSimilarItems[similarItemIndex] = {
         ...newInitialItems[initialItemIndex],
-        //num: similarItemIndex,
+        quizItemList: newInitialItems[initialItemIndex].quizItemList.map(
+          (quizItem: any) => ({
+            ...quizItem,
+            //order: initialItemOrder, // 교체 시 initialItemOrder 값 추가
+          }),
+        ),
       };
 
       newInitialItems[initialItemIndex] = {
         ...temp,
-        //num: newInitialItems[initialItemIndex].num,
+        quizItemList: temp.quizItemList.map((quizItem: any) => ({
+          ...quizItem,
+          order: initialItemOrder, // 기존 order 값 유지
+        })),
       };
 
       setSimilarItems({
@@ -1935,10 +1959,10 @@ export function Step2() {
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
     if (
-      tabVeiw == '학습지 요약' ||
-      tabVeiw == '새 문항 추가' ||
-      tabVeiw == '즐겨찾는 문항' ||
-      tabVeiw == '개념'
+      tabView == '학습지 요약' ||
+      tabView == '새 문항 추가' ||
+      tabView == '즐겨찾는 문항' ||
+      tabView == '개념'
     ) {
       const handleBeforeUnload = (event: BeforeUnloadEvent) => {
         // 사용자에게 경고 메시지를 표시하도록 설정
@@ -1956,13 +1980,13 @@ export function Step2() {
         //window.opener.localStorage.clear();
       };
     }
-  }, [tabVeiw]);
+  }, [tabView]);
 
   //tab 선택시 선택 초기화
   useEffect(() => {
     setUnitClassificationList([]);
     onResetList();
-  }, [tabVeiw]);
+  }, [tabView]);
 
   //그룹이였던 문항을 각각 풀어서 가공
   function createNewItems(initialItems: QuizList[]) {
@@ -1970,7 +1994,7 @@ export function Step2() {
     const divideItems = initialItems.filter((item) => item.type === 'TEXT');
     const asidedItems = initialItems.filter((item) => item.type !== 'TEXT');
 
-    console.log('asidedItems', asidedItems);
+    //('asidedItems', asidedItems);
 
     // quizCategoryList를 quizCode별로 그룹화
     const groupedCategoryItems = divideItems.reduce(
@@ -2022,7 +2046,7 @@ export function Step2() {
     const newQuizListItems = Object.keys(groupedItems).map((quizCode, idx) => {
       const groupedItem = groupedItems[quizCode];
       const groupedCategory = groupedCategoryItems[quizCode] || [];
-      console.log('groupedItem', groupedItem);
+      //console.log('groupedItem', groupedItem);
       // 각 quizCode별로 QuizList 객체 생성
       const newQuizList: QuizList = {
         groupCode: groupedItem[0].groupCode, // groupCode는 첫 번째 항목에서 가져옴
@@ -2083,7 +2107,7 @@ export function Step2() {
 
       return item;
     });
-    console.log('combinedItems', combinedItems);
+    //console.log('combinedItems', combinedItems);
     return combinedItems; // 합쳐진 배열을 반환
   }
 
@@ -2463,7 +2487,7 @@ export function Step2() {
                     <SimilarWrapper>
                       <SimilarTitleWrapper>
                         <SimilarTitle>
-                          {similarItemNumber}번 유사 문항
+                          {initialItemIdx}번 유사 문항
                           <SimilarTitleSpan>
                             문항을 교체하거나, 추가할 수 있습니다.
                           </SimilarTitleSpan>
@@ -2526,7 +2550,7 @@ export function Step2() {
                                           similarItems,
                                           i,
                                           initialItems,
-                                          similarItemIndex as number,
+                                          initialItemOrder as number,
                                         )
                                       }
                                       addQuizItem={() =>
@@ -2571,12 +2595,12 @@ export function Step2() {
                         menu={menuList}
                         width={'500px'}
                         lineStyle
-                        selected={tabVeiw}
-                        setTabVeiw={setTabVeiw}
+                        selected={tabView}
+                        setTabView={setTabView}
                       />
                     </TabWrapper>
                     <DiscriptionWrapper>
-                      {tabVeiw === '학습지 요약' && (
+                      {tabView === '학습지 요약' && (
                         <>
                           <Label value="문항 통계" fontSize="16px" />
                           <Discription>
@@ -2668,7 +2692,7 @@ export function Step2() {
                           </ContentsList>
                         </>
                       )}
-                      {tabVeiw === '새 문항 추가' && (
+                      {tabView === '새 문항 추가' && (
                         <>
                           <AddNewContentOption>
                             <AddNewContentIcon onClick={openRangeSetting}>
@@ -3119,7 +3143,7 @@ export function Step2() {
                           )}
                         </>
                       )}
-                      {tabVeiw === '즐겨찾는 문항' && (
+                      {tabView === '즐겨찾는 문항' && (
                         <>
                           {favoriteQuizData && favoriteQuestionList ? (
                             <>
@@ -3241,7 +3265,7 @@ export function Step2() {
                           )}
                         </>
                       )}
-                      {tabVeiw === '개념' && (
+                      {tabView === '개념' && (
                         <>
                           <ConceptWrapper>
                             <ConceptDiscription>
@@ -3357,14 +3381,14 @@ export function Step2() {
                                     onSelectCard={setSelectedCardIndex}
                                     reportQuizitem={openReportProcess}
                                     deleteQuizItem={deleteQuizItem}
-                                    clickSwapQuizItem={() =>
-                                      clickSwapQuizItem(
-                                        similarItems as SimilarQuizList,
-                                        0,
-                                        initialItems,
-                                        similarItemIndex as number,
-                                      )
-                                    }
+                                    // clickSwapQuizItem={() =>
+                                    //   clickSwapQuizItem(
+                                    //     similarItems as SimilarQuizList,
+                                    //     itemIndex,
+                                    //     initialItems,
+                                    //     similarItemIndex as number,
+                                    //   )
+                                    // }
                                     code={dragItem.quizItemList
                                       .filter(
                                         (el: any) => el.type === 'QUESTION',

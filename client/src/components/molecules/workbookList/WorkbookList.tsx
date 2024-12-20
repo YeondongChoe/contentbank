@@ -31,7 +31,7 @@ import { WorkbookPDFModal } from '../PDFModal/WorkbookPDFModal';
 
 type ContentListProps = {
   list: WorksheetListType[] | any[]; // TODO
-  tabVeiw: string;
+  tabView: string;
   deleteBtn?: boolean;
   ondeleteClick?: () => void;
   totalCount?: number;
@@ -41,7 +41,7 @@ type ContentListProps = {
 
 export function WorkbookList({
   list,
-  tabVeiw,
+  tabView,
   deleteBtn,
   ondeleteClick,
   itemsCountPerPage,
@@ -228,7 +228,7 @@ export function WorkbookList({
   // 탭 바뀔시 초기화
   useEffect(() => {
     setCheckList([]);
-  }, [tabVeiw]);
+  }, [tabView]);
 
   const openCreatePDFModal = (idx: number) => {
     openModal({

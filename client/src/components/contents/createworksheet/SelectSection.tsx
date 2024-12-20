@@ -20,7 +20,7 @@ import { DifficultyDataType } from '../../../types/WorkbookType';
 import { COLOR } from '../../constants';
 
 type SelectSectionProps = {
-  tabVeiw: string; //탭뷰
+  tabView: string; //탭뷰
   //문항수
   questionNum: string | null;
   setQuestionNum: React.Dispatch<React.SetStateAction<string | null>>;
@@ -55,7 +55,7 @@ type SelectSectionProps = {
 };
 
 export function SelectSection({
-  tabVeiw,
+  tabView,
   questionNum,
   setQuestionNum,
   inputValue,
@@ -120,7 +120,7 @@ export function SelectSection({
     inputValue = inputValue.replace(/[^0-9]/g, '');
 
     const parsedValue = parseInt(inputValue, 10);
-    if (tabVeiw === '시중교재' || tabVeiw === '기출') {
+    if (tabView === '시중교재' || tabView === '기출') {
       if (!isNaN(parsedValue) && parsedValue > 0) {
         setInputValue(
           parsedValue < 1 ? '1' : parsedValue >= 5 ? '5' : inputValue,
@@ -386,7 +386,7 @@ export function SelectSection({
 
     //선택된 문항 수
     const questionNumValue =
-      tabVeiw === '시중교재' || tabVeiw === '기출'
+      tabView === '시중교재' || tabView === '기출'
         ? questionNum
           ? parseInt(questionNum, 10) * includeQuizList.length
           : inputValue
@@ -461,7 +461,7 @@ export function SelectSection({
 
     return (
       <>
-        {tabVeiw === '단원·유형별' && (
+        {tabView === '단원·유형별' && (
           <>
             {buttonOption.map((button) => (
               <Button
@@ -480,7 +480,7 @@ export function SelectSection({
             ))}
           </>
         )}
-        {(tabVeiw === '시중교재' || tabVeiw === '기출') && (
+        {(tabView === '시중교재' || tabView === '기출') && (
           <>
             {buttonOption1.map((button) => (
               <Button
@@ -692,7 +692,7 @@ export function SelectSection({
   return (
     <>
       <SchoolSelectorSection
-        $tabVeiw={tabVeiw}
+        $tabView={tabView}
         $isSelectTextbookContent={isSelectTextbookContent}
         $isSelectPreviousExamContent={isSelectPreviousExamContent}
       >
@@ -768,7 +768,7 @@ export function SelectSection({
 //       <EqualScoreModalWrapper>
 //         <EqualScoreModalTitleWrapper>
 //           <Label
-//             value={`총 ${receivedQuizCount ? receivedQuizCount : tabVeiw === '시중교재' || tabVeiw === '기출' ? Number(questionNum) * Number(includeQuizList.length) || Number(inputValue) * Number(includeQuizList.length) : questionNum || inputValue || includeQuizList.length} 문항`}
+//             value={`총 ${receivedQuizCount ? receivedQuizCount : tabView === '시중교재' || tabView === '기출' ? Number(questionNum) * Number(includeQuizList.length) || Number(inputValue) * Number(includeQuizList.length) : questionNum || inputValue || includeQuizList.length} 문항`}
 //             fontSize="25px"
 //             width="160px"
 //           />
@@ -887,7 +887,7 @@ export function SelectSection({
 const SchoolSelectorSection = styled.div<{
   $isSelectTextbookContent?: boolean;
   $isSelectPreviousExamContent?: boolean;
-  $tabVeiw?: string;
+  $tabView?: string;
 }>`
   display: flex;
   flex-direction: column;
@@ -896,13 +896,13 @@ const SchoolSelectorSection = styled.div<{
   padding: 20px;
   border-radius: 25px;
   flex: 1 0 0;
-  ${({ $isSelectTextbookContent, $tabVeiw }) =>
+  ${({ $isSelectTextbookContent, $tabView }) =>
     !$isSelectTextbookContent &&
-    $tabVeiw === '시중교재' &&
+    $tabView === '시중교재' &&
     'pointer-events: none; opacity: 0.5;'}
-  ${({ $isSelectPreviousExamContent, $tabVeiw }) =>
+  ${({ $isSelectPreviousExamContent, $tabView }) =>
     !$isSelectPreviousExamContent &&
-    $tabVeiw === '기출' &&
+    $tabView === '기출' &&
     'pointer-events: none; opacity: 0.5;'}
 `;
 const SubTitleWrapper = styled.div`

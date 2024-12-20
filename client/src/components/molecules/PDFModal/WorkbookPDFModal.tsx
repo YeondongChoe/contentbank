@@ -43,7 +43,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   const [isDate, setIsDate] = useState<boolean>(false);
   const [isQuizType, setIsQuizType] = useState<boolean>(false);
   const [itemType, setItemType] = useState<number>(0);
-
+  console.log('initialItems', initialItems);
   const getWorkbookData = async () => {
     const res = await workbookInstance.get(
       `/v1/workbook/detail/${workbookIndex}`,
@@ -69,7 +69,27 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
 
   useEffect(() => {
     if (workbookData) {
-      setInitialItems(workbookData?.data.data.quizList);
+      let numCounter = 1; // QUESTION 타입의 항목에 부여할 num 값
+
+      const quizListWithNum = workbookData?.data.data.quizList.map(
+        (quiz: any) => {
+          // If type is 'TEXT', delete 'score' key
+          if (quiz.type === 'TEXT') {
+            const { score, ...restQuiz } = quiz; // Destructure and remove 'score' key
+            return {
+              ...restQuiz, // Return the object without 'score'
+            };
+          }
+
+          // If type is 'QUESTION', assign num
+          return {
+            ...quiz,
+            num: quiz.type === 'QUESTION' ? numCounter++ : null, // QUESTION 타입만 순차적으로 num 추가
+          };
+        },
+      );
+
+      setInitialItems(quizListWithNum);
       setNameValue(workbookData?.data.data.name);
       setGradeValue(workbookData?.data.data.grade);
       setTag(workbookData?.data.data.tag);
@@ -119,7 +139,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       leftArray: [],
       rightArray: [],
     };
-
+    console.log('items', items);
     let leftMaxItems = 0;
     let rightMaxItems = 0;
 
@@ -188,6 +208,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       extraRightHeight = type === 'A' ? 150 : 150; //이미지 제대로 들어오면 다시 수정
     }
     items.forEach((item) => {
+      console.log('items', item);
       const maxHeight = type === 'A' ? 740 : 800;
       //console.log('if문 전 item:', item);
       //console.log('if문 전 maxHeight:', maxHeight);
@@ -256,7 +277,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     if (currentPage.leftArray.length > 0 || currentPage.rightArray.length > 0) {
       pages.push(currentPage);
     }
-
+    console.log('pages', pages);
     return pages;
   };
 
@@ -266,6 +287,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     multiLevel,
     assign,
   );
+  console.log('pages', pages);
 
   // 현재 시간을 YYYY/MM/DD 형식으로 반환하는 함수
   const formatDate = (createdAt: string) => {
@@ -351,7 +373,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                   quizItemList.quizItemList
                                     .filter(
                                       (quizItem) =>
-                                        quizItem.type === 'QUESTION',
+                                        quizItem.type === 'QUESTION' ||
+                                        quizItem.type === 'BIG' ||
+                                        quizItem.type === 'TEXT',
                                     )
                                     .map((quizItem, i) => {
                                       const quizCategory =
@@ -441,7 +465,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                   quizItemList.quizItemList
                                     .filter(
                                       (quizItem) =>
-                                        quizItem.type === 'QUESTION',
+                                        quizItem.type === 'QUESTION' ||
+                                        quizItem.type === 'BIG' ||
+                                        quizItem.type === 'TEXT',
                                     )
                                     .map((quizItem, i) => {
                                       const quizCategory =
@@ -593,7 +619,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                     quizItemList.quizItemList
                                       .filter(
                                         (quizItem) =>
-                                          quizItem.type === 'QUESTION',
+                                          quizItem.type === 'QUESTION' ||
+                                          quizItem.type === 'BIG' ||
+                                          quizItem.type === 'TEXT',
                                       )
                                       .map((quizItem, i) => {
                                         const quizCategory =
@@ -677,7 +705,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                     quizItemList.quizItemList
                                       .filter(
                                         (quizItem) =>
-                                          quizItem.type === 'QUESTION',
+                                          quizItem.type === 'QUESTION' ||
+                                          quizItem.type === 'BIG' ||
+                                          quizItem.type === 'TEXT',
                                       )
                                       .map((quizItem, i) => {
                                         const quizCategory =
@@ -821,7 +851,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                   quizItemList.quizItemList
                                     .filter(
                                       (quizItem) =>
-                                        quizItem.type === 'QUESTION',
+                                        quizItem.type === 'QUESTION' ||
+                                        quizItem.type === 'BIG' ||
+                                        quizItem.type === 'TEXT',
                                     )
                                     .map((quizItem, i) => {
                                       const quizCategory =
@@ -908,7 +940,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                   quizItemList.quizItemList
                                     .filter(
                                       (quizItem) =>
-                                        quizItem.type === 'QUESTION',
+                                        quizItem.type === 'QUESTION' ||
+                                        quizItem.type === 'BIG' ||
+                                        quizItem.type === 'TEXT',
                                     )
                                     .map((quizItem, i) => {
                                       const quizCategory =
@@ -1046,7 +1080,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                     quizItemList.quizItemList
                                       .filter(
                                         (quizItem) =>
-                                          quizItem.type === 'QUESTION',
+                                          quizItem.type === 'QUESTION' ||
+                                          quizItem.type === 'BIG' ||
+                                          quizItem.type === 'TEXT',
                                       )
                                       .map((quizItem, i) => {
                                         const quizCategory =
@@ -1127,7 +1163,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                     quizItemList.quizItemList
                                       .filter(
                                         (quizItem) =>
-                                          quizItem.type === 'QUESTION',
+                                          quizItem.type === 'QUESTION' ||
+                                          quizItem.type === 'BIG' ||
+                                          quizItem.type === 'TEXT',
                                       )
                                       .map((quizItem, i) => {
                                         const quizCategory =

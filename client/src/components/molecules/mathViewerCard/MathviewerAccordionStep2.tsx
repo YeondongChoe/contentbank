@@ -131,7 +131,7 @@ function Accordion({
 }
 
 type MathviewerCardProps = {
-  onClick: (code: string, index: number, type: string) => void;
+  onClick: (code: string, order: number, idx: number) => void;
   reportQuizitem?: (idx: number) => void;
   changeQuizitem?: () => void;
   addQuizItem?: () => void;

@@ -27,7 +27,7 @@ export function ContentDtEditingSetting() {
     },
   ];
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
-  const [tabVeiw, setTabVeiw] = useState<string>('출처');
+  const [tabView, setTabView] = useState<string>('출처');
   const [page, setPage] = useRecoilState(pageAtom);
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
@@ -291,7 +291,7 @@ export function ContentDtEditingSetting() {
 
   //그룹 정보 업데이트 api
   const updateMenuInfo = async () => {
-    if (tabVeiw === '출처') {
+    if (tabView === '출처') {
       const filterData = menuDataList.filter((el) => el.name === selectedValue);
       const data = {
         detailIdx: detailIdx ? detailIdx : 'null',
@@ -364,8 +364,8 @@ export function ContentDtEditingSetting() {
                   menu={menuList}
                   width={'400px'}
                   lineStyle
-                  selected={tabVeiw}
-                  setTabVeiw={setTabVeiw}
+                  selected={tabView}
+                  setTabView={setTabView}
                   onClickTab={changeTab}
                 />
               </TabWrapper>
@@ -373,7 +373,7 @@ export function ContentDtEditingSetting() {
               <PageDescription>
                 리스트에 노출되는 필터의 순서를 변경합니다.
               </PageDescription>
-              {tabVeiw === '출처' && (
+              {tabView === '출처' && (
                 <>
                   <Label
                     value={'출처'}
@@ -537,7 +537,7 @@ export function ContentDtEditingSetting() {
                   </Button>
                 </>
               )}
-              {tabVeiw === '추가정보' && (
+              {tabView === '추가정보' && (
                 <>
                   <CategoryWrapper>
                     <Label

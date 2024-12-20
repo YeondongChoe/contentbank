@@ -18,6 +18,7 @@ export interface QuizItemList {
   quizIdx?: number;
   quizFavorite?: boolean;
   num?: number;
+  order?: number;
   groupType?: string;
   score?: number;
 }
