@@ -22,7 +22,6 @@ export function PaginationBox({
   totalItemsCount,
 }: PaginationBoxProps) {
   const [page, setPage] = useRecoilState(pageAtom);
-
   const pageRangeDisplay = () => {
     if (totalItemsCount < 5) return totalItemsCount;
     if (totalItemsCount > 5) return 5;
@@ -30,8 +29,8 @@ export function PaginationBox({
 
   // 페이지 이동시 초기화
   useEffect(() => {
-    setPage(1);
-  }, []);
+    setPage(page);
+  }, [page]);
 
   return (
     <Wrapper $margin={$margin}>

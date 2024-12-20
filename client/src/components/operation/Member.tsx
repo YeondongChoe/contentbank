@@ -36,7 +36,7 @@ import { RegisterModal } from './member/RegisterModal';
 
 export function Member() {
   const { openModal } = useModal();
-  const [tabVeiw, setTabVeiw] = useState<string>('전체');
+  const [tabView, setTabView] = useState<string>('전체');
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   const [checkList, setCheckList] = useState<number[]>([]);
@@ -64,10 +64,10 @@ export function Member() {
 
   // 유저 리스트 불러오기 api
   const isUseFilter = useMemo(() => {
-    if (tabVeiw === '전체') return '';
-    if (tabVeiw === '활성화') return 'Y';
-    if (tabVeiw === '비활성화') return 'N';
-  }, [tabVeiw]);
+    if (tabView === '전체') return '';
+    if (tabView === '활성화') return 'Y';
+    if (tabView === '비활성화') return 'N';
+  }, [tabView]);
 
   const {
     isLoading,
@@ -401,9 +401,9 @@ export function Member() {
           <TabMenu
             length={3}
             menu={tabMenuList}
-            selected={tabVeiw}
+            selected={tabView}
             width={'300px'}
-            setTabVeiw={setTabVeiw}
+            setTabView={setTabView}
             lineStyle
             $margin={'10px 0'}
             onClickTab={changeTab}
@@ -451,7 +451,7 @@ export function Member() {
                       />
                       <span className="title_top">전체선택</span>
                     </CheckBoxWrapper>
-                    {tabVeiw !== '비활성화' && (
+                    {tabView !== '비활성화' && (
                       <Button
                         height={'35px'}
                         width={'130px'}

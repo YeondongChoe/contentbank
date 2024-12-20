@@ -100,6 +100,7 @@ export function ContentInspection({
     const idxArray = parsedStoredQuizList.map((list) => list.idx);
     const idxList = idxArray.join(',');
     const res = await quizService.get(`/v1/process/${idxList}`);
+    console.log(res);
     return res.data.data.quizList;
   };
   const { data: inspectionQuizData, refetch: inspectionQuizDataRefetch } =
@@ -261,84 +262,93 @@ export function ContentInspection({
 
         <ContentListWrapper className="flex_1">
           <Title>프로세스</Title>
-          {quizList.map((process) => {
-            return (
-              <ListBoxWrapper key={process.idx}>
-                {process.processInfo?.stepList.map((step) => {
-                  return (
-                    <ListBox key={step.stepSort}>
-                      <strong className="title">
-                        {step.stepName === 'BUILD'
-                          ? '제작'
-                          : step.stepName === 'EDITING'
-                            ? '편집'
-                            : step.stepName === 'REVIEW'
-                              ? '검수'
-                              : ''}
-                      </strong>
-                      <PerfectScrollbar>
-                        {step.workerList.map((worker) => {
-                          return (
-                            <ul className="name_list" key={worker.idx}>
-                              {worker.account ? (
-                                <li>
-                                  {myInfoData?.data.data.name ===
-                                    worker.account.name &&
-                                  process.currentStep === step.stepSort ? (
-                                    <button className="active">
-                                      <span className="name">
-                                        {`${worker.account.name}(${worker.account.id})`}
-                                      </span>
-                                      <span className="tag">
-                                        {worker.account.authorityName}
-                                      </span>
-                                    </button>
-                                  ) : (
-                                    <button>
-                                      <span className="name">
-                                        {`${worker.account.name}(${worker.account.id})`}
-                                      </span>
-                                      <span className="tag">
-                                        {worker.account.authorityName}
-                                      </span>
-                                    </button>
-                                  )}
-                                </li>
-                              ) : worker.authority ? (
-                                <li>
-                                  {myInfoData?.data.data.authority.name ===
-                                    worker.authority.name &&
-                                  process.currentStep === step.stepSort ? (
-                                    <button className="active">
-                                      <span className="name">
-                                        {worker.authority.name}
-                                      </span>
-                                      <span className="tag">
-                                        {worker.authority.code}
-                                      </span>
-                                    </button>
-                                  ) : (
-                                    <button>
-                                      <span className="name">
-                                        {worker.authority.name}
-                                      </span>
-                                      <span className="tag">
-                                        {worker.authority.code}
-                                      </span>
-                                    </button>
-                                  )}
-                                </li>
-                              ) : null}
-                            </ul>
-                          );
-                        })}
-                      </PerfectScrollbar>
-                    </ListBox>
-                  );
-                })}
-              </ListBoxWrapper>
-            );
-          })}
+          {quizList && quizList.length > 0 ? (
+            <>
+              {quizList.map((process) => {
+                return (
+                  <ListBoxWrapper key={process.idx}>
+                    {process.processInfo?.stepList.map((step) => {
+                      return (
+                        <ListBox key={step.stepSort}>
+                          <strong className="title">
+                            {step.stepName === 'BUILD'
+                              ? '제작'
+                              : step.stepName === 'EDITING'
+                                ? '편집'
+                                : step.stepName === 'REVIEW'
+                                  ? '검수'
+                                  : ''}
+                          </strong>
+                          <PerfectScrollbar>
+                            {step.workerList.map((worker) => {
+                              return (
+                                <ul className="name_list" key={worker.idx}>
+                                  {worker.account ? (
+                                    <li>
+                                      {myInfoData?.data.data.name ===
+                                        worker.account.name &&
+                                      process.currentStep === step.stepSort ? (
+                                        <button className="active">
+                                          <span className="name">
+                                            {`${worker.account.name}(${worker.account.id})`}
+                                          </span>
+                                          <span className="tag">
+                                            {worker.account.authorityName}
+                                          </span>
+                                        </button>
+                                      ) : (
+                                        <button>
+                                          <span className="name">
+                                            {`${worker.account.name}(${worker.account.id})`}
+                                          </span>
+                                          <span className="tag">
+                                            {worker.account.authorityName}
+                                          </span>
+                                        </button>
+                                      )}
+                                    </li>
+                                  ) : worker.authority ? (
+                                    <li>
+                                      {myInfoData?.data.data.authority.name ===
+                                        worker.authority.name &&
+                                      process.currentStep === step.stepSort ? (
+                                        <button className="active">
+                                          <span className="name">
+                                            {worker.authority.name}
+                                          </span>
+                                          <span className="tag">
+                                            {worker.authority.code}
+                                          </span>
+                                        </button>
+                                      ) : (
+                                        <button>
+                                          <span className="name">
+                                            {worker.authority.name}
+                                          </span>
+                                          <span className="tag">
+                                            {worker.authority.code}
+                                          </span>
+                                        </button>
+                                      )}
+                                    </li>
+                                  ) : null}
+                                </ul>
+                              );
+                            })}
+                          </PerfectScrollbar>
+                        </ListBox>
+                      );
+                    })}
+                  </ListBoxWrapper>
+                );
+              })}
+            </>
+          ) : (
+            <>
+              <ValueNone />
+            </>
+          )}
+
           {/* <ListBoxWrapper>
             <ListBox>
               <PerfectScrollbar>

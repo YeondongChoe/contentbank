@@ -42,7 +42,7 @@ type WorkbookMathViewerProps = {
   index?: number;
   selectedCardIndex?: number | undefined;
   isSimilar?: boolean;
-  onClick?: (code: string, index: number, type: string) => void;
+  onClick?: (code: string, order: number, idx: number) => void;
   reportQuizitem?: (idx: number) => void;
   onSelectCard?: (index: number) => void;
   deleteQuizItem?: (code: string, type: string) => void;
@@ -142,7 +142,7 @@ export function WorkbookMathViewer({
           //onStartup={(mathJax) => setMathJax(mathJax)}
         >
           <MathJaxWrapper>
-            {isSetp3 && (
+            {isSetp3 && data.type === 'QUESTION' && (
               <strong>{data.num < 10 ? `0${data.num}` : `${data.num}`}</strong>
             )}
             <MathJax
@@ -335,14 +335,14 @@ export function WorkbookMathViewer({
                                                   ? onClick &&
                                                     onClick(
                                                       quiz.quizCode as string,
-                                                      quiz.idx,
-                                                      data.type,
+                                                      quiz.order as number,
+                                                      quiz.quizIdx as number,
                                                     )
                                                   : onClick &&
                                                     onClick(
                                                       data.code,
-                                                      quiz.idx,
-                                                      data.type,
+                                                      quiz.order as number,
+                                                      data.idx,
                                                     )
                                               }
                                               $padding="10px"
@@ -371,14 +371,14 @@ export function WorkbookMathViewer({
                                                   ? onClick &&
                                                     onClick(
                                                       quiz.quizCode as string,
-                                                      quiz.idx,
-                                                      data.type,
+                                                      quiz.order as number,
+                                                      quiz.quizIdx as number,
                                                     )
                                                   : onClick &&
                                                     onClick(
                                                       data.code,
-                                                      quiz.idx,
-                                                      data.type,
+                                                      quiz.order as number,
+                                                      data.idx,
                                                     )
                                               }
                                               $padding="10px"
@@ -412,14 +412,14 @@ export function WorkbookMathViewer({
                                                   ? onClick &&
                                                     onClick(
                                                       quiz.quizCode as string,
-                                                      quiz.idx,
-                                                      data.type,
+                                                      quiz.order as number,
+                                                      quiz.quizIdx as number,
                                                     )
                                                   : onClick &&
                                                     onClick(
                                                       data.code,
-                                                      quiz.idx,
-                                                      data.type,
+                                                      quiz.order as number,
+                                                      data.idx,
                                                     )
                                               }
                                               $padding="10px"
@@ -448,14 +448,14 @@ export function WorkbookMathViewer({
                                                   ? onClick &&
                                                     onClick(
                                                       quiz.quizCode as string,
-                                                      quiz.idx,
-                                                      data.type,
+                                                      quiz.order as number,
+                                                      quiz.quizIdx as number,
                                                     )
                                                   : onClick &&
                                                     onClick(
                                                       data.code,
-                                                      quiz.idx,
-                                                      data.type,
+                                                      quiz.order as number,
+                                                      data.idx,
                                                     )
                                               }
                                               $padding="10px"
@@ -721,14 +721,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -757,14 +757,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -796,14 +796,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -830,14 +830,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -1109,14 +1109,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -1145,14 +1145,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -1184,14 +1184,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -1218,14 +1218,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -1492,14 +1492,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -1528,14 +1528,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -1567,14 +1567,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"
@@ -1601,14 +1601,14 @@ export function WorkbookMathViewer({
                                                 ? onClick &&
                                                   onClick(
                                                     quiz.quizCode as string,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    quiz.quizIdx as number,
                                                   )
                                                 : onClick &&
                                                   onClick(
                                                     data.code,
-                                                    quiz.idx,
-                                                    data.type,
+                                                    quiz.order as number,
+                                                    data.idx,
                                                   )
                                             }
                                             $padding="10px"

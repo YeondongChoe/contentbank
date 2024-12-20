@@ -36,7 +36,7 @@ export function ContentClassificationSetting() {
       value: '추가정보',
     },
   ];
-  const [tabVeiw, setTabVeiw] = useState<string>('단원분류'); //태그가 없어서 탭에 따라 카테고리 노출
+  const [tabView, setTabView] = useState<string>('단원분류'); //태그가 없어서 탭에 따라 카테고리 노출
   const [page, setPage] = useRecoilState(pageAtom);
   const [selectedValue, setSelectedValue] = useState<string>(''); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
@@ -311,7 +311,7 @@ export function ContentClassificationSetting() {
 
   //그룹 정보 업데이트 api
   const updateMenuInfo = async () => {
-    if (tabVeiw === '단원분류') {
+    if (tabView === '단원분류') {
       const filterData = menuDataList.filter((el) => el.name === selectedValue);
       const data = {
         detailIdx: detailIdx ? detailIdx : 'null',
@@ -384,8 +384,8 @@ export function ContentClassificationSetting() {
                   menu={menuList}
                   width={'400px'}
                   lineStyle
-                  selected={tabVeiw}
-                  setTabVeiw={setTabVeiw}
+                  selected={tabView}
+                  setTabView={setTabView}
                   onClickTab={changeTab}
                 />
               </TabWrapper>
@@ -394,7 +394,7 @@ export function ContentClassificationSetting() {
                 리스트에 노출되는 필터의 순서를 변경합니다.
               </PageDescription>
 
-              {tabVeiw === '단원분류' && (
+              {tabView === '단원분류' && (
                 <>
                   <Label
                     value={'그룹'}
@@ -509,7 +509,7 @@ export function ContentClassificationSetting() {
                   </Button>
                 </>
               )}
-              {tabVeiw === '추가정보' && (
+              {tabView === '추가정보' && (
                 <>
                   <CategoryWrapper>
                     <Label

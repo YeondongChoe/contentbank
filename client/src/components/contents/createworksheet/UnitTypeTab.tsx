@@ -52,8 +52,8 @@ type UnitTypeTabProps = {
     label: string;
     value: string;
   }[];
-  tabVeiw: string;
-  setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
+  tabView: string;
+  setTabView: React.Dispatch<React.SetStateAction<string>>;
   unitClassificationList: UnitClassificationType[][];
   setUnitClassificationList: React.Dispatch<
     React.SetStateAction<UnitClassificationType[][]>
@@ -66,8 +66,8 @@ type UnitTypeTabProps = {
 
 export function UnitTypeTab({
   menuList,
-  tabVeiw,
-  setTabVeiw,
+  tabView,
+  setTabView,
   unitClassificationList,
   setUnitClassificationList,
   checkedDepthList,
@@ -132,10 +132,10 @@ export function UnitTypeTab({
   }, [menuData]);
 
   useEffect(() => {
-    if (tabVeiw === '단원·유형별' && categoryTypeList) {
+    if (tabView === '단원·유형별' && categoryTypeList) {
       fetchCategoryItems(categoryTypeList, setCategoryList);
     }
-  }, [categoryTypeList, tabVeiw]);
+  }, [categoryTypeList, tabView]);
 
   // 카테고리의 첫번째 유형 조회
   const fetchCategoryItems = async (
@@ -785,8 +785,8 @@ export function UnitTypeTab({
             menu={menuList}
             width={'450px'}
             lineStyle
-            selected={tabVeiw}
-            setTabVeiw={setTabVeiw}
+            selected={tabView}
+            setTabView={setTabView}
           />
         </TabWrapper>
         <CategoryWrapper>{renderCategoryFields()}</CategoryWrapper>

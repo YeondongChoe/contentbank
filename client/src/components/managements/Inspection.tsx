@@ -131,6 +131,7 @@ export function Inspection() {
     const res = await quizService.get(
       `/v1/process?pageIndex=${page}&pageUnit=${8}&${queryString}`,
     );
+    //console.log(res.data.data);
 
     return res.data.data;
   };
@@ -252,7 +253,6 @@ export function Inspection() {
           <SelectWrapper>
             {selectedList.map((list, i) => {
               if (list.type === 'SELECT' && list.search) {
-                console.log(selectedList.filter((selected) => selected.name));
                 return (
                   <Select
                     key={`${list.idx}-${list.selectedName}`}
@@ -274,11 +274,11 @@ export function Inspection() {
                 list={questionList}
                 selectedList={selectedList}
                 quizDataRefetch={quizDataRefetch}
-                totalCount={quizData.pagination.totalCount}
+                totalCount={quizData?.pagination?.totalCount || 0}
               />
               <PaginationBox
-                itemsCountPerPage={quizData.pagination.pageUnit}
-                totalItemsCount={quizData.pagination.totalCount}
+                itemsCountPerPage={quizData?.pagination?.pageUnit || 0}
+                totalItemsCount={quizData?.pagination?.totalCount || 0}
               />
             </>
           ) : (

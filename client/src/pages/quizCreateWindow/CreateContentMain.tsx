@@ -92,7 +92,7 @@ export function CreateContentMain() {
                 menu={menuList}
                 selected={tabView}
                 width={'350px'}
-                setTabVeiw={setTabView}
+                setTabView={setTabView}
                 onClickTab={() => {
                   if (tabView !== 'DT & Editing') {
                     // 페이지 진입시 에디터 라이브러리 정적파일 불러오기위한 리로딩

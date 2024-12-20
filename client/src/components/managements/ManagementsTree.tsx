@@ -15,7 +15,7 @@ export function ManagementsTree() {
       value: '히스토리',
     },
   ];
-  const [tabVeiw, setTabVeiw] = useState<string>('히스토리');
+  const [tabView, setTabView] = useState<string>('히스토리');
 
   const [isOpenPopup, setIsOpenPopup] = useState(false);
 
@@ -30,9 +30,9 @@ export function ManagementsTree() {
         <TabMenu
           length={1}
           menu={menuList}
-          selected={tabVeiw}
+          selected={tabView}
           width={'125px'}
-          setTabVeiw={setTabVeiw}
+          setTabView={setTabView}
         />
         <Button
           buttonType="button"

@@ -43,8 +43,8 @@ type PreviousTabProps = {
     label: string;
     value: string;
   }[];
-  tabVeiw: string;
-  setTabVeiw: React.Dispatch<React.SetStateAction<string>>;
+  tabView: string;
+  setTabView: React.Dispatch<React.SetStateAction<string>>;
   isSelectPreviousExamContent: boolean;
   setIsSelectPreviousExamContent: React.Dispatch<React.SetStateAction<boolean>>;
   //문항수
@@ -68,8 +68,8 @@ type PreviousTabProps = {
 
 export function PreviousTab({
   menuList,
-  tabVeiw,
-  setTabVeiw,
+  tabView,
+  setTabView,
   isSelectPreviousExamContent,
   setIsSelectPreviousExamContent,
   setQuestionNum,
@@ -1472,8 +1472,8 @@ export function PreviousTab({
             menu={menuList}
             width={'450px'}
             lineStyle
-            selected={tabVeiw}
-            setTabVeiw={setTabVeiw}
+            selected={tabView}
+            setTabView={setTabView}
           />
         </TabWrapper>
         {isSelectPreviousExamContent ? (

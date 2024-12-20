@@ -56,7 +56,7 @@ type TabMenuProps = {
   length: number;
   className?: string;
   selected: string;
-  setTabVeiw?: (value: string) => void;
+  setTabView?: (value: string) => void;
   getTabList?: (value: string) => void;
   width?: string;
   height?: string;
@@ -70,7 +70,7 @@ export function TabMenu({
   length,
   className,
   selected,
-  setTabVeiw,
+  setTabView,
   getTabList,
   width,
   height,
@@ -87,7 +87,7 @@ export function TabMenu({
   };
 
   const handleChange = (value: string) => {
-    setTabVeiw && setTabVeiw(value);
+    setTabView && setTabView(value);
     getTabList && getTabList(value);
   };
 

@@ -41,7 +41,7 @@ export function QuizManagementList() {
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
   const [checkListOn, setCheckListOn] = useState<number[]>([]);
-  const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
+  const [tabView, setTabView] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   // 셀렉트
@@ -151,7 +151,7 @@ export function QuizManagementList() {
     );
 
     const queryString = createQueryString(keyValuePairs);
-    // if (tabVeiw == '문항 리스트') {
+    // if (tabView == '문항 리스트') {
     const res = await quizService.get(
       `/v1/quiz?pageIndex=${page}&pageUnit=${8}&${queryString}`,
     );
@@ -442,7 +442,7 @@ export function QuizManagementList() {
   useEffect(() => {
     setOnSearch(false);
     quizDataRefetch();
-  }, [tabVeiw]);
+  }, [tabView]);
 
   // 데이터 변경시 리랜더링
   useEffect(() => {
@@ -481,8 +481,8 @@ export function QuizManagementList() {
         length={2}
         menu={menuList}
         width={'300px'}
-        selected={tabVeiw}
-        setTabVeiw={setTabVeiw}
+        selected={tabView}
+        setTabView={setTabView}
         $margin={'10px 0'}
         onClickTab={changeTab}
       /> */}
@@ -558,7 +558,7 @@ export function QuizManagementList() {
               height="40px"
             /> */}
           </SelectWrapper>
-          {/* {tabVeiw === '문항 리스트' && ( */}
+          {/* {tabView === '문항 리스트' && ( */}
           <>
             {quizData && questionList.length > 0 ? (
               <>
@@ -572,7 +572,7 @@ export function QuizManagementList() {
                     setIsAlertOpen(true);
                   }}
                   setCheckListOn={setCheckListOn}
-                  tabVeiw={tabVeiw}
+                  tabView={tabView}
                   totalCount={quizData.pagination.totalCount}
                   deleteQuizIsSuccess={deleteQuizIsSuccess}
                 />
@@ -591,7 +591,7 @@ export function QuizManagementList() {
         </>
       )}
 
-      {/* {tabVeiw === '신고 문항' && <QuizReportList />} */}
+      {/* {tabView === '신고 문항' && <QuizReportList />} */}
 
       <Alert
         isAlertOpen={isAlertOpen}

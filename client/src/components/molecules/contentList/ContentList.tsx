@@ -41,7 +41,7 @@ import { COLOR } from '../../constants';
 
 type ContentListProps = {
   list: QuizListType[] | any[]; // TODO
-  tabVeiw: string;
+  tabView: string;
   deleteBtn?: boolean;
   ondeleteClick?: () => void;
   totalCount?: number;
@@ -63,7 +63,7 @@ export type selectedListProps = {
 
 export function ContentList({
   list,
-  tabVeiw,
+  tabView,
   deleteBtn,
   ondeleteClick,
   totalCount,
@@ -382,7 +382,7 @@ export function ContentList({
   // 탭 바뀔시 초기화
   useEffect(() => {
     setCheckList([]);
-  }, [tabVeiw, page]);
+  }, [tabView, page]);
 
   useEffect(() => {
     // console.log('list/----------*', list);

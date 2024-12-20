@@ -43,7 +43,7 @@ export function QuizCreateList() {
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuizListType[] | null>([]);
 
-  const [tabVeiw, setTabVeiw] = useState<string>('문항 리스트');
+  const [tabView, setTabView] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
   // const [categoryTitles, setCategoryTitles] = useState<ItemCategoryType[]>([]);
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
@@ -161,7 +161,7 @@ export function QuizCreateList() {
 
     const queryString = createQueryString(keyValuePairs);
 
-    if (tabVeiw == '즐겨찾는 문항') {
+    if (tabView == '즐겨찾는 문항') {
       const res = await quizService.get(
         `/v1/quiz/favorite?pageIndex=${page}&pageUnit=${8}&${queryString}`,
       );
@@ -402,7 +402,7 @@ export function QuizCreateList() {
   useEffect(() => {
     setOnSearch(false);
     quizDataRefetch();
-  }, [tabVeiw]);
+  }, [tabView]);
   // 데이터 변경시 리랜더링
   useEffect(() => {
     quizDataRefetch();
@@ -425,7 +425,7 @@ export function QuizCreateList() {
         return rest;
       });
     });
-  }, [tabVeiw]);
+  }, [tabView]);
 
   // 검색용 셀렉트 선택시
   useEffect(() => {
@@ -457,9 +457,9 @@ export function QuizCreateList() {
       <TabMenu
         length={2}
         menu={menuList}
-        selected={tabVeiw}
+        selected={tabView}
         width={'300px'}
-        setTabVeiw={setTabVeiw}
+        setTabView={setTabView}
         $margin={'10px 0'}
         onClickTab={changeTab}
         lineStyle
@@ -643,7 +643,7 @@ export function QuizCreateList() {
                 list={questionList as QuizListType[]}
                 selectedList={selectedList}
                 quizDataRefetch={quizDataRefetch}
-                tabVeiw={tabVeiw}
+                tabView={tabView}
                 totalCount={quizData?.pagination?.totalCount}
               />
               <PaginationBox
