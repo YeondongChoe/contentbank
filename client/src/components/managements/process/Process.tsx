@@ -292,32 +292,33 @@ export function Process() {
     return await userInstance.post(`/v1/process`, data);
   };
 
-  const { mutate: postNewProcessData } = useMutation({
-    mutationFn: postNewProcess,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: '잠시후 다시 시도해주세요',
-      });
-      if (context.response.data.code == 'GE-002') {
-        postRefreshToken();
-      }
-    },
-    onSuccess: (response) => {
-      //성공 시 리스트 리패치
-      processNameListRefetch();
-      //저장 알람
-      openToastifyAlert({
-        type: 'success',
-        text: '저장되었습니다.',
-      });
-      setProcessList(DummyData);
-      setProcessNameIdx(null);
-      setNameValue('');
-    },
-  });
+  const { mutate: postNewProcessData, isPending: postNewProcessPending } =
+    useMutation({
+      mutationFn: postNewProcess,
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: '잠시후 다시 시도해주세요',
+        });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
+      },
+      onSuccess: (response) => {
+        //성공 시 리스트 리패치
+        processNameListRefetch();
+        //저장 알람
+        openToastifyAlert({
+          type: 'success',
+          text: '저장되었습니다.',
+        });
+        setProcessList(DummyData);
+        setProcessNameIdx(null);
+        setNameValue('');
+      },
+    });
 
   const handleNewProcess = () => {
     postNewProcessData();
@@ -344,7 +345,7 @@ export function Process() {
     return await userInstance.put(`/v1/process`, data);
   };
 
-  const { mutate: putProcessData } = useMutation({
+  const { mutate: putProcessData, isPending: putProcessPending } = useMutation({
     mutationFn: putProcess,
     onError: (context: {
       response: { data: { message: string; code: string } };
@@ -831,6 +832,7 @@ export function Process() {
               fontSize="13px"
               $filled
               cursor
+              disabled={postNewProcessPending || putProcessPending}
             >
               저장
             </Button>

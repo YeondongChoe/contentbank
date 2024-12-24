@@ -433,6 +433,7 @@ export function RegisterModal({
                 fontSize="16px"
                 $filled
                 cursor
+                disabled={isPending}
               >
                 <span>등록</span>
               </Button>

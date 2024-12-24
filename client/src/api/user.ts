@@ -69,7 +69,7 @@ export const getAuthorityList = async (companyIdx: string) => {
 };
 // 선택된 권한 불러오기 api
 export const getAuthorityItem = async (codeValue: string) => {
-  if (codeValue !== '')
+  if (codeValue !== null)
     return await userInstance.get(`/v1/authority/${codeValue}`);
 };
 

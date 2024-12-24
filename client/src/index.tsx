@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 // eslint-disable-next-line import/order, import/default
+import { NoAuthrizedPage } from './pages/NoAuthorizedPage';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
@@ -139,6 +140,11 @@ const router = createBrowserRouter([
       {
         path: '/managementeditmain',
         element: <ManagementEditMain />,
+      },
+      //접근 권한이 없는는 페이지입니다.
+      {
+        path: '/no-authrized',
+        element: <NoAuthrizedPage />,
       },
       //임시로 만들어둔 페이지 준비중인 페이지입니다.
       {

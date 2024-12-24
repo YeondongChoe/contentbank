@@ -6,3 +6,11 @@ export interface IdxNamePair {
   searchList: boolean;
   viewList: boolean;
 }
+
+export type accessMenuListProps = {
+  sort: number;
+  isLock: boolean;
+  isUse: boolean;
+  menuCode: string;
+  menuName: string;
+};

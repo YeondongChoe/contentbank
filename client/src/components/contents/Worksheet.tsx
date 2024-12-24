@@ -400,7 +400,7 @@ export function Worksheet() {
               );
             } else if (list.name === '등록일' && list.search === true) {
               return (
-                <div key={list.idx}>
+                <DatePickerWrapper key={list.idx}>
                   <CommonDate
                     setDate={setStartDate}
                     $button={
@@ -435,7 +435,7 @@ export function Worksheet() {
                       </IconButton>
                     }
                   />
-                </div>
+                </DatePickerWrapper>
               );
             }
             return null;
@@ -495,6 +495,11 @@ const SelectWrapper = styled.div`
   .btn_title {
     padding-right: 5px;
   }
+`;
+const DatePickerWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
 `;
 const LoaderWrapper = styled.div`
   display: flex;
