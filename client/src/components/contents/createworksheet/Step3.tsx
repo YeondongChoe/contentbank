@@ -48,8 +48,8 @@ export function Step3() {
     window.close();
   };
 
-  console.log('initialItems', initialItems);
-  console.log('newInitialItems', newInitialItems);
+  //console.log('initialItems', initialItems);
+  //console.log('newInitialItems', newInitialItems);
 
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();

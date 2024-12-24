@@ -116,7 +116,7 @@ export function Authority() {
   const [authorityList, setAuthorityList] = useState<ItemAuthorityType[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [isClickedName, setIsClickedName] = useState(false);
-  const [codeValue, setCodeValue] = useState('');
+  const [codeValue, setCodeValue] = useState<string | null>(null);
   const [codeUpdateList, setCodeUpdateList] = useState<PermissionOutput[]>([]);
   const [deleteCodeValue, setDeleteCodeValue] = useState('');
 
@@ -196,15 +196,14 @@ export function Authority() {
   const {
     data: authorityData,
     isSuccess,
-    isPending,
+    isFetching,
     refetch: authorityDataRefetch,
   } = useQuery({
-    queryKey: ['get-authority'],
-    queryFn: () => getAuthorityItem(codeValue),
+    queryKey: ['get-authority', codeValue],
+    queryFn: () => getAuthorityItem(codeValue as string),
     meta: {
       errorMessage: 'get-authority 에러 메세지',
     },
-    enabled: !!codeValue,
   });
 
   // 등록된 권한 데이터 불러올 시 체크박스에 맞춘 데이터로 변환
@@ -330,8 +329,8 @@ export function Authority() {
     if (isClickedName && permissionList.length > 0) {
       mutateChangeAuthority({
         name: inputValue,
-        code: codeValue,
-        companyIdx: 1, //수정해야함
+        code: codeValue as string,
+        companyIdx: Number(companyIdxValue),
         permissionList,
       });
 
@@ -340,7 +339,7 @@ export function Authority() {
     if (!isClickedName && permissionList.length > 0) {
       mutateCreateAuthority({
         name: inputValue,
-        companyIdx: 1, //수정해야함
+        companyIdx: Number(companyIdxValue),
         permissionList,
       });
 
@@ -377,6 +376,8 @@ export function Authority() {
       authorityListDataRefetch();
       setInputValue('');
       setIsClickedName(false);
+      //리프레시토큰 재발급
+      postRefreshToken();
     },
   });
   // 선택된 권한 생성하기 api
@@ -956,7 +957,7 @@ export function Authority() {
             {isClickedName ? (
               // 수정 테이블
               <>
-                {!isPending && isSuccess ? (
+                {!isFetching && isSuccess ? (
                   <table className="authority_table">
                     <thead>
                       <tr>

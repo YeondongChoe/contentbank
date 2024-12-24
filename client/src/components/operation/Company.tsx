@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { BiToggleRight, BiSolidTrashAlt } from 'react-icons/bi';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -25,6 +25,7 @@ import { getUserListTotal } from '../../api/user';
 import { DoubleSelect } from '../../components/molecules/doubleSelect';
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
+import { accessMenuListProps } from '../../types';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 
@@ -44,15 +45,10 @@ type companyAccountListProps = {
   userKey: string;
 };
 
-type accessMenuListProps = {
-  isLock: boolean;
-  isUse: boolean;
-  menuCode: string;
-  menuName: string;
-};
-
 export function Company() {
   const { openModal } = useModal();
+  const queryClient = useQueryClient();
+
   //페이지네이션
   const [page, setPage] = useRecoilState(pageAtom);
   //기업리스트 값
@@ -424,7 +420,7 @@ export function Company() {
   //접근 메뉴 리스트 불러오기 api
   const getAccessMenu = async () => {
     const res = await userInstance.get(`/v1/company/access/${codeValue}`);
-    //console.log(`getAccessMenu 결과값`, res);
+    console.log(`getAccessMenu 결과값`, res);
     return res;
   };
 
@@ -580,46 +576,47 @@ export function Company() {
     }
   };
 
-  const { mutate: postNewCompanyData } = useMutation({
-    mutationFn: postNewCompany,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: '잠시후 다시 시도해주세요',
-      });
-      if (context.response.data.code == 'GE-002') {
-        postRefreshToken();
-      }
-    },
-    onSuccess: (response) => {
-      //성공 시 리스트 리패치
-      companyListRefetch();
-      //저장 알람
-      openToastifyAlert({
-        type: 'success',
-        text: '저장되었습니다.',
-      });
-      //내용초기화
-      setNameValue('');
-      setLanguageValue('');
-      setCorporateIdentifierValue('');
-      setRepresentativeNameValue('');
-      setRepresentativePhoneNumberValue('');
-      setBusinessRegistrationNumberValue('');
-      setPhoneNumberValue('');
-      setDaumAddressValue('');
-      setDetailAddressValue('');
-      setEmailValue('');
-      setLargeItemCodeValue('');
-      setLargeItemValue('');
-      setDetailItemCodeValue('');
-      setDetailItemValue('');
-      setIdxValue(null); //응답받은 기업 idx값
-      setSelectedIdxValue(null); //리스트 idx값
-    },
-  });
+  const { mutate: postNewCompanyData, isPending: postNewCompanyPending } =
+    useMutation({
+      mutationFn: postNewCompany,
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: '잠시후 다시 시도해주세요',
+        });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
+      },
+      onSuccess: (response) => {
+        //성공 시 리스트 리패치
+        companyListRefetch();
+        //저장 알람
+        openToastifyAlert({
+          type: 'success',
+          text: '저장되었습니다.',
+        });
+        //내용초기화
+        setNameValue('');
+        setLanguageValue('');
+        setCorporateIdentifierValue('');
+        setRepresentativeNameValue('');
+        setRepresentativePhoneNumberValue('');
+        setBusinessRegistrationNumberValue('');
+        setPhoneNumberValue('');
+        setDaumAddressValue('');
+        setDetailAddressValue('');
+        setEmailValue('');
+        setLargeItemCodeValue('');
+        setLargeItemValue('');
+        setDetailItemCodeValue('');
+        setDetailItemValue('');
+        setIdxValue(null); //응답받은 기업 idx값
+        setSelectedIdxValue(null); //리스트 idx값
+      },
+    });
 
   //기업 생성
   const submitCreateCompany = () => {
@@ -787,28 +784,34 @@ export function Company() {
     return await userInstance.put(`/v1/company/access`, data);
   };
 
-  const { mutate: putAccessMenuData } = useMutation({
-    mutationFn: putAccessMenu,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: '잠시후 다시 시도해주세요',
-      });
-      if (context.response.data.code == 'GE-002') {
-        postRefreshToken();
-      }
-    },
-    onSuccess: (response) => {
-      //저장 알람
-      openToastifyAlert({
-        type: 'success',
-        text: '저장되었습니다.',
-      });
-      setIsModalOpen(false);
-    },
-  });
+  const { mutate: putAccessMenuData, isPending: putAccessMenuPending } =
+    useMutation({
+      mutationFn: putAccessMenu,
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: '잠시후 다시 시도해주세요',
+        });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
+      },
+      onSuccess: (response) => {
+        //저장 알람
+        openToastifyAlert({
+          type: 'success',
+          text: '저장되었습니다.',
+        });
+        setIsModalOpen(false);
+
+        //네비게이션 다시 호출
+        queryClient.invalidateQueries({
+          queryKey: ['get-companyAccessMenu', codeValue],
+        });
+      },
+    });
 
   const renderCompanyInputFields = () => {
     return (
@@ -1213,6 +1216,7 @@ export function Company() {
                 .filter(
                   (menu) => menu.menuCode === 'QE' || menu.menuCode === 'WE',
                 )
+                .sort((a, b) => a.sort - b.sort)
                 .map((menu) => (
                   <ModalCheckboxWrapper
                     className="padding"
@@ -1241,6 +1245,7 @@ export function Company() {
                     menu.menuCode === 'RM' ||
                     menu.menuCode === 'IM',
                 )
+                .sort((a, b) => a.sort - b.sort)
                 .map((menu) => (
                   <ModalCheckboxWrapper
                     className="padding"
@@ -1272,6 +1277,7 @@ export function Company() {
                     menu.menuCode === 'LOM' ||
                     menu.menuCode === 'STM',
                 )
+                .sort((a, b) => a.sort - b.sort)
                 .map((menu) => (
                   <ModalCheckboxWrapper
                     className="padding"
@@ -1298,6 +1304,7 @@ export function Company() {
                 .filter(
                   (menu) => menu.menuCode === 'CCC' || menu.menuCode === 'CMC',
                 )
+                .sort((a, b) => a.sort - b.sort)
                 .map((menu) => (
                   <ModalCheckboxWrapper
                     className="padding"
@@ -1334,6 +1341,7 @@ export function Company() {
               fontSize="14px"
               $filled
               cursor
+              disabled={putAccessMenuPending}
             >
               <span>저장</span>
             </Button>
@@ -1491,6 +1499,7 @@ export function Company() {
                   fontSize="13px"
                   $filled
                   cursor
+                  disabled={postNewCompanyPending}
                 >
                   <span>저장</span>
                 </Button>
