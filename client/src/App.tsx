@@ -50,10 +50,10 @@ export function App() {
           error: { response: { data: { code: string } } },
         ) => {
           console.log(
-            `failureCount: ${failureCount} ${error.response.data.code}`,
+            `failureCount: ${failureCount} ${error?.response?.data?.code}`,
           );
           // 토큰만료시 리프레쉬요청 후 재요청
-          if (error.response.data.code == 'GE-002') {
+          if (error?.response?.data?.code == 'GE-002') {
             return postRefreshToken();
           }
 
@@ -68,7 +68,7 @@ export function App() {
       }) => {
         openToastifyAlert({
           type: 'error',
-          text: context.response.data.message,
+          text: context?.response?.data?.message,
         });
       },
     },

@@ -12,7 +12,7 @@ import { TabMenu } from '../molecules';
 import { CategroyManagement, GroupManagement } from './metainfotab';
 
 export function MetaInfo() {
-  const [tabVeiw, setTabVeiw] = useState<string>('카테고리 관리');
+  const [tabView, setTabView] = useState<string>('카테고리 관리');
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   /* 안내 알럿 */
@@ -68,16 +68,16 @@ export function MetaInfo() {
         <TabMenu
           length={3}
           menu={tabMenuList}
-          selected={tabVeiw}
+          selected={tabView}
           width={'300px'}
-          setTabVeiw={setTabVeiw}
+          setTabView={setTabView}
           lineStyle
           $margin={'10px 0'}
           onClickTab={changeTab}
         />
 
-        {tabVeiw == '카테고리 관리' && <CategroyManagement />}
-        {tabVeiw == '그룹 관리' && <GroupManagement />}
+        {tabView == '카테고리 관리' && <CategroyManagement />}
+        {tabView == '그룹 관리' && <GroupManagement />}
       </>
       {/* )} */}
     </Container>

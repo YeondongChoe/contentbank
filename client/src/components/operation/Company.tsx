@@ -1422,7 +1422,7 @@ export function Company() {
                 width={'450px'}
                 lineStyle
                 selected={tabView}
-                setTabVeiw={setTabView}
+                setTabView={setTabView}
                 onClickTab={changeTab}
               />
               {idxValue !== '' && tabView === '기업 관리' && (

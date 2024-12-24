@@ -555,6 +555,8 @@ export function Process() {
                             onClick={() => {
                               setProcessNameIdx(process.idx);
                               setNameValue(process.name as string);
+                              //항목 눌렀을때 추가해뒀던 데이터 초기화
+                              setProcessList(DummyData);
                             }}
                           >
                             <div className="title">{process.name}</div>

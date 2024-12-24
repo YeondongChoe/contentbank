@@ -82,7 +82,7 @@ export function Step1() {
   ];
   const navigate = useNavigate();
   //탭메뉴
-  const [tabVeiw, setTabVeiw] = useState<string>('단원·유형별');
+  const [tabView, setTabView] = useState<string>('단원·유형별');
   //단원.유형별 선택한 리스트
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
@@ -181,7 +181,7 @@ export function Step1() {
 
   //   //선택된 문항 수
   //   const questionNumValue =
-  //     tabVeiw === '시중교재' || tabVeiw === '기출'
+  //     tabView === '시중교재' || tabView === '기출'
   //       ? questionNum
   //         ? parseInt(questionNum, 10) * includeQuizList.length
   //         : inputValue
@@ -375,10 +375,10 @@ export function Step1() {
 
   //조건값이 바뀔때 재검색
   useEffect(() => {
-    if (tabVeiw === '시중교재') {
+    if (tabView === '시중교재') {
       textbookDataRefetch();
     }
-  }, [page, schoolLevel, gradeLevel, searchTextbookValue, tabVeiw]);
+  }, [page, schoolLevel, gradeLevel, searchTextbookValue, tabView]);
 
   const [isChoice, setIsChoice] = useState(false);
   const [clickedIdx, setClickedIdx] = useState<number | null>(null);
@@ -637,7 +637,7 @@ export function Step1() {
       setReceivedQuizCount(filterQuizCount);
       saveLocalData(response.data.data);
       //받아온 문항수와 선택한 문항수가 같을경우 다음단계
-      if (tabVeiw === '단원·유형별') {
+      if (tabView === '단원·유형별') {
         if (filterQuizCount === 0) {
           openToastifyAlert({
             type: 'error',
@@ -662,7 +662,7 @@ export function Step1() {
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
-      } else if (tabVeiw === '시중교재') {
+      } else if (tabView === '시중교재') {
         if (filterQuizCount === 0) {
           openToastifyAlert({
             type: 'error',
@@ -690,7 +690,7 @@ export function Step1() {
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
-      } else if (tabVeiw === '수능/모의고사') {
+      } else if (tabView === '수능/모의고사') {
         if (filterQuizCount === 0) {
           openToastifyAlert({
             type: 'error',
@@ -708,7 +708,7 @@ export function Step1() {
             localStorage.setItem('itemCount', JSON.stringify(itemCount));
           }
         }
-      } else if (tabVeiw === '기출') {
+      } else if (tabView === '기출') {
         if (filterQuizCount === 0) {
           openToastifyAlert({
             type: 'error',
@@ -783,14 +783,14 @@ export function Step1() {
 
   const clickNextButton = () => {
     const data = {
-      itemTreeKeyList: tabVeiw === '단원·유형별' ? makingdata : null,
+      itemTreeKeyList: tabView === '단원·유형별' ? makingdata : null,
       count:
-        tabVeiw === '시중교재' || tabVeiw === '기출'
+        tabView === '시중교재' || tabView === '기출'
           ? Number(questionNum) * Number(includeQuizList.length) ||
             Number(inputValue) * Number(includeQuizList.length)
-          : tabVeiw === '수능/모의고사'
+          : tabView === '수능/모의고사'
             ? Number(includeQuizList.length)
-            : tabVeiw === '단원·유형별'
+            : tabView === '단원·유형별'
               ? Number(questionNum) || Number(inputValue)
               : null,
       //수능/모의고사 경우 어떻게 보내야할지 나중에 수정해야함
@@ -803,7 +803,7 @@ export function Step1() {
       isQuizEven: isQuizEven,
       isMePriority: isPriority,
       filterList: null,
-      includeList: tabVeiw === '단원·유형별' ? null : includeQuizList,
+      includeList: tabView === '단원·유형별' ? null : includeQuizList,
     };
 
     postStep1Data(data);
@@ -852,6 +852,7 @@ export function Step1() {
         {},
       );
 
+      let orderCounter = 1;
       const result = quizList.map((quiz: any) => {
         if (quiz.groupCode && groupMap[quiz.groupCode]) {
           const group = groupMap[quiz.groupCode];
@@ -860,7 +861,6 @@ export function Step1() {
           );
 
           if (textType) {
-            let sortCounter = 2; // Sort starts from 2 for non-TEXT items.
             group.forEach((groupItem: any) => {
               if (groupItem !== textType) {
                 // Add items to textItem's quizItemList with appropriate sort value
@@ -871,7 +871,7 @@ export function Step1() {
                       quizIdx: groupItem.idx,
                       quizCode: groupItem.code,
                       quizFavorite: groupItem.isFavorite,
-                      sort: sortCounter++,
+                      //sort: sortCounter++,
                     });
                   },
                 );
@@ -884,7 +884,7 @@ export function Step1() {
                       ...categoryItem,
                       quizIdx: groupItem.idx,
                       quizCode: groupItem.code,
-                      sort: sortCounter++,
+                      //sort: sortCounter++,
                     });
                   },
                 );
@@ -895,7 +895,7 @@ export function Step1() {
             textType.quizItemList = textType.quizItemList.map(
               (quizItem: any, index: number) => ({
                 ...quizItem,
-                sort: index + 1,
+                //sort: index + 1,
                 quizIdx:
                   quizItem.type === 'TEXT' || quizItem.type === 'BIG'
                     ? textType.idx
@@ -913,7 +913,7 @@ export function Step1() {
             textType.quizCategoryList = textType.quizCategoryList.map(
               (quizItem: any, index: number) => ({
                 ...quizItem,
-                sort: index + 1,
+                //sort: index + 1,
                 quizIdx: !quizItem.quizIdx ? textType.idx : quizItem.quizIdx,
                 quizCode: !quizItem.quizCode
                   ? textType.code
@@ -922,6 +922,21 @@ export function Step1() {
             );
           }
         }
+
+        quiz.quizItemList.forEach((quizItem: any) => {
+          if (quizItem.type === 'QUESTION') {
+            const order = orderCounter++;
+            quizItem.order = order;
+
+            // Assign the same order to items with matching quizCode
+            quiz.quizItemList.forEach((item: any) => {
+              if (item.quizCode === quizItem.quizCode) {
+                item.order = order;
+              }
+            });
+          }
+        });
+
         return quiz;
       });
 
@@ -953,7 +968,7 @@ export function Step1() {
   // };
 
   const moveStep2 = () => {
-    if (tabVeiw === '단원·유형별')
+    if (tabView === '단원·유형별')
       if (unitClassificationList.length > 0) {
         if (
           (inputValue !== '' || questionNum !== null || questionNum !== '') &&
@@ -974,7 +989,7 @@ export function Step1() {
           text: '교과정보 추가버튼을 눌러주세요.',
         });
       }
-    else if (tabVeiw === '시중교재') {
+    else if (tabView === '시중교재') {
       if (
         (inputValue !== '' || questionNum !== null || questionNum !== '') &&
         includeQuizList.length > 0 &&
@@ -989,7 +1004,7 @@ export function Step1() {
           text: '필수항목을 선택해주세요',
         });
       }
-    } else if (tabVeiw === '수능/모의고사') {
+    } else if (tabView === '수능/모의고사') {
       if (includeQuizList.length > 0) {
         clickNextButton();
       } else {
@@ -998,7 +1013,7 @@ export function Step1() {
           text: '필수항목을 선택해주세요',
         });
       }
-    } else if (tabVeiw === '기출') {
+    } else if (tabView === '기출') {
       if (
         (inputValue !== '' || questionNum !== null || questionNum !== '') &&
         includeQuizList.length > 0 &&
@@ -1018,10 +1033,10 @@ export function Step1() {
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
     if (
-      tabVeiw === '단원·유형별' ||
-      tabVeiw === '시중교재' ||
-      tabVeiw === '수능/모의고사' ||
-      tabVeiw === '기출'
+      tabView === '단원·유형별' ||
+      tabView === '시중교재' ||
+      tabView === '수능/모의고사' ||
+      tabView === '기출'
     ) {
       const handleBeforeUnload = (event: BeforeUnloadEvent) => {
         // 사용자에게 경고 메시지를 표시하도록 설정
@@ -1038,7 +1053,7 @@ export function Step1() {
         window.removeEventListener('beforeunload', handleBeforeUnload);
       };
     }
-  }, [tabVeiw]);
+  }, [tabView]);
 
   useEffect(() => {
     setReceivedQuizCount(null);
@@ -1063,7 +1078,7 @@ export function Step1() {
     setQuestionLevel(null);
     setQuestionType([]);
     setIsQuizEven(false);
-  }, [tabVeiw]);
+  }, [tabView]);
 
   //시중교재
   const renderGradeButtons = () => {
@@ -1163,12 +1178,12 @@ export function Step1() {
           </Title>
         </TitleWrapper>
         <MainWrapper>
-          {tabVeiw === '단원·유형별' && (
+          {tabView === '단원·유형별' && (
             <>
               <UnitTypeTab
                 menuList={menuList}
-                tabVeiw={tabVeiw}
-                setTabVeiw={setTabVeiw}
+                tabView={tabView}
+                setTabView={setTabView}
                 unitClassificationList={unitClassificationList}
                 setUnitClassificationList={setUnitClassificationList}
                 checkedDepthList={checkedDepthList}
@@ -1177,7 +1192,7 @@ export function Step1() {
                 setSearchValue={setSearchValue}
               ></UnitTypeTab>
               <SelectSection
-                tabVeiw={tabVeiw}
+                tabView={tabView}
                 questionNum={questionNum}
                 setQuestionNum={setQuestionNum}
                 inputValue={inputValue}
@@ -1201,7 +1216,7 @@ export function Step1() {
               ></SelectSection>
             </>
           )}
-          {tabVeiw === '시중교재' && (
+          {tabView === '시중교재' && (
             <>
               {isSelectTextbook && (
                 <>
@@ -1212,8 +1227,8 @@ export function Step1() {
                         menu={menuList}
                         width={'450px'}
                         lineStyle
-                        selected={tabVeiw}
-                        setTabVeiw={setTabVeiw}
+                        selected={tabView}
+                        setTabView={setTabView}
                       />
                     </TabWrapper>
                     <SchoolGradeWrapper>
@@ -1273,7 +1288,7 @@ export function Step1() {
                     />
                   </CategorySection>
                   <SelectSection
-                    tabVeiw={tabVeiw}
+                    tabView={tabView}
                     questionNum={questionNum}
                     setQuestionNum={setQuestionNum}
                     inputValue={inputValue}
@@ -1307,8 +1322,8 @@ export function Step1() {
                         menu={menuList}
                         width={'450px'}
                         lineStyle
-                        selected={tabVeiw}
-                        setTabVeiw={setTabVeiw}
+                        selected={tabView}
+                        setTabView={setTabView}
                       />
                     </TabWrapper>
                     <TextbookTitleWrapper>
@@ -1452,7 +1467,7 @@ export function Step1() {
                     )}
                   </CategorySection>
                   <SelectSection
-                    tabVeiw={tabVeiw}
+                    tabView={tabView}
                     questionNum={questionNum}
                     setQuestionNum={setQuestionNum}
                     inputValue={inputValue}
@@ -1479,12 +1494,12 @@ export function Step1() {
               )}
             </>
           )}
-          {tabVeiw === '수능/모의고사' && (
+          {tabView === '수능/모의고사' && (
             <>
               <MockExamTab
                 menuList={menuList}
-                tabVeiw={tabVeiw}
-                setTabVeiw={setTabVeiw}
+                tabView={tabView}
+                setTabView={setTabView}
                 equalScore={equalScore}
                 setEqualScore={setEqualScore}
                 includeQuizList={includeQuizList}
@@ -1494,12 +1509,12 @@ export function Step1() {
               ></MockExamTab>
             </>
           )}
-          {tabVeiw === '기출' && (
+          {tabView === '기출' && (
             <>
               <PreviousTab
                 menuList={menuList}
-                tabVeiw={tabVeiw}
-                setTabVeiw={setTabVeiw}
+                tabView={tabView}
+                setTabView={setTabView}
                 isSelectPreviousExamContent={isSelectPreviousExamContent}
                 setIsSelectPreviousExamContent={setIsSelectPreviousExamContent}
                 setQuestionNum={setQuestionNum}
@@ -1513,7 +1528,7 @@ export function Step1() {
                 setIncludeQuizList={setIncludeQuizList}
               ></PreviousTab>
               <SelectSection
-                tabVeiw={tabVeiw}
+                tabView={tabView}
                 questionNum={questionNum}
                 setQuestionNum={setQuestionNum}
                 inputValue={inputValue}

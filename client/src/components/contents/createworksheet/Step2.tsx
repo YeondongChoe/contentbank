@@ -49,6 +49,7 @@ import {
   classificationInstance,
   quizService,
   workbookInstance,
+  resourceServiceInstance,
 } from '../../../api/axios';
 import { useModal } from '../../../hooks';
 import { contentQuotient, pageAtom } from '../../../store/utilAtom';
@@ -66,6 +67,7 @@ import {
   SimilarQuizList,
   ContentWithScore,
   QuizItemList,
+  selectedListType,
 } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
@@ -93,9 +95,13 @@ interface EditWorkbookData {
 }
 
 export function Step2() {
+  const navigate = useNavigate();
+  const { openModal } = useModal();
+  const contentRef = useRef<HTMLDivElement>(null);
+
   const [getLocalData, setGetLocalData] = useState<WorkbookData | null>(null);
-  const [getQuotientLocalData, setGetQuotientLocalData] =
-    useState<WorkbookQuotientData | null>(null);
+  // const [getQuotientLocalData, setGetQuotientLocalData] =
+  //   useState<WorkbookQuotientData | null>(null);
   const [getCategoryLocalData, setGetCategoryLocalData] =
     useState<WorkbookCategoryData | null>(null);
   const [getEditData, setGetEditData] = useState<EditWorkbookData | null>(null);
@@ -144,255 +150,117 @@ export function Step2() {
   const [itemType, setItemType] = useState<number>();
 
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
-  const [categoryNameList, setCategoryNameList] = useState<string>('');
+
+  //수정에서 들어왔을때 로컬스토리지 값 다 받은 후
   const [isDone, setIsDone] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
-  }, [getEditData]);
-
-  // 학습지 상세 정보 불러오기 api
-  const getWorkbookData = async (idx: number) => {
-    const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
-    // console.log(`getWorkbook 결과값`, res);
-    return res;
-  };
-
-  const { data: workbookData, isLoading: isWorkbookLoading } = useQuery({
-    queryKey: ['get-workbookData', workbookIdx],
-    queryFn: () => getWorkbookData(workbookIdx as number),
-    meta: {
-      errorMessage: 'get-workbookData 에러 메세지',
+  const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
+  //탭 값
+  const [tabView, setTabView] = useState<string>('학습지 요약');
+  //페이지 번호
+  const [page, setPage] = useRecoilState(pageAtom);
+  //드레그 여부부
+  const [isStartDnD, setIsStartDnd] = useState(false);
+  // 선택한 문항 배열 정렬
+  const selectArrange = [
+    {
+      idx: 0,
+      name: '사용자 정렬',
+      value: '0',
+      options: [
+        { idx: 0, name: '객관식 상단배치', value: '0' },
+        { idx: 1, name: '무작위 정렬', value: '1' },
+      ],
     },
-    enabled: !!workbookIdx,
-  });
+  ];
 
-  //로컬스토리지에서 Idx받아오면 서버 요청
-  useEffect(() => {
-    if (workbookIdx) {
-      getWorkbookData(workbookIdx);
-    }
-  }, [workbookIdx]);
-  //서버로부터 값을 받아오면 넣어주기
-  useEffect(() => {
-    if (workbookData) {
-      const arrayScore = workbookData?.data.data.quizList.map(
-        (item: QuizList) => item.score,
-      );
-      const totalScore = arrayScore.reduce(
-        (accumulator: number, currentValue: number) =>
-          accumulator + currentValue,
-        0,
-      );
-      const avgScore = totalScore / workbookData?.data.data.quizList.length;
-      //setQuotient(avgScore === 0 ? null : avgScore);
-      //setQuotient(avgScore);
-      //setMinQuotient(avgScore > 1 ? avgScore - 1 : avgScore);
-      //setMaxQuotient(avgScore + 1);
-      //setEqualTotalValue(totalScore.toString());
-      //setTotalEqualScore(totalScore);
-      //setRemainderContent(workbookData?.data.data.quizList.length);
-      //setNextRemainderContent(workbookData?.data.data.quizList.length + 1);
-      //setEqualScore(2);
-      setInitialItems(workbookData?.data.data.quizList);
-      setNameValue(workbookData?.data.data.name);
-      setGradeValue(workbookData?.data.data.grade);
-      setContentAuthor(workbookData?.data.data.examiner);
-      setTag(workbookData?.data.data.tag);
-      setGetItemCountData(workbookData?.data.data.quizCnt);
-      setColor(workbookData?.data.data.templateList[0].color);
-      setType(workbookData?.data.data.templateList[0].type);
-      setMultiLevel(workbookData?.data.data.templateList[0].multiLevel);
-      setAssign(workbookData?.data.data.templateList[0].assign);
-      setIsDate(workbookData?.data.data.templateList[0].isDate);
-      setIsQuizType(workbookData?.data.data.templateList[0].isQuizType);
-      setItemType(workbookData?.data.data.templateList[0].itemType);
-      setIsDone(true);
-      //window.opener.localStorage.clear();
-    }
-  }, [workbookData]);
-
-  //배점이 바뀔때마다 변경되는 전역변수
-  // const [contentNumQuotient, setContentNumQuotient] =
-  //   useRecoilState<ContentWithScore[]>(contentQuotient);
-  //기존 문항 데이타에 배점 넣기
-  //console.log('contentNumQuotient', contentNumQuotient);
-
-  // useEffect(() => {
-  //   const updatedItems = initialItems.map((item) => {
-  //     // 각 initialItems의 item에 대해 contentNumQuotient 배열을 탐색합니다.
-  //     const matchingItem = contentNumQuotient.find(
-  //       (quotient) => quotient.code === item.code,
-  //     );
-  //     // 일치하는 항목이 있으면 score를 추가합니다.
-  //     if (matchingItem) {
-  //       return {
-  //         ...item,
-  //         score: matchingItem.score,
-  //       };
-  //     }
-
-  //     // 일치하는 항목이 없으면 원래 항목을 반환합니다.
-  //     return item;
-  //   });
-  //   setInitialItems(updatedItems);
-  // }, [contentNumQuotient]);
-
+  const initialValues: { [key: number]: string } = selectArrange.reduce(
+    (acc, el) => {
+      acc[el.idx] = el.name;
+      return acc;
+    },
+    {} as { [key: number]: string },
+  );
+  //정렬 기본 값
+  const [defaultValues, setDefaultValues] = useState(initialValues);
+  // 새 문항 추가
+  const [newQuizItems, setNewQuizItems] = useState<SimilarQuizList>();
+  // 이전 불러오기에 저장된 새 문항
+  const [newQuizPrevItems, setNewQuizPrevItems] = useState<SimilarQuizList[]>(
+    [],
+  );
+  //범위 변경
+  const [isRangeSetting, setIsRangeSetting] = useState<boolean>(false);
+  //범위 변경한 리스트
+  const [unitClassificationList, setUnitClassificationList] = useState<
+    UnitClassificationType[][]
+  >([]);
+  //범위변경 카테고리 리스트
+  const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([
+    [{ code: '', idx: 0, name: '' }],
+  ]);
+  //세분류 트리리스트
+  const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
+  //세분류 리스트 중 선택된 항목
+  const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
+  // 검색 단어 하이라이트 && 하이라이트간 이동 처리
+  const [highlightIndex, setHighlightIndex] = useState<number>(-1);
+  //즐겨찾기 문항
+  const [favoriteQuestionList, setFavoriteQuestionList] =
+    useState<FavoriteQuizList>();
+  //즐겨찾기 필터
+  const [onFilter, setOnFilter] = useState<boolean>(false);
+  //즐겨찾기 필터명
+  const [filterValue, setFilterValue] = useState<string>('');
+  //내 문항 우선
+  const [isPriorityQuiz, setIsPriorityEven] = useState(false);
+  // 유사문항
+  const [isSimilar, setIsSimilar] = useState(false);
+  const [similarItems, setSimilarItems] = useState<SimilarQuizList | null>(
+    null,
+  );
+  const [similarItemCode, setSimilarItemCode] = useState<string>('');
+  const [initialItemOrder, setInitialItemOrder] = useState<number | null>(null);
+  const [initialItemIdx, setInitialItemIdx] = useState<number>();
+  const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
+    [],
+  );
+  //즐겨찾기 문항 추가 여부
+  const [isAdded, setIsAdded] = useState(false);
+  //배점 모달
+  const [isEqualScoreModal, setIsEqualScoreModal] = useState<boolean>(false);
+  // 문항당 배점
+  const [isSaveEqualValue, setIsSaveEqualValue] = useState<boolean>(false);
+  //문항수 확인
+  const [receivedQuizCount, setReceivedQuizCount] = useState<number | null>(
+    null,
+  );
   //평균 배점 문항
   const [remainderContent, setRemainderContent] = useState<number>();
   //평균 배점 이상 문항
   const [nextRemainderContent, setNextRemainderContent] = useState<number>();
   //문항당 배점
-  //const [quotient, setQuotient] = useState<number | null>(null);
   const [quotient, setQuotient] = useState<number>(0);
   const [minQuotient, setMinQuotient] = useState<number>();
   const [maxQuotient, setMaxQuotient] = useState<number>();
   const [equalScore, setEqualScore] = useState<number | null>(null);
+  //문항의 배점을 다 더한 값
   const [equalTotalValue, setEqualTotalValue] = useState<string>('0');
-  //총 문항 점수
+  //문항의 총합이 되어야 하는 값값
   const [totalEqualScore, setTotalEqualScore] = useState<number>(0);
-  useEffect(() => {
-    if (getQuotientLocalData) {
-      setEqualScore(getQuotientLocalData.equalScore);
-      //setEqualTotalValue(getQuotientLocalData.equalTotalValue);
-      setRemainderContent(getQuotientLocalData.remainderContent);
-      setNextRemainderContent(getQuotientLocalData.nextRemainderContent);
-      setQuotient(getQuotientLocalData.quotient);
-      setMinQuotient(getQuotientLocalData.minQuotient);
-      setMaxQuotient(getQuotientLocalData.maxQuotient);
-    }
-  }, [getQuotientLocalData]);
-  //step1에서 step2로 넘어왔을때 전역변수에 score 넣어줌
-  //step1에서 step2로 넘어왔을때 문항 추가했을 때 score 넣어줌
-  // useEffect(() => {
-  //   if (
-  //     contentNumQuotient &&
-  //     quotient !== null &&
-  //     isEditWorkbook === undefined
-  //   ) {
-  //     setContentNumQuotient((prevData) => {
-  //       let updated = false;
-  //       const newData = prevData.map((item) => {
-  //         if (item.score === undefined) {
-  //           updated = true;
-  //           return {
-  //             ...item,
-  //             score:
-  //               remainderContent && item.num <= remainderContent
-  //                 ? (quotient as number)
-  //                 : nextRemainderContent && item.num >= nextRemainderContent
-  //                   ? quotient + 1
-  //                   : 0,
-  //           };
-  //         }
-  //         return item;
-  //       });
-  //       return updated ? newData : prevData;
-  //     });
-  //   }
-  // }, [contentNumQuotient]);
-  //수정, 복제 후 수정일 때 문항 추가 했을 때 score 넣어줌
-  // useEffect(() => {
-  //   if (contentNumQuotient && quotient !== null && isEditWorkbook === 1) {
-  //     setContentNumQuotient((prevData) => {
-  //       let updated = false;
-  //       const newData = prevData.map((item) => {
-  //         if (item.score === undefined) {
-  //           updated = true;
-  //           return {
-  //             ...item,
-  //             score:
-  //               remainderContent && item.num <= remainderContent
-  //                 ? (quotient as number)
-  //                 : nextRemainderContent && item.num >= nextRemainderContent
-  //                   ? quotient + 1
-  //                   : 0,
-  //           };
-  //         }
-  //         return item;
-  //       });
-  //       return updated ? newData : prevData;
-  //     });
-  //   }
-  // }, [contentNumQuotient]);
-
-  //문항 번호가 없을 때 문항 번호 부여해주기
-  // useEffect(() => {
-  //   if (initialItems && initialItems.length > 0) {
-  //     // initialItems 배열에서 num 속성이 있는 항목들만 모아서 정렬
-  //     const itemsWithNum = initialItems
-  //       .filter((item) => item.num)
-  //       .sort((a, b) => a.num - b.num);
-
-  //     // 가장 큰 num 값을 찾음
-  //     const maxNum =
-  //       itemsWithNum.length > 0 ? itemsWithNum[itemsWithNum.length - 1].num : 0;
-
-  //     // num 속성이 없는 항목들에 새로운 num 값을 부여
-  //     let newNum = maxNum + 1;
-  //     let updated = false;
-  //     const updatedItems = initialItems.map((item) => {
-  //       if (!item.num) {
-  //         updated = true;
-  //         return { ...item, num: newNum++ };
-  //       }
-  //       return item;
-  //     });
-  //     if (updated) {
-  //       setInitialItems(updatedItems);
-  //     }
-  //   }
-  // }, []);
 
   //배점 옵션 => MathviewerAccordionStep2로 넘겨줌
   const [quotientOption, setQuotientOption] = useState<
     { code: string; idx: number; name: string; value: number }[]
   >([]);
-  useEffect(() => {
-    if (minQuotient === quotient) {
-      setQuotientOption([
-        {
-          code: '0',
-          idx: 0,
-          name: `${minQuotient}점`,
-          value: minQuotient as number,
-        },
-        {
-          code: '1',
-          idx: 1,
-          name: `${maxQuotient}점`,
-          value: maxQuotient as number,
-        },
-      ]);
-    } else {
-      setQuotientOption([
-        {
-          code: '0',
-          idx: 0,
-          name: `${minQuotient}점`,
-          value: minQuotient as number,
-        },
-        {
-          code: '1',
-          idx: 1,
-          name: `${quotient ? quotient : 0}점`,
-          value: quotient ? quotient : 0,
-        },
-        {
-          code: '2',
-          idx: 2,
-          name: `${maxQuotient}점`,
-          value: maxQuotient as number,
-        },
-      ]);
-    }
-  }, [quotient, minQuotient, maxQuotient]);
+  //배점 나머지
+  const [remainder, setRemainder] = useState<number>();
 
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
       const data = localStorage.getItem('sendData');
-      const quotientData = localStorage.getItem('sendQuotientData');
+      //const quotientData = localStorage.getItem('sendQuotientData');
       const categoryData = localStorage.getItem('sendCategoryData');
       const editData = localStorage.getItem('sendEditData');
       const itemCount = localStorage.getItem('itemCount');
@@ -413,17 +281,17 @@ export function Step2() {
         console.log('로컬 스토리지에 sendData가 없습니다.');
       }
 
-      if (quotientData) {
-        try {
-          const parsedQuotientData = JSON.parse(quotientData);
-          // console.log('sendQuotientData:', parsedQuotientData); // 디버깅용 콘솔 로그
-          setGetQuotientLocalData(parsedQuotientData);
-        } catch (error) {
-          console.error('로컬 스토리지 sendQuotientData 파싱 에러:', error);
-        }
-      } else {
-        console.log('로컬 스토리지에 sendQuotientData가 없습니다.');
-      }
+      // if (quotientData) {
+      //   try {
+      //     const parsedQuotientData = JSON.parse(quotientData);
+      //     // console.log('sendQuotientData:', parsedQuotientData); // 디버깅용 콘솔 로그
+      //     setGetQuotientLocalData(parsedQuotientData);
+      //   } catch (error) {
+      //     console.error('로컬 스토리지 sendQuotientData 파싱 에러:', error);
+      //   }
+      // } else {
+      //   console.log('로컬 스토리지에 sendQuotientData가 없습니다.');
+      // }
 
       if (categoryData) {
         try {
@@ -467,35 +335,130 @@ export function Step2() {
     return () => clearTimeout(retryTimeout);
   }, []);
 
-  //로컬데이터에서 데이타 가져 온 후 번호 부여와 함께 상태관리 변수에 저장
+  useEffect(() => {
+    if (getEditData) setWorkbookIdx(getEditData?.workbookIdx);
+  }, [getEditData]);
+
+  // 학습지 상세 정보 불러오기 api
+  const getWorkbookData = async (idx: number) => {
+    const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
+    // console.log(`getWorkbook 결과값`, res);
+    return res;
+  };
+
+  const { data: workbookData, isLoading: isWorkbookLoading } = useQuery({
+    queryKey: ['get-workbookData', workbookIdx],
+    queryFn: () => getWorkbookData(workbookIdx as number),
+    meta: {
+      errorMessage: 'get-workbookData 에러 메세지',
+    },
+    enabled: !!workbookIdx,
+  });
+
+  //로컬스토리지에서 Idx받아오면 서버 요청
+  useEffect(() => {
+    if (workbookIdx) {
+      getWorkbookData(workbookIdx);
+    }
+  }, [workbookIdx]);
+
+  //서버로부터 값을 받아오면 넣어주기
+  useEffect(() => {
+    if (workbookData) {
+      const arrayScore = workbookData?.data.data.quizList.map(
+        (item: QuizList) => item.score,
+      );
+      const totalScore = arrayScore.reduce(
+        (accumulator: number, currentValue: number) =>
+          accumulator + currentValue,
+        0,
+      );
+      const avgScore = totalScore / workbookData?.data.data.quizList.length;
+      //setQuotient(avgScore === 0 ? null : avgScore);
+      //setQuotient(avgScore);
+      //setMinQuotient(avgScore > 1 ? avgScore - 1 : avgScore);
+      //setMaxQuotient(avgScore + 1);
+      //setEqualTotalValue(totalScore.toString());
+      //setTotalEqualScore(totalScore);
+      //setRemainderContent(workbookData?.data.data.quizList.length);
+      //setNextRemainderContent(workbookData?.data.data.quizList.length + 1);
+      //setEqualScore(2);
+      setInitialItems(workbookData?.data.data.quizList);
+      setNameValue(workbookData?.data.data.name);
+      setGradeValue(workbookData?.data.data.grade);
+      setContentAuthor(workbookData?.data.data.examiner);
+      setTag(workbookData?.data.data.tag);
+      setGetItemCountData(workbookData?.data.data.quizCnt);
+      setColor(workbookData?.data.data.templateList[0].color);
+      setType(workbookData?.data.data.templateList[0].type);
+      setMultiLevel(workbookData?.data.data.templateList[0].multiLevel);
+      setAssign(workbookData?.data.data.templateList[0].assign);
+      setIsDate(workbookData?.data.data.templateList[0].isDate);
+      setIsQuizType(workbookData?.data.data.templateList[0].isQuizType);
+      setItemType(workbookData?.data.data.templateList[0].itemType);
+      setIsDone(true);
+      //window.opener.localStorage.clear();
+    }
+  }, [workbookData]);
+
   // useEffect(() => {
-  //   const filterQuizItem = initialItems.some((item) => 'score' in item);
-
-  //   if (filterQuizItem === false && getLocalData?.data.quizList) {
-  //     let globalQuestionNumber = 1; // 전역적으로 사용할 번호 변수
-
-  //     const updatedQuizList = getLocalData.data.quizList.map((quiz) => ({
-  //       ...quiz,
-  //       quizItemList: quiz.quizItemList.map((quizItem) => {
-  //         if (quizItem.type === 'QUESTION') {
-  //           return {
-  //             ...quizItem,
-  //             num: globalQuestionNumber++, // QUESTION 항목에만 번호 할당
-  //           };
-  //         }
-  //         return quizItem;
-  //       }),
-  //     }));
-
-  //     setInitialItems(updatedQuizList);
+  //   if (getQuotientLocalData) {
+  //     setEqualScore(getQuotientLocalData.equalScore);
+  //     //setEqualTotalValue(getQuotientLocalData.equalTotalValue);
+  //     setRemainderContent(getQuotientLocalData.remainderContent);
+  //     setNextRemainderContent(getQuotientLocalData.nextRemainderContent);
+  //     setQuotient(getQuotientLocalData.quotient);
+  //     setMinQuotient(getQuotientLocalData.minQuotient);
+  //     setMaxQuotient(getQuotientLocalData.maxQuotient);
   //   }
-  // }, [getLocalData]);
+  // }, [getQuotientLocalData]);
+
+  useEffect(() => {
+    if (minQuotient === quotient) {
+      setQuotientOption([
+        {
+          code: '0',
+          idx: 0,
+          name: `${minQuotient}점`,
+          value: minQuotient as number,
+        },
+        {
+          code: '1',
+          idx: 1,
+          name: `${maxQuotient}점`,
+          value: maxQuotient as number,
+        },
+      ]);
+    } else {
+      setQuotientOption([
+        {
+          code: '0',
+          idx: 0,
+          name: `${minQuotient}점`,
+          value: minQuotient as number,
+        },
+        {
+          code: '1',
+          idx: 1,
+          name: `${quotient ? quotient : 0}점`,
+          value: quotient ? quotient : 0,
+        },
+        {
+          code: '2',
+          idx: 2,
+          name: `${maxQuotient}점`,
+          value: maxQuotient as number,
+        },
+      ]);
+    }
+  }, [quotient, minQuotient, maxQuotient]);
 
   //수정, 복제후 수정일 때 step3 갔다가 돌아왔을 때 상태관리
   useEffect(() => {
     if (getLocalData) {
       setIsEditWorkbook(getLocalData.data.isEditWorkbook);
       setInitialItems(getLocalData.data.quizList);
+      setTotalEqualScore(0);
     }
   }, [getLocalData]);
 
@@ -503,7 +466,6 @@ export function Step2() {
     if (getEditData) setIsEditWorkbook(getEditData?.isEditWorkbook);
   }, [getEditData]);
 
-  const [tabVeiw, setTabVeiw] = useState<string>('학습지 요약');
   const menuList = [
     {
       label: '학습지 요약',
@@ -530,32 +492,6 @@ export function Step2() {
     { value: levelUpper, label: '상' },
     { value: levelBest, label: '최상' },
   ];
-
-  const [page, setPage] = useRecoilState(pageAtom);
-
-  const [isStartDnD, setIsStartDnd] = useState(false);
-
-  // 선택한 문항 배열 정렬
-  const selectArrange = [
-    {
-      idx: 0,
-      name: '사용자 정렬',
-      value: '0',
-      options: [
-        { idx: 0, name: '객관식 상단배치', value: '0' },
-        { idx: 1, name: '무작위 정렬', value: '1' },
-      ],
-    },
-  ];
-
-  const initialValues: { [key: number]: string } = selectArrange.reduce(
-    (acc, el) => {
-      acc[el.idx] = el.name;
-      return acc;
-    },
-    {} as { [key: number]: string },
-  );
-  const [defaultValues, setDefaultValues] = useState(initialValues);
 
   //객관식 상단배치
   useEffect(() => {
@@ -619,14 +555,6 @@ export function Step2() {
     },
   ];
 
-  // 새 문항 추가
-  const [newQuizItems, setNewQuizItems] = useState<SimilarQuizList>();
-  const [newQuizPrevItems, setNewQuizPrevItems] = useState<SimilarQuizList[]>(
-    [],
-  );
-  //console.log('newQuizItems', newQuizItems);
-  const [newQuizItemSetting, setNewQuizItemSetting] = useState<any>();
-
   // 새 문항 문항 불러오기 api
   const postnewQuizList = async (data: any) => {
     return await quizService.post(`/v1/search/quiz/step/1`, data);
@@ -660,7 +588,7 @@ export function Step2() {
     });
 
   useEffect(() => {
-    if (tabVeiw === '새 문항 추가') {
+    if (tabView === '새 문항 추가') {
       const data = {
         itemTreeKeyList: isRangeSetting ? makingdata : getCategoryLocalData,
         count: 10,
@@ -675,7 +603,7 @@ export function Step2() {
       };
       postNewQuizData(data);
     }
-  }, [tabVeiw]);
+  }, [tabView]);
 
   //새로 불러오기
   const clickGetNewQuiz = () => {
@@ -694,7 +622,7 @@ export function Step2() {
       isMePriority: false,
       filterList: initialItems.map((quiz) => quiz.code),
     };
-    setNewQuizItemSetting(data);
+    //setNewQuizItemSetting(data);
     postNewQuizData(data);
   };
 
@@ -714,8 +642,6 @@ export function Step2() {
     }
   };
 
-  //범위 변경
-  const [isRangeSetting, setIsRangeSetting] = useState<boolean>(false);
   const openRangeSetting = () => {
     setIsRangeSetting(true);
   };
@@ -725,189 +651,59 @@ export function Step2() {
 
   useEffect(() => {
     setIsRangeSetting(false);
-  }, [tabVeiw]);
+  }, [tabView]);
 
-  const [radio1depthCheck, setRadio1depthCheck] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
-  const [radio2depthCheck, setRadio2depthCheck] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
-  const [radio3depthCheck, setRadio3depthCheck] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
-  const [radio4depthCheck, setRadio4depthCheck] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
-  const [radio5depthCheck, setRadio5depthCheck] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
-  const [radio6depthCheck, setRadio6depthCheck] = useState<RadioStateType>({
-    title: '',
-    checkValue: 0,
-    code: '',
-    key: '',
-  });
-  const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
-  const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
-  const [selected1depth, setSelected1depth] = useState<string>('');
-  const [selected2depth, setSelected2depth] = useState<string>('');
-  const [selected3depth, setSelected3depth] = useState<string>('');
-  const [selected4depth, setSelected4depth] = useState<string>('');
-  const [selected5depth, setSelected5depth] = useState<string>('');
-  const [selected6depth, setSelected6depth] = useState<string>('');
-  const [selectedCategoryEtc1, setSelectedCategoryEtc1] = useState<string[]>([
-    '',
-  ]);
-  const [selectedCategoryEtc2, setSelectedCategoryEtc2] = useState<string[]>([
-    '',
-  ]);
-  const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
-
-  const [nextList1depth, setNextList1depth] = useState([
-    { code: '', idx: 0, name: '' },
-  ]);
-  const [nextList2depth, setNextList2depth] = useState([
-    { code: '', idx: 0, name: '' },
-  ]);
-  const [nextList3depth, setNextList3depth] = useState([
-    { code: '', idx: 0, name: '' },
-  ]);
-  const [nextList4depth, setNextList4depth] = useState([
-    { code: '', idx: 0, name: '' },
-  ]);
-  const [nextList5depth, setNextList5depth] = useState([
-    { code: '', idx: 0, name: '' },
-  ]);
-
-  const [unitClassificationList, setUnitClassificationList] = useState<
-    UnitClassificationType[][]
-  >([]);
-  const [selectedClassification, setSelectedClassification] = useState<
-    UnitClassificationType[]
-  >([]);
-
-  const [isModifying, setIsModifying] = useState(false);
-
-  const [categoryItems, setCategoryItems] = useState<ItemCategoryType[]>([]); // 카테고리 항목을 저장할 상태
-  const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([
-    [{ code: '', idx: 0, name: '' }],
-  ]);
-  const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
-  const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
-
-  const [categoryAddInfoList, setCategoryAddInfoList] = useState<
-    ItemCategoryType[][]
-  >([]); // 각 카테고리의 상세 리스트를 저장할 상태
-  const [itemTree, setItemTree] = useState<ItemTreeListType[]>([]);
-  const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
-
-  //  카테고리 불러오기 api
-  const getCategory = async () => {
-    const res = await classificationInstance.get(`/v1/category`);
-    // console.log(`getCategory 결과값`, res);
+  //그룹 화면설정 정보 불러오기 api
+  const getMenu = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=workbookClassificationSetting`,
+    );
+    //console.log(res);
     return res;
   };
   const {
-    data: categoryData,
-    isLoading: isCategoryLoading,
-    error: categoryDataError,
-    refetch: categoryDataRefetch,
-    isSuccess,
+    data: menuData,
+    isLoading: isMenuLoading,
+    refetch: menuRefetch,
   } = useQuery({
-    queryKey: ['get-category'],
-    queryFn: getCategory,
+    queryKey: ['get-menu'],
+    queryFn: getMenu,
     meta: {
-      errorMessage: 'get-category 에러 메세지',
+      errorMessage: 'get-menu 에러 메세지',
     },
   });
 
-  // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
   useEffect(() => {
-    if (categoryDataError) {
-      categoryDataRefetch();
-    }
-    if (categoryData) {
-      setCategoryItems(categoryData.data.data.categoryItemList);
-    }
-  }, [categoryData, categoryDataError, categoryDataRefetch]);
+    if (menuData) {
+      const filterList = menuData.data.data.menuDetailList;
+      const nameListArray = filterList[0]?.nameList?.split(',') || [];
+      const typeListArray = filterList[0]?.idxList.split(',') || [];
+      const typeList = filterList[0]?.idxList;
 
-  useEffect(() => {
-    if (isSuccess) {
-      setIsCategoryLoaded(true);
+      const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
+        (item: string) => item === 'true',
+      );
+      const newArray = nameListArray
+        .map((name: string, index: number) => ({
+          name,
+          idx: typeListArray[index],
+          view: viewListArray[index] || false,
+          search: searchListArray[index] || false,
+        }))
+        .filter((item: string) => item.search);
+      setSelectedList(newArray);
+      setCategoryTypeList(typeList);
     }
-  }, [isSuccess]);
+  }, [menuData]);
 
-  // 카테고리의 그룹 유형 조회
-  const getCategoryGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/group/A'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
-    return response.data.data;
-  };
-  const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
-    queryKey: ['get-category-groups-A'],
-    queryFn: getCategoryGroups,
-    enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups 에러 메세지',
-    },
-  });
   useEffect(() => {
     if (isRangeSetting && categoryTypeList) {
       fetchCategoryItems(categoryTypeList, setCategoryList);
     }
   }, [categoryTypeList, isRangeSetting]);
-
-  //groupsData값 들어왔을때 typeList 관리
-  useEffect(() => {
-    if (groupsData) {
-      setCategoryTypeList(groupsData.typeList);
-    }
-  }, [groupsData]);
-
-  //groupsData값 들어왔을때 nameList 관리
-  useEffect(() => {
-    if (groupsData) {
-      setCategoryNameList(groupsData.nameList);
-    }
-  }, [groupsData]);
-
-  // 카테고리의 그룹 유형 조회 (출처)
-  const getCategoryGroupsE = async () => {
-    const response = await classificationInstance.get('/v1/category/group/E');
-    return response.data.data.typeList;
-  };
-  const {
-    data: groupsEData,
-    refetch: groupsDataERefetch,
-    isFetching: groupsDataEIsFetching,
-  } = useQuery({
-    queryKey: ['get-category-groups-E'],
-    queryFn: getCategoryGroupsE,
-    enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups-E 에러 메세지',
-    },
-  });
-  useEffect(() => {
-    if (groupsEData) {
-      fetchCategoryItems(groupsEData, setCategoriesE);
-    }
-  }, [groupsEData]);
 
   // 카테고리의 그룹 유형 조회
   const fetchCategoryItems = async (
@@ -916,376 +712,136 @@ export function Step2() {
   ) => {
     const typeIds = typeList.split(',');
     try {
-      setIsCategoryLoaded(true);
+      if (typeIds.length > 0) {
+        const response = await classificationInstance.get(
+          `/v1/category/class/${typeIds[0]}`,
+        );
+        const itemsList = response?.data?.data?.categoryClassList || [];
 
-      const requests = typeIds.map((id) =>
-        classificationInstance
-          .get(`/v1/category/class/${id}`)
-          .catch((error) => {
-            if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
-              setRefreshTokenCalled(true);
-              postRefreshToken().then(() => {
-                setRefreshTokenCalled(false);
-              });
-            }
-          }),
-      );
-      const responses = await Promise.all(requests);
-      const itemsList = responses.map(
-        (res) => res?.data?.data?.categoryClassList,
-      );
-
-      setCategory(itemsList);
+        setCategory([itemsList]); // 2D 배열로 설정
+      }
     } finally {
-      setIsCategoryLoaded(false);
+      //console.log('finally');
     }
   };
 
   // 라디오 버튼 설정
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const depth =
-      e.target.parentElement?.parentElement?.parentElement?.parentElement
-        ?.parentElement?.classList[0];
-    const itemId =
-      e.target.parentElement?.parentElement?.parentElement?.parentElement
-        ?.parentElement?.id;
+    const radioValue = e.currentTarget.value; // 선택된 값
+    const radioName = e.currentTarget.name; // radio 버튼의 name 값
+    const radioClass = e.currentTarget.className; // radio 버튼의 class
 
-    switch (depth) {
-      case '1depth':
-        setSelected1depth(e.currentTarget.id);
-        setRadio1depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '2depth':
-        setSelected2depth(e.currentTarget.value);
-        setRadio2depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '3depth':
-        setSelected3depth(e.currentTarget.value);
-        setRadio3depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '4depth':
-        setSelected4depth(e.currentTarget.value);
-        setRadio4depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '5depth':
-        setSelected5depth(e.currentTarget.value);
-        setRadio5depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      case '6depth':
-        setSelected6depth(e.currentTarget.value);
-        setRadio6depthCheck({
-          title: e.currentTarget.name,
-          checkValue: Number(e.currentTarget.value),
-          code: e.currentTarget.className,
-          key: itemId as string,
-        });
-        break;
-      default:
-        break;
+    // selectedList에서 해당 name에 맞는 항목을 찾아서 selected 값을 업데이트
+    const updatedSelectedList = selectedList.map((item) => {
+      if (item.name === radioClass) {
+        return {
+          ...item,
+          selected: radioValue, // 선택된 값을 selected로 업데이트
+          selectedName: radioName,
+        };
+      }
+      return item;
+    });
+
+    // 현재 선택된 항목의 인덱스
+    const updateIndex = updatedSelectedList.findIndex(
+      (item) => item.name === radioClass,
+    );
+
+    // 선택된 항목 이후의 값 초기화
+    const finalizedSelectedList = updatedSelectedList.map((item, index) => {
+      if (index > updateIndex) {
+        const { selected, selectedName, ...rest } = item; // selected와 selectedName 제거
+        return rest;
+      }
+      return item;
+    });
+
+    // selectedList를 업데이트합니다.
+    setSelectedList(finalizedSelectedList);
+
+    // pidxList를 업데이트 (radioValue를 pidx로 설정)
+    const updatedPidxList: number[] = [];
+    const indexToUpdate = selectedList.findIndex(
+      (item) => item.name === radioClass,
+    );
+
+    if (indexToUpdate !== -1) {
+      updatedPidxList[indexToUpdate] = Number(radioValue);
     }
-  };
 
-  // 다중 라디오 버튼 설정
-  const handleMultiRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const depth =
-      e.target.parentElement?.parentElement?.parentElement?.parentElement
-        ?.parentElement?.classList[0];
-    const itemId =
-      e.target.parentElement?.parentElement?.parentElement?.parentElement
-        ?.parentElement?.id;
+    // 선택된 리스트를 순회하며 필요한 데이터 가져오기
+    updatedSelectedList.forEach((list, index) => {
+      if (list.search) {
+        const nextItem = updatedSelectedList[index + 1]; // 다음 항목
+        const itemIdx = nextItem ? nextItem.idx : null; // 다음 항목의 idx
+        const pidx = updatedPidxList[index]; // 현재 선택된 pidx
 
-    const title = e.currentTarget.name;
-    const code = e.currentTarget.className;
-    const value = e.currentTarget.value;
+        if (itemIdx !== null && pidx !== undefined) {
+          fetchCategoryList(itemIdx, pidx, index);
+        }
+      }
+    });
 
-    switch (depth) {
-      case 'etc1':
-        setSelectedCategoryEtc1(() => {
-          if (selectedCategoryEtc1.includes(value)) {
-            const updated = selectedCategoryEtc1.filter((v) => v !== value);
-            return updated;
-          } else {
-            const updated = [...selectedCategoryEtc1, value];
-            return updated;
-          }
-        });
+    // 마지막 항목인지 확인하고 `categoryItemTreeDataMutate` 실행
+    const isLastItem =
+      updatedSelectedList.findIndex((item) => item.name === radioClass) ===
+      updatedSelectedList.length - 1;
 
-        setRadioEtc1Check(() => {
-          if (radioEtc1Check.some((item) => item.checkValue == Number(value))) {
-            return radioEtc1Check.filter(
-              (item) => item.checkValue !== Number(value),
-            );
-          } else {
-            return [
-              ...radioEtc1Check,
-              {
-                title: title,
-                checkValue: Number(value),
-                code: code,
-                key: itemId as string,
-              },
-            ];
-          }
-        });
-        break;
-
-      case 'etc2':
-        setSelectedCategoryEtc2(() => {
-          if (selectedCategoryEtc2.includes(value)) {
-            const updated = selectedCategoryEtc2.filter((v) => v !== value);
-            return updated;
-          } else {
-            const updated = [...selectedCategoryEtc2, value];
-            return updated;
-          }
-        });
-
-        setRadioEtc2Check(() => {
-          if (radioEtc2Check.some((item) => item.checkValue == Number(value))) {
-            return radioEtc2Check.filter(
-              (item) => item.checkValue !== Number(value),
-            );
-          } else {
-            return [
-              ...radioEtc2Check,
-              {
-                title: title,
-                checkValue: Number(value),
-                code: code,
-                key: itemId as string,
-              },
-            ];
-          }
-        });
-        break;
-      default:
-        break;
+    if (isLastItem) {
+      categoryItemTreeDataMutate();
     }
   };
 
   /* 선택된 유형에따라 항목 조회 */
-  //1뎁스 선택시 2뎁스 설정되게
-  const getNextList1 = async () => {
-    const groupsArray = categoryTypeList.split(',').map(Number);
-    const itemIdx = groupsArray[1];
-    const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
+  const fetchCategoryList = async (
+    itemIdx: number, //구하고자 하는 유형의 idx
+    pidx: number, //클릭한 유형의 idx
+    index: number,
+  ) => {
     try {
       const res = await classificationInstance.get(
         `/v1/category/${itemIdx}/${pidx}`,
       );
-      setNextList1depth(res?.data.data.categoryClassList);
-      return res.data;
-    } catch (error: any) {
-      if (error.response.data.code == 'GE-002') postRefreshToken();
-      return undefined;
-    }
-  };
-  const { data: nextListData1, refetch: nextListData1Refetch } = useQuery({
-    queryKey: ['get-nextList1'],
-    queryFn: getNextList1,
-    meta: {
-      errorMessage: 'get-nextList1 에러 메세지',
-    },
-    // 체크된 값이 있을때 조회
-    enabled: radio1depthCheck.code !== '',
-  });
-
-  //2뎁스 선택시 3뎁스 설정되게
-  const getNextList2 = async () => {
-    const groupsArray = categoryTypeList.split(',').map(Number);
-    const itemIdx = groupsArray[2];
-    const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
-    try {
-      const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
-      );
-      setNextList2depth(res?.data.data.categoryClassList);
-      return res.data;
-    } catch (error: any) {
-      if (error.response.data.code == 'GE-002') postRefreshToken();
-      return undefined;
-    }
-  };
-  const { data: nextListData2, refetch: nextListData2Refetch } = useQuery({
-    queryKey: ['get-nextList2'],
-    queryFn: getNextList2,
-    meta: {
-      errorMessage: 'get-nextList2 에러 메세지',
-    },
-    // 체크된 값이 있을때 조회
-    enabled: radio2depthCheck.code !== '',
-  });
-
-  //3뎁스 선택시 4뎁스 설정되게
-  const getNextList3 = async () => {
-    const groupsArray = categoryTypeList.split(',').map(Number);
-    const itemIdx = groupsArray[3];
-    const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
-    try {
-      const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
-      );
-      setNextList3depth(res?.data.data.categoryClassList);
-      return res.data;
-    } catch (error: any) {
-      if (error.response.data.code == 'GE-002') postRefreshToken();
-      return undefined;
-    }
-  };
-  const { data: nextListData3, refetch: nextListData3Refetch } = useQuery({
-    queryKey: ['get-nextList3'],
-    queryFn: getNextList3,
-    meta: {
-      errorMessage: 'get-nextList3 에러 메세지',
-    },
-    // 체크된 값이 있을때 조회
-    enabled: radio3depthCheck.code !== '',
-  });
-
-  const isRadioStateType = (
-    item: UnitClassificationType,
-  ): item is RadioStateType => {
-    return (item as RadioStateType).title !== undefined;
-  };
-
-  //useMemo를 사용하여 makingdata값을 기억하며 unitClassificationList가 변경될때 업데이트
-  const makingdata = useMemo(
-    () =>
-      unitClassificationList.map((item) => {
-        // 타입 가드로 RadioStateType인지 확인 후 title에 접근
-        const itemTreeKey = {
-          교육과정: isRadioStateType(item[0]) ? item[0].title : '',
-          학교급: isRadioStateType(item[1]) ? item[1].title : '',
-          학년: isRadioStateType(item[2]) ? item[2].title : '',
-          학기: isRadioStateType(item[3]) ? item[3].title : '',
-          교과: isRadioStateType(item[4]) ? item[4].title : '',
-          과목: isRadioStateType(item[5]) ? item[5].title : '',
-        };
-
-        // ItemTreeIdxListType인지 확인 후 checkedDepthList에 접근
-        const itemTreeIdxList =
-          (item[6] as ItemTreeIdxListType).itemTreeIdxList || [];
-
-        return {
-          itemTreeKey,
-          itemTreeIdxList,
-        };
-      }),
-    [unitClassificationList],
-  );
-
-  const setNextList = (idx: number) => {
-    //교과 과목 오픈여부 라디오 버튼 셋팅
-    if (categoriesE && idx == 4) {
-      setNextList4depth(categoriesE[0]);
-    }
-    if (categoriesE && idx == 5) {
-      setNextList5depth(categoriesE[1]);
+      const newCategoryLists = [...categoryList];
+      newCategoryLists.splice(index + 1);
+      newCategoryLists[index + 1] = res?.data?.data?.categoryClassList || [];
+      setCategoryList(newCategoryLists);
+    } catch (error) {
+      console.error(`Error fetching category list for index ${index}:`, error);
     }
   };
 
-  useEffect(() => {
-    if (radio1depthCheck.code !== '') nextListData1Refetch();
-    if (radio2depthCheck.code !== '') nextListData2Refetch();
-    if (radio3depthCheck.code !== '') nextListData3Refetch();
-    if (radio4depthCheck.code !== '') setNextList(4);
-    if (radio5depthCheck.code !== '') setNextList(5);
-    if (radio6depthCheck.code !== '') setNextList(6);
-  }, [
-    radio1depthCheck,
-    radio2depthCheck,
-    radio3depthCheck,
-    radio4depthCheck,
-    radio5depthCheck,
-    radio6depthCheck,
-  ]);
+  ///쿼리스트링 만드는 함수
+  const createQueryString = (params: Record<string, string>) => {
+    return Object.entries(params)
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+      )
+      .join('&');
+  };
 
-  // 체크값 변경시 초기화
-  useEffect(() => {
-    setSelected2depth('');
-    setCheckedDepthList([]);
-  }, [selected1depth]);
-  useEffect(() => {
-    setSelected3depth('');
-    setCheckedDepthList([]);
-  }, [selected2depth]);
-  useEffect(() => {
-    setSelected4depth('');
-    setRadio4depthCheck({ title: '', checkValue: 0, code: '', key: '' });
-    setCheckedDepthList([]);
-  }, [selected3depth]);
-  useEffect(() => {
-    setSelected5depth('');
-    setCheckedDepthList([]);
-    setRadio5depthCheck({ title: '', checkValue: 0, code: '', key: '' });
-  }, [selected4depth]);
-  useEffect(() => {
-    setSelected6depth('');
-    setCheckedDepthList([]);
-    setRadio6depthCheck({ title: '', checkValue: 0, code: '', key: '' });
-  }, [selected5depth]);
-  useEffect(() => {
-    setSearchValue('');
-    setCheckedDepthList([]);
-    setSelectedCategoryEtc1([]);
-    setSelectedCategoryEtc2([]);
-    setRadioEtc1Check([]);
-    setRadioEtc2Check([]);
-  }, [selected6depth]);
-
-  // 카테고리 선택후 아이템트리
-  // 아이템 트리 불러오기 api
   const postCategoryItemTree = async () => {
-    const depthChecks = [
-      radio1depthCheck,
-      radio2depthCheck,
-      radio3depthCheck,
-      radio4depthCheck,
-      radio5depthCheck,
-      radio6depthCheck,
-    ];
+    const depthChecks = selectedList.map((el) => el.selectedName);
 
     //서버로 부터 받은 nameList에 맞게 서버에 요청
-    const groupsArray = categoryNameList.split(',');
+    //const groupsArray = categoryNameList.split(',');
+    const groupsArray = selectedList.map((el) => el.name);
     const keyValuePairs = groupsArray.reduce<Record<string, string>>(
       (acc, item, index) => {
         const depthCheck = depthChecks[index];
         if (depthCheck) {
-          acc[item] = depthCheck.title; // title 속성을 사용하여 acc 객체에 추가
+          acc[item] = depthCheck; // title 속성을 사용하여 acc 객체에 추가
         }
         return acc;
       },
       {},
     );
 
-    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
+    const queryString = createQueryString(keyValuePairs);
 
-    const res = await classificationInstance.post('/v2/item', itemTreeKeyList);
+    const res = await classificationInstance.get(`/v2/item?${queryString}`);
     return res;
   };
 
@@ -1302,71 +858,58 @@ export function Step2() {
         type: 'error',
         text: context.response.data.message,
       });
-      if (context.response.data.code == 'GE-002') {
+      if (context.response.data?.code == 'GE-002') {
         postRefreshToken();
       }
     },
     onSuccess: (response: { data: { data: ItemTreeListType[] } }) => {
-      // setItemTreeList(res.data.data[0].itemTreeList);
       setItemTree(response.data.data);
     },
   });
 
-  useEffect(() => {
-    if (selected6depth == '') return;
-    categoryItemTreeDataMutate();
-  }, [selected6depth]);
-
-  // 카테고리의 그룹 유형 조회 (추가정보)
-  const getAddInfoGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/group/B');
-    return response.data.data.typeList;
+  const isRadioStateType = (
+    item: UnitClassificationType,
+  ): item is RadioStateType => {
+    return (item as RadioStateType).title !== undefined;
   };
-  const { data: addInfoData } = useQuery({
-    queryKey: ['get-add-info-groups'],
-    queryFn: getAddInfoGroups,
-    enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-add-info-groups 에러 메세지',
-    },
-  });
-  useEffect(() => {
-    if (addInfoData) {
-      fetchAddInfoItems(addInfoData);
-    }
-  }, [addInfoData]);
 
-  // 카테고리의 그룹 아이템 조회 (추가정보)
-  const fetchAddInfoItems = async (typeList: string) => {
-    const typeIds = typeList.split(',');
-    try {
-      const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/class/${id}`),
+  //useMemo를 사용하여 makingdata값을 기억하며 unitClassificationList가 변경될때 업데이트
+  const makingdata = useMemo(() => {
+    return unitClassificationList.map((item) => {
+      // itemTreeKey를 동적으로 생성
+      const itemTreeKey = item.reduce(
+        (acc, cur, index) => {
+          if (isRadioStateType(cur)) {
+            // RadioStateType인 경우에만 code를 사용
+            const code = cur.code || `key_${index}`; // `code`가 없을 경우 기본 키 사용
+            acc[code] = cur.title;
+          }
+          return acc;
+        },
+        {} as Record<string, string>,
       );
-      const responses = await Promise.all(requests);
-      const itemsList = responses.map(
-        (res) => res?.data?.data?.categoryClassList,
-      );
-      setCategoryAddInfoList(itemsList);
-    } catch (error: any) {
-      if (error.response?.data?.code == 'GE-002') {
-        postRefreshToken();
-        groupsDataRefetch();
-      }
-    }
-  };
+
+      // ItemTreeIdxListType인지 확인 후 itemTreeIdxList에 접근
+      const lastItem = item[item.length - 1];
+      const itemTreeIdxList =
+        (lastItem as ItemTreeIdxListType)?.itemTreeIdxList || [];
+
+      return {
+        itemTreeKey,
+        itemTreeIdxList,
+      };
+    });
+  }, [unitClassificationList]);
 
   const saveCheckItems = () => {
-    const newClassification: UnitClassificationType[] = [
-      radio1depthCheck,
-      radio2depthCheck,
-      radio3depthCheck,
-      radio4depthCheck,
-      radio5depthCheck,
-      radio6depthCheck,
-      radioEtc1Check,
-      radioEtc2Check,
-    ];
+    const newClassification: UnitClassificationType[] = selectedList.map(
+      (item) => ({
+        title: item.selectedName || '',
+        checkValue: item.selected ? Number(item.selected) : 0,
+        code: item.name || '',
+        key: item.idx?.toString() || '',
+      }),
+    );
 
     if (checkedDepthList.length > 0) {
       newClassification.splice(6, 0, { itemTreeIdxList: checkedDepthList });
@@ -1380,7 +923,7 @@ export function Step2() {
         text: '교과정보는 최대 5개 까지 저장 가능합니다',
       });
     }
-    //선택정보 저장과 함께 체크상태 초기화
+
     //저장 성공 후
     onResetList();
   };
@@ -1391,142 +934,100 @@ export function Step2() {
       ...prevList.slice(0, idx),
       ...prevList.slice(idx + 1),
     ]);
+    setCheckedDepthList([]);
+    setSearchValue('');
   };
 
   //분류 리스트 리셋
   const onResetList = () => {
-    const reset = { title: '', checkValue: 0, code: '', key: '' };
-    const listReset = [{ code: '', idx: 0, name: '' }];
-    setRadio1depthCheck(reset);
-    setRadio2depthCheck(reset);
-    setRadio3depthCheck(reset);
-    setRadio4depthCheck(reset);
-    setRadio5depthCheck(reset);
-    setRadio6depthCheck(reset);
-    setRadioEtc1Check([]);
-    setRadioEtc2Check([]);
-    setSelected1depth('');
-    setSelected2depth('');
-    setSelected3depth('');
-    setSelected4depth('');
-    setSelected5depth('');
-    setSelected6depth('');
-    setNextList1depth(listReset);
-    setNextList2depth(listReset);
-    setNextList3depth(listReset);
-    setNextList4depth(listReset);
-    setNextList5depth(listReset);
-    setSelectedCategoryEtc1([]);
-    setSelectedCategoryEtc2([]);
+    // categoryList의 첫 번째 항목을 제외한 나머지 항목을 지웁니다
+    const resetCategoryList = [categoryList[0]];
+
+    // selectedList의 항목들의 selected와 selectedName을 지웁니다
+    const resetSelectedList = selectedList.map((item) => {
+      // `selected`와 `selectedName` 키를 삭제
+      const newItem = { ...item }; // item을 복사하여 원본을 보호
+      delete newItem.selected; // selected 키 삭제
+      delete newItem.selectedName; // selectedName 키 삭제
+      return newItem;
+    });
+
+    // categoryList와 selectedList를 업데이트합니다.
+    setCategoryList(resetCategoryList);
+    setSelectedList(resetSelectedList);
     setCheckedDepthList([]);
   };
 
   // 수정
-  const changeUnitClassification = (idx: number) => {
+  const changeUnitClassification = async (idx: number) => {
     onResetList();
-    setSelectedClassification(unitClassificationList[idx]);
-    setIsModifying(true);
+    const transformedList = unitClassificationList[idx]
+      .map((item) => {
+        // RadioStateType일 경우
+        if (
+          'key' in item &&
+          'code' in item &&
+          'checkValue' in item &&
+          'title' in item
+        ) {
+          return {
+            idx: Number(item.key), // key -> idx
+            name: item.code, // code -> name
+            search: true, // search는 true로 설정
+            selected: item.checkValue.toString(), // checkValue -> selected
+            selectedName: item.title, // title -> selectedName
+            view: false, // view는 false로 설정
+          };
+        }
+
+        // 만약 다른 타입이 있을 경우에는 처리하지 않음 (필요시 추가 처리)
+        return null;
+      })
+      // null을 제거하고 selectedListType[]으로 강제 변환
+      .filter((item) => item !== null) as selectedListType[];
+
+    setSelectedList(transformedList);
+
+    // categoryList를 업데이트할 배열을 미리 준비
+    const updatedCategoryList = [...categoryList];
+
+    // fetchCategoryLists 호출 후, 그 결과를 updatedCategoryList에 반영
+    const fetchPromises = transformedList.map(async (item, index) => {
+      const itemIdx = item.idx;
+      const pidx = Number(transformedList[index - 1]?.selected); // pidx는 현재 항목의 selected 값
+
+      if (itemIdx && pidx) {
+        try {
+          const res = await classificationInstance.get(
+            `/v1/category/${itemIdx}/${pidx}`,
+          );
+          // 서버 응답을 받아서 해당 위치에 값 반영
+          updatedCategoryList[index] = res?.data?.data?.categoryClassList || [];
+        } catch (error) {
+          console.error(
+            `Error fetching category list for index ${index}:`,
+            error,
+          );
+        }
+      }
+    });
+
+    // 모든 fetchCategoryLists 호출이 완료된 후, 한 번에 setCategoryList 호출
+    await Promise.all(fetchPromises);
+
+    // 최종적으로 updatedCategoryList를 setCategoryList에 넣어줌
+    setCategoryList(updatedCategoryList);
+    categoryItemTreeDataMutate();
   };
-
-  // 수정시 작동
-  useEffect(() => {
-    if (isModifying && selectedClassification.length > 0) {
-      const classification = selectedClassification[0] as RadioStateType;
-      setSelected1depth(classification?.checkValue?.toString() || '');
-      setRadio1depthCheck(classification);
-    }
-  }, [isModifying, selectedClassification]);
-
-  useEffect(() => {
-    if (isModifying && selected1depth !== '') {
-      const classification = selectedClassification[1] as RadioStateType;
-      setSelected2depth(classification?.checkValue?.toString() || '');
-      setRadio2depthCheck(classification);
-    }
-  }, [isModifying, selected1depth]);
-
-  useEffect(() => {
-    if (isModifying && selected2depth !== '') {
-      const classification = selectedClassification[2] as RadioStateType;
-      setSelected3depth(classification?.checkValue?.toString() || '');
-      setRadio3depthCheck(classification);
-    }
-  }, [isModifying, selected2depth]);
-
-  useEffect(() => {
-    if (isModifying && selected3depth !== '') {
-      const classification = selectedClassification[3] as RadioStateType;
-      setSelected4depth(classification?.checkValue?.toString() || '');
-      setRadio4depthCheck(classification as RadioStateType);
-    }
-  }, [isModifying, selected3depth]);
-
-  useEffect(() => {
-    if (isModifying && selected4depth !== '') {
-      const classification = selectedClassification[4] as RadioStateType;
-      setSelected5depth(classification?.checkValue?.toString() || '');
-      setRadio5depthCheck(classification as RadioStateType);
-    }
-  }, [isModifying, selected4depth]);
-
-  useEffect(() => {
-    if (isModifying && selected5depth !== '') {
-      const classification = selectedClassification[5] as RadioStateType;
-      setSelected6depth(classification?.checkValue?.toString() || '');
-      setRadio6depthCheck(classification as RadioStateType);
-    }
-  }, [isModifying, selected5depth]);
-
-  useEffect(() => {
-    if (isModifying && selected6depth !== '') {
-      const classification = selectedClassification[6] as ItemTreeIdxListType;
-      setCheckedDepthList(classification.itemTreeIdxList);
-
-      const classificationEtc1 = selectedClassification[7] as RadioStateType[];
-      // 저장되었던 행동 요소1
-      setSelectedCategoryEtc1(
-        classificationEtc1.map((el) => el.checkValue?.toString()),
-      );
-      setRadioEtc1Check(classificationEtc1);
-
-      const classificationEtc2 = selectedClassification[8] as RadioStateType[];
-      // 저장되었던 행동 요소2
-      setSelectedCategoryEtc2(
-        classificationEtc2.map((el) => el.checkValue?.toString()),
-      );
-      setRadioEtc2Check(classificationEtc2);
-
-      //초기화
-      setIsModifying(false);
-    }
-  }, [isModifying, selected6depth]);
 
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
-    if (
-      unitClassificationList.length < 5 &&
-      radio1depthCheck.code !== '' &&
-      radio2depthCheck.code !== '' &&
-      radio3depthCheck.code !== '' &&
-      radio4depthCheck.code !== '' &&
-      radio5depthCheck.code !== '' &&
-      radio6depthCheck.code !== '' &&
-      checkedDepthList.length > 0
-    ) {
+    if (unitClassificationList.length < 5 && checkedDepthList.length > 0) {
       return false;
     } else {
       return true;
     }
-  }, [
-    unitClassificationList,
-    radio1depthCheck,
-    radio2depthCheck,
-    radio3depthCheck,
-    radio4depthCheck,
-    radio5depthCheck,
-    radio6depthCheck,
-    checkedDepthList,
-  ]);
+  }, [unitClassificationList, checkedDepthList]);
 
   const [searchValue, setSearchValue] = useState<string>('');
 
@@ -1601,10 +1102,6 @@ export function Step2() {
     return children;
   };
 
-  // 검색 단어 하이라이트 && 하이라이트간 이동 처리
-  const [highlightIndex, setHighlightIndex] = useState<number>(-1);
-  const contentRef = useRef<HTMLDivElement>(null);
-
   const highlightText = (text: string, searchValue: string) => {
     if (searchValue.length < 2) return text;
     const parts = text.split(new RegExp(`(${searchValue})`, 'gi'));
@@ -1648,10 +1145,7 @@ export function Step2() {
     setHighlightIndex(-1);
   }, [itemTree, searchValue]);
 
-  const navigate = useNavigate();
-
   //신고하기
-  const { openModal } = useModal();
   const openReportProcess = (idx: number) => {
     openModal({
       title: '',
@@ -1704,17 +1198,6 @@ export function Step2() {
             prevItems.filter((item) => item !== selectedQuizItem),
           );
         }
-
-        // 총 배점 관리를 위해서 전역 데이터 업데이트
-        // if (isQuizNumExists) {
-        //   setContentNumQuotient((prevItems) => {
-        //     // 항목을 필터링하고 quizNum 순서로 정렬
-        //     const updatedItems = prevItems
-        //       .filter((item) => item !== isQuizNumExists)
-        //       .sort((a, b) => a.num - b.num);
-        //     return updatedItems;
-        //   });
-        // }
       }
     }
   };
@@ -1733,7 +1216,7 @@ export function Step2() {
       meta: {
         errorMessage: 'get-favoriteCategory 에러 메세지',
       },
-      enabled: tabVeiw == '즐겨찾는 문항',
+      enabled: tabView == '즐겨찾는 문항',
     });
 
   const [selectItemList, setSelectItemList] = useState<any[]>([]);
@@ -1757,8 +1240,6 @@ export function Step2() {
     },
   ];
 
-  const [onFilter, setOnFilter] = useState<boolean>(false);
-  const [filterValue, setFilterValue] = useState<string>('');
   useEffect(() => {
     if (defaultValues[2] === '유형을 선택해주세요.') {
       setOnFilter(false);
@@ -1769,9 +1250,6 @@ export function Step2() {
       favoriteQuizDataRefetch();
     }
   }, [defaultValues[2]]);
-
-  const [favoriteQuestionList, setFavoriteQuestionList] =
-    useState<FavoriteQuizList>();
 
   // 문항 즐겨찾기리스트 불러오기 api
   const getFavoriteQuiz = async (page: any) => {
@@ -1791,7 +1269,7 @@ export function Step2() {
       meta: {
         errorMessage: 'get-favoriteQuizList 에러 메세지',
       },
-      enabled: tabVeiw == '즐겨찾는 문항',
+      enabled: tabView == '즐겨찾는 문항',
     },
   );
 
@@ -1935,24 +1413,9 @@ export function Step2() {
     mutateQuizFavorite(favoriteItem);
   };
 
-  const [isPriorityQuiz, setIsPriorityEven] = useState(false);
   const selectPriorityQuiz = () => {
     setIsPriorityEven(!isPriorityQuiz);
   };
-
-  // 유사문항
-  const [isSimilar, setIsSimilar] = useState(false);
-  const [similarOriginItems, setSimilarOriginItems] =
-    useState<SimilarQuizList | null>(null);
-  const [similarItems, setSimilarItems] = useState<SimilarQuizList | null>(
-    null,
-  );
-  const [similarItemCode, setSimilarItemCode] = useState<string>('');
-  const [similarItemIndex, setSimilarItemIndex] = useState<number | null>(null);
-  const [similarItemNumber, setSimilarItemNumber] = useState<number>();
-  const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
-    [],
-  );
 
   // 유사문항 요청 api
   const postSimilarItems = async () => {
@@ -1994,10 +1457,10 @@ export function Step2() {
   });
 
   // 유사문항 버튼 클릭
-  const showSimilarContent = (code: string, index: number, type: string) => {
+  const showSimilarContent = (code: string, order: number, idx: number) => {
     setSimilarItemCode(code);
-    setSimilarItemIndex(index);
-    setSimilarItemNumber(index + 1);
+    setInitialItemOrder(order);
+    setInitialItemIdx(idx);
     if (isSimilar) {
       setIsSimilar(!isSimilar);
       setSimilarItems(null);
@@ -2036,12 +1499,8 @@ export function Step2() {
       const allNewQuizItems = newQuizItems.quizList;
       if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
         setInitialItems((prevItems) => {
-          // const maxNum = prevItems.reduce((max, item) => {
-          //   return item.num && item.num > max ? item.num : max;
-          // }, 0);
           const updatedQuizItem = allNewQuizItems.map((item, index) => ({
             ...item,
-            //num: item.num ?? maxNum + 1 + index,
           }));
           const filteredQuizItem = updatedQuizItem.filter(
             (updatedItem) =>
@@ -2072,12 +1531,8 @@ export function Step2() {
       const allNewQuizItems = favoriteQuestionList.quizList;
       if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
         setInitialItems((prevItems) => {
-          // const maxNum = prevItems.reduce((max, item) => {
-          //   return item.num && item.num > max ? item.num : max;
-          // }, 0);
           const updatedQuizItem = allNewQuizItems.map((item, index) => ({
             ...item,
-            //num: item.num ?? maxNum + 1 + index,
           }));
           const filteredQuizItem = updatedQuizItem.filter(
             (updatedItem) =>
@@ -2087,15 +1542,6 @@ export function Step2() {
           );
           return [...prevItems, ...filteredQuizItem];
         });
-        // setFavoriteQuestionList((prevItems) => {
-        //   if (prevItems) {
-        //     return {
-        //       ...prevItems,
-        //       quizList: [],
-        //     };
-        //   }
-        //   return prevItems;
-        // });
       } else {
         openToastifyAlert({
           type: 'error',
@@ -2139,12 +1585,8 @@ export function Step2() {
           } else {
             setInitialItems((prevItems) => {
               if (prevItems) {
-                // const maxNum = prevItems.reduce((max, item) => {
-                //   return item.num && item.num > max ? item.num : max;
-                // }, 0);
                 const updatedQuizItem = {
                   ...selectedQuizItem,
-                  //num: selectedQuizItem.num ?? maxNum + 1,
                 };
                 return [...prevItems, updatedQuizItem];
               }
@@ -2204,17 +1646,12 @@ export function Step2() {
           } else {
             setInitialItems((prevItems) => {
               if (prevItems) {
-                // 현재 문항들 중에서 num이 있는 문항들만 필터링하여 num의 최대값 찾기
-                // const maxNum = prevItems.reduce((max, item) => {
-                //   return item.num && item.num > max ? item.num : max;
-                // }, 0);
                 const updatedQuizItem = {
                   ...selectedQuizItem,
-                  //num: selectedQuizItem.num ?? maxNum + 1,
                 };
                 return [...prevItems, updatedQuizItem];
               }
-              return [selectedQuizItem]; // 초기 상태 설정
+              return [selectedQuizItem];
             });
             setNewQuizItems((prevItems) => {
               if (prevItems) {
@@ -2237,34 +1674,6 @@ export function Step2() {
       }
     }
   };
-
-  //즐겨찾기 문항 추가 여부
-  const [isAdded, setIsAdded] = useState(false);
-
-  // useEffect(() => {
-  //   // 누적 `num` 값을 유지할 변수
-  //   let currentNum = 1;
-
-  //   // `initialItems` 순회
-  //   const updatedItems = initialItems.map((item) => {
-  //     const updatedQuizItemList = item.quizItemList.map((quizItem) => {
-  //       if (quizItem.type === 'QUESTION') {
-  //         return {
-  //           ...quizItem,
-  //           num: currentNum++, // `num` 값을 부여하고 증가
-  //         };
-  //       }
-  //       return quizItem; // `QUESTION`이 아니면 그대로 반환
-  //     });
-
-  //     return {
-  //       ...item,
-  //       quizItemList: updatedQuizItemList,
-  //     };
-  //   });
-
-  //   setInitialItems(updatedItems);
-  // }, [similarItems, newQuizItems, isAdded]);
 
   const clickAddFavoriteQuizItem = (code: string) => {
     // 즐겨찾기 리스트
@@ -2299,15 +1708,8 @@ export function Step2() {
           } else {
             setInitialItems((prevItems) => {
               if (prevItems) {
-                // 현재 문항들 중에서 num이 있는 문항들만 필터링하여 num의 최대값 찾기
-                // const maxNum = prevItems.reduce((max, item) => {
-                //   return item.num && item.num > max ? item.num : max;
-                // }, 0);
-
-                // selectedQuizItem에 num이 없으면 부여해서 score 부여
                 const updatedQuizItem = {
                   ...selectedQuizItem,
-                  //num: selectedQuizItem.num ?? maxNum + 1,
                 };
 
                 return [...prevItems, updatedQuizItem];
@@ -2315,9 +1717,8 @@ export function Step2() {
               return [
                 {
                   ...selectedQuizItem,
-                  //num: selectedQuizItem.num ?? 1
                 },
-              ]; // 초기 상태 설정, num이 없으면 1 부여
+              ];
             });
             setIsAdded(!isAdded);
           }
@@ -2465,35 +1866,61 @@ export function Step2() {
     setInitialItems(processedItems); // 중복 제거된 데이터로 상태 갱신
   }, [isDone]);
 
-  //리스트 문항 교체하기 버그 발견/해결요망
+  //console.log('similarItems', similarItems);
+  //console.log('initialItems', initialItems);
+  //리스트 문항 교체하기
   const clickSwapQuizItem = (
     similarItems: SimilarQuizList | undefined,
     similarItemIndex: number,
     initialItems: QuizList[],
-    initialItemIndex: number,
+    initialItemOrder: number,
   ) => {
     //console.log('similarItems;', similarItems);
     //console.log('similarItemIndex;', similarItemIndex);
     //console.log('initialItems;', initialItems);
-    //console.log('initialItemIndex;', initialItemIndex);
+    //console.log('initialItemOrder;', initialItemOrder);
+
     if (similarItems && initialItems) {
       const newSimilarItems = [...similarItems.quizList];
       const newInitialItems = [...initialItems];
-      //console.log('newSimilarItems;', newSimilarItems);
-      //console.log('newInitialItems;', newInitialItems);
+
+      // initialItems에서 quizItemList를 순회하며 order가 initialItemOrder와 같은 항목 찾기
+      let initialItemIndex = -1;
+      for (let i = 0; i < newInitialItems.length; i++) {
+        const quizItemIndex = newInitialItems[i].quizItemList.findIndex(
+          (quizItem: any) => quizItem.order === initialItemOrder,
+        );
+        if (quizItemIndex !== -1) {
+          initialItemIndex = i; // 해당 quizItem이 있는 initialItem의 index
+          break;
+        }
+      }
+
+      if (initialItemIndex === -1) {
+        console.error('Order not found in quizItemList');
+        return;
+      }
 
       // 교체할 항목을 임시 저장
       const temp = newSimilarItems[similarItemIndex];
 
-      //문항 번호 넣어주기
+      // newInitialItems에서 찾은 항목과 교체
       newSimilarItems[similarItemIndex] = {
         ...newInitialItems[initialItemIndex],
-        //num: similarItemIndex,
+        quizItemList: newInitialItems[initialItemIndex].quizItemList.map(
+          (quizItem: any) => ({
+            ...quizItem,
+            //order: initialItemOrder, // 교체 시 initialItemOrder 값 추가
+          }),
+        ),
       };
 
       newInitialItems[initialItemIndex] = {
         ...temp,
-        //num: newInitialItems[initialItemIndex].num,
+        quizItemList: temp.quizItemList.map((quizItem: any) => ({
+          ...quizItem,
+          order: initialItemOrder, // 기존 order 값 유지
+        })),
       };
 
       setSimilarItems({
@@ -2514,8 +1941,6 @@ export function Step2() {
 
   const handleButtonCheck = (e: React.MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
-    const target = e.currentTarget.childNodes[0].childNodes[0]
-      .childNodes[0] as HTMLInputElement;
   };
 
   // 로컬스토리지에 보낼데이터 저장
@@ -2534,10 +1959,10 @@ export function Step2() {
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
   useEffect(() => {
     if (
-      tabVeiw == '학습지 요약' ||
-      tabVeiw == '새 문항 추가' ||
-      tabVeiw == '즐겨찾는 문항' ||
-      tabVeiw == '개념'
+      tabView == '학습지 요약' ||
+      tabView == '새 문항 추가' ||
+      tabView == '즐겨찾는 문항' ||
+      tabView == '개념'
     ) {
       const handleBeforeUnload = (event: BeforeUnloadEvent) => {
         // 사용자에게 경고 메시지를 표시하도록 설정
@@ -2555,18 +1980,21 @@ export function Step2() {
         //window.opener.localStorage.clear();
       };
     }
-  }, [tabVeiw]);
+  }, [tabView]);
 
   //tab 선택시 선택 초기화
   useEffect(() => {
     setUnitClassificationList([]);
     onResetList();
-  }, [tabVeiw]);
+  }, [tabView]);
 
+  //그룹이였던 문항을 각각 풀어서 가공
   function createNewItems(initialItems: QuizList[]) {
     let numCounter = 1; // 'QUESTION' 타입의 항목에 대한 순차 번호
     const divideItems = initialItems.filter((item) => item.type === 'TEXT');
     const asidedItems = initialItems.filter((item) => item.type !== 'TEXT');
+
+    //('asidedItems', asidedItems);
 
     // quizCategoryList를 quizCode별로 그룹화
     const groupedCategoryItems = divideItems.reduce(
@@ -2579,6 +2007,7 @@ export function Step2() {
             acc[category.quizCode].push({
               ...category,
               groupCode: list.groupCode, // groupCode 추가
+              num: list.num,
             });
           }
         });
@@ -2587,6 +2016,7 @@ export function Step2() {
       {} as Record<string, any[]>,
     );
 
+    // quizItemList를 quizCode별로 그룹화
     const groupedItems = divideItems.reduce(
       (acc, list) => {
         list.quizItemList.forEach((item) => {
@@ -2600,6 +2030,7 @@ export function Step2() {
             acc[item.quizCode].push({
               groupCode: list.groupCode,
               groupType: item.type,
+              num: item.num,
               ...item,
             });
           }
@@ -2615,13 +2046,17 @@ export function Step2() {
     const newQuizListItems = Object.keys(groupedItems).map((quizCode, idx) => {
       const groupedItem = groupedItems[quizCode];
       const groupedCategory = groupedCategoryItems[quizCode] || [];
-
+      //console.log('groupedItem', groupedItem);
       // 각 quizCode별로 QuizList 객체 생성
       const newQuizList: QuizList = {
         groupCode: groupedItem[0].groupCode, // groupCode는 첫 번째 항목에서 가져옴
         code: quizCode,
         idx: idx + 1, // idx는 1부터 시작 (예시로 순차적인 인덱스)
-        num: 0,
+        num:
+          groupedItem
+            .filter((quiz) => quiz.type === 'QUESTION')
+            .map((quiz) => quiz.num)
+            .find((num) => num !== undefined && num !== null) ?? 0,
         score:
           groupedItem
             .filter((item) => item.type === 'QUESTION')
@@ -2662,7 +2097,6 @@ export function Step2() {
           .filter((quiz) => quiz.type === 'QUESTION')
           .map((quiz) => quiz.score)
           .find((score) => score !== undefined && score !== null) ?? 0;
-      // `QUESTION` 타입을 확인하며 순차적으로 `num` 값을 설정
       if (item.type === 'QUESTION') {
         return {
           ...item,
@@ -2671,59 +2105,36 @@ export function Step2() {
         };
       }
 
-      // // asidedItems에 score 값 추가
-      // if (item.quizItemList) {
-      //   const score =
-      //     item.quizItemList
-      //       .filter((quiz) => quiz.type === 'QUESTION')
-      //       .map((quiz) => quiz.score)
-      //       .find((score) => score !== undefined && score !== null) ?? 0;
-      //   return {
-      //     ...item,
-      //     score: score, // score 값을 추가
-      //   };
-      // }
-
       return item;
     });
-
+    //console.log('combinedItems', combinedItems);
     return combinedItems; // 합쳐진 배열을 반환
   }
 
-  //배점 모달
-  const [isEqualScoreModal, setIsEqualScoreModal] = useState<boolean>(false);
-  // 문항당 배점
-  const [isSaveEqualValue, setIsSaveEqualValue] = useState<boolean>(false);
-  //문항수 확인
-  const [receivedQuizCount, setReceivedQuizCount] = useState<number | null>(
-    null,
-  );
-  const [remainder, setRemainder] = useState<number>();
-
   //배점 로컬스토리지 저장
-  const saveLocalQutientData = () => {
-    const sendQuotientData = {
-      equalScore: equalScore,
-      equalTotalValue: equalTotalValue,
-      remainderContent: remainderContent,
-      quotient: quotient,
-      nextRemainderContent: nextRemainderContent,
-      minQuotient: minQuotient,
-      maxQuotient: maxQuotient,
-    };
-    if (equalScore === 2) {
-      localStorage.setItem(
-        'sendQuotientData',
-        JSON.stringify(sendQuotientData),
-      );
-    }
-  };
+  // const saveLocalQutientData = () => {
+  //   const sendQuotientData = {
+  //     equalScore: equalScore,
+  //     equalTotalValue: equalTotalValue,
+  //     remainderContent: remainderContent,
+  //     quotient: quotient,
+  //     nextRemainderContent: nextRemainderContent,
+  //     minQuotient: minQuotient,
+  //     maxQuotient: maxQuotient,
+  //   };
+  //   if (equalScore === 2) {
+  //     localStorage.setItem(
+  //       'sendQuotientData',
+  //       JSON.stringify(sendQuotientData),
+  //     );
+  //   }
+  // };
 
   //균등배점 저장
   const saveEqualScoreSettingModal = () => {
     if (isSaveEqualValue) {
       closeEqualScoreSettingModal();
-      saveLocalQutientData();
+      //saveLocalQutientData();
     } else {
       if (equalTotalValue) {
         openToastifyAlert({
@@ -2767,19 +2178,20 @@ export function Step2() {
       return newItems; // 상태에 업데이트할 새로운 데이터 반환
     });
   };
-  //문항리스트가 변경됐을때 배점 수정
-  useEffect(() => {
-    // score의 합계 계산
-    const totalScore = initialItems.reduce((total, item) => {
-      const quizScoreSum = item.quizItemList.reduce((sum, el) => {
-        return sum + (Number(el.score) || 0); // score를 숫자로 변환해서 합산
-      }, 0);
-      return total + quizScoreSum;
-    }, 0);
 
-    // score 합계를 상태에 업데이트
-    setTotalEqualScore && setTotalEqualScore(totalScore);
-  }, [initialItems]);
+  //문항리스트가 변경됐을때 배점 수정
+  // useEffect(() => {
+  //   // score의 합계 계산
+  //   const totalScore = initialItems.reduce((total, item) => {
+  //     const quizScoreSum = item.quizItemList.reduce((sum, el) => {
+  //       return sum + (Number(el.score) || 0); // score를 숫자로 변환해서 합산
+  //     }, 0);
+  //     return total + quizScoreSum;
+  //   }, 0);
+
+  //   // score 합계를 상태에 업데이트
+  //   setTotalEqualScore && setTotalEqualScore(totalScore);
+  // }, [initialItems]);
 
   // 균등배점 모달 닫기
   const closeEqualScoreSettingModal = () => {
@@ -2800,46 +2212,29 @@ export function Step2() {
   //console.log('totalEqualScore', totalEqualScore);
   //console.log('equalTotalValue', equalTotalValue);
 
-  // useEffect(() => {
-  //   if (!isSaveEqualValue) {
-  //     const quotientData = localStorage.getItem('sendQuotientData');
+  //선택안함 했을때
+  const noEqualScoreSetting = () => {
+    //문항 번호 정해주기기
+    let globalQuestionNumber = 1; // 전역적으로 사용할 번호 변수
 
-  //     if (quotientData) {
-  //       try {
-  //         const parsedQuotientData = JSON.parse(quotientData);
-  //         // console.log('sendQuotientData:', parsedQuotientData); // 디버깅용 콘솔 로그
-  //         setGetQuotientLocalData(parsedQuotientData);
-  //       } catch (error) {
-  //         console.error('로컬 스토리지 sendQuotientData 파싱 에러:', error);
-  //       }
-  //     } else {
-  //       console.log('로컬 스토리지에 sendQuotientData가 없습니다.');
-  //     }
-  //   }
-  // }, [isSaveEqualValue]);
-  // useEffect(() => {
-  //   // 누적 `num` 값을 유지할 변수
-  //   let currentNum = 0;
+    const updatedQuizList = initialItems.map((quiz) => ({
+      ...quiz,
+      quizItemList: quiz.quizItemList.map((quizItem) => {
+        if (quizItem.type === 'QUESTION') {
+          return {
+            ...quizItem,
+            num: globalQuestionNumber++, // QUESTION 항목에만 번호 할당
+          };
+        }
+        return quizItem;
+      }),
+    }));
+    setInitialItems(updatedQuizList);
+    setEqualTotalValue('0');
+    setTotalEqualScore(0);
+  };
 
-  //   // `initialItems` 순회
-  //   const updatedItems = initialItems.map((item) => {
-  //     const updatedQuizItemList = item.quizItemList.map((quizItem) => {
-  //       if (quizItem.type === 'QUESTION') {
-  //         return {
-  //           ...quizItem,
-  //           num: currentNum++, // `num` 값을 부여하고 증가
-  //         };
-  //       }
-  //       return quizItem; // `QUESTION`이 아니면 그대로 반환
-  //     });
-
-  //     return {
-  //       ...item,
-  //       quizItemList: updatedQuizItemList,
-  //     };
-  //   });
-  //   setInitialItems(updatedItems);
-  // }, []);
+  //균등 배점 Modal
   const openEqualScoreSettingModal = () => {
     const questionTypeCount = initialItems.reduce((totalCount, item) => {
       const questionCount = item.quizItemList.filter(
@@ -2850,26 +2245,23 @@ export function Step2() {
     }, 0);
     //총 문항수 가져오기기
     setReceivedQuizCount(questionTypeCount);
+
     //문항 번호 정해주기기
-    const filterQuizItem = initialItems.some((item) => 'score' in item);
+    let globalQuestionNumber = 1; // 전역적으로 사용할 번호 변수
 
-    if (filterQuizItem === false) {
-      let globalQuestionNumber = 1; // 전역적으로 사용할 번호 변수
-
-      const updatedQuizList = initialItems.map((quiz) => ({
-        ...quiz,
-        quizItemList: quiz.quizItemList.map((quizItem) => {
-          if (quizItem.type === 'QUESTION') {
-            return {
-              ...quizItem,
-              num: globalQuestionNumber++, // QUESTION 항목에만 번호 할당
-            };
-          }
-          return quizItem;
-        }),
-      }));
-      setInitialItems(updatedQuizList);
-    }
+    const updatedQuizList = initialItems.map((quiz) => ({
+      ...quiz,
+      quizItemList: quiz.quizItemList.map((quizItem) => {
+        if (quizItem.type === 'QUESTION') {
+          return {
+            ...quizItem,
+            num: globalQuestionNumber++, // QUESTION 항목에만 번호 할당
+          };
+        }
+        return quizItem;
+      }),
+    }));
+    setInitialItems(updatedQuizList);
 
     //알람 열기기
     setIsAlert(true);
@@ -2988,6 +2380,9 @@ export function Step2() {
           buttonType="button"
           onClick={() => {
             selectEqualScore(button.value);
+            if (button.value === 1) {
+              noEqualScoreSetting();
+            }
             if (button.value === 2) {
               openEqualScoreSettingModal();
             }
@@ -3006,12 +2401,7 @@ export function Step2() {
     ));
   };
 
-  // useEffect(() => {
-  //   if (equalScore === null) {
-  //     setTotalEqualScore(0);
-  //   }
-  // }, [equalScore === null]);
-
+  //Step3로 이동하는 함수수
   const moveStep3 = () => {
     const createdItems = createNewItems(initialItems);
     const data = {
@@ -3097,7 +2487,7 @@ export function Step2() {
                     <SimilarWrapper>
                       <SimilarTitleWrapper>
                         <SimilarTitle>
-                          {similarItemNumber}번 유사 문항
+                          {initialItemIdx}번 유사 문항
                           <SimilarTitleSpan>
                             문항을 교체하거나, 추가할 수 있습니다.
                           </SimilarTitleSpan>
@@ -3160,7 +2550,7 @@ export function Step2() {
                                           similarItems,
                                           i,
                                           initialItems,
-                                          similarItemIndex as number,
+                                          initialItemOrder as number,
                                         )
                                       }
                                       addQuizItem={() =>
@@ -3205,12 +2595,12 @@ export function Step2() {
                         menu={menuList}
                         width={'500px'}
                         lineStyle
-                        selected={tabVeiw}
-                        setTabVeiw={setTabVeiw}
+                        selected={tabView}
+                        setTabView={setTabView}
                       />
                     </TabWrapper>
                     <DiscriptionWrapper>
-                      {tabVeiw === '학습지 요약' && (
+                      {tabView === '학습지 요약' && (
                         <>
                           <Label value="문항 통계" fontSize="16px" />
                           <Discription>
@@ -3302,7 +2692,7 @@ export function Step2() {
                           </ContentsList>
                         </>
                       )}
-                      {tabVeiw === '새 문항 추가' && (
+                      {tabView === '새 문항 추가' && (
                         <>
                           <AddNewContentOption>
                             <AddNewContentIcon onClick={openRangeSetting}>
@@ -3413,188 +2803,45 @@ export function Step2() {
                                     </UnitClassifications>
 
                                     {/* 교육과정 라디오 버튼 부분 */}
-                                    {categoryItems[0] && categoryList && (
-                                      <>
-                                        {/* 교육과정 */}
-                                        {
+                                    {selectedList.map((list, index) => {
+                                      if (list.search) {
+                                        return (
                                           <div
-                                            className={`1depth`}
-                                            id={categoryNameList.split(',')[0]}
-                                            key={`selected1depth ${categoryNameList.split(',')[0]}`}
+                                            className={`${list.idx + 1}depth`}
+                                            id={list.name}
+                                            key={`selected${list.idx + 1}depth ${list.name}`}
                                           >
                                             <ButtonFormatRadio
-                                              titleText={
-                                                categoryNameList.split(',')[0]
+                                              branchValue={list.name}
+                                              titleText={list.name}
+                                              list={categoryList[index] || []}
+                                              selected={
+                                                selectedList.find(
+                                                  (item) =>
+                                                    item.name === list.name,
+                                                )?.selectedName || ''
                                               }
-                                              list={categoryList[0]}
-                                              selected={selected1depth}
                                               onChange={(e) =>
                                                 handleRadioCheck(e)
                                               }
-                                              // defaultChecked={}
-                                              checkedInput={radio1depthCheck}
-                                              $margin={`10px 0 0 0`}
+                                              $margin={`5px 0 0 0`}
                                             />
                                           </div>
-                                        }
-                                        {/* 학교급 */}
-                                        {radio1depthCheck.code !== '' &&
-                                          selected1depth !== '' && (
-                                            <div
-                                              className={`2depth`}
-                                              id={
-                                                categoryNameList.split(',')[1]
-                                              }
-                                              key={`selected2depth ${categoryNameList.split(',')[1]}`}
-                                            >
-                                              <ButtonFormatRadio
-                                                branchValue={
-                                                  categoryNameList.split(',')[1]
-                                                }
-                                                titleText={
-                                                  categoryNameList.split(',')[1]
-                                                }
-                                                list={nextList1depth}
-                                                selected={selected2depth}
-                                                onChange={(e) =>
-                                                  handleRadioCheck(e)
-                                                }
-                                                // defaultChecked={}
-                                                checkedInput={radio2depthCheck}
-                                              />
-                                            </div>
-                                          )}
-                                        {/* 학년 */}
-                                        {radio2depthCheck.code !== '' &&
-                                          selected2depth !== '' && (
-                                            <div
-                                              className={`3depth`}
-                                              id={
-                                                categoryNameList.split(',')[2]
-                                              }
-                                              key={`selected3depth ${categoryNameList.split(',')[2]}`}
-                                            >
-                                              <ButtonFormatRadio
-                                                branchValue={
-                                                  categoryNameList.split(',')[2]
-                                                }
-                                                titleText={
-                                                  categoryNameList.split(',')[2]
-                                                }
-                                                list={nextList2depth}
-                                                selected={selected3depth}
-                                                onChange={(e) =>
-                                                  handleRadioCheck(e)
-                                                }
-                                                // defaultChecked={}
-                                                checkedInput={radio3depthCheck}
-                                              />
-                                            </div>
-                                          )}
-                                        {/* 학기 */}
-                                        {radio3depthCheck.code !== '' &&
-                                          selected3depth !== '' && (
-                                            <div
-                                              className={`4depth`}
-                                              id={
-                                                categoryNameList.split(',')[3]
-                                              }
-                                              key={`selected4depth ${categoryNameList.split(',')[3]}`}
-                                            >
-                                              <ButtonFormatRadio
-                                                branchValue={
-                                                  categoryNameList.split(',')[3]
-                                                }
-                                                titleText={
-                                                  categoryNameList.split(',')[3]
-                                                }
-                                                list={nextList3depth}
-                                                selected={selected4depth}
-                                                onChange={(e) =>
-                                                  handleRadioCheck(e)
-                                                }
-                                                // defaultChecked={}
-                                                checkedInput={radio4depthCheck}
-                                              />
-                                            </div>
-                                          )}
-                                        {/* 교과 */}
-                                        {radio4depthCheck.code !== '' &&
-                                          selected4depth !== '' && (
-                                            <div
-                                              className={`5depth`}
-                                              id={
-                                                categoryNameList.split(',')[4]
-                                              }
-                                              key={`selected5depth ${categoryNameList.split(',')[4]}`}
-                                            >
-                                              <ButtonFormatRadio
-                                                branchValue={
-                                                  categoryNameList.split(',')[4]
-                                                }
-                                                titleText={
-                                                  categoryNameList.split(',')[4]
-                                                }
-                                                list={nextList4depth}
-                                                selected={selected5depth}
-                                                onChange={(e) =>
-                                                  handleRadioCheck(e)
-                                                }
-                                                // defaultChecked={}
-                                                checkedInput={radio5depthCheck}
-                                              />
-                                            </div>
-                                          )}
-                                        {/* 과목 */}
-                                        {radio5depthCheck.code !== '' &&
-                                          selected5depth !== '' && (
-                                            <div
-                                              className={`6depth`}
-                                              id={
-                                                categoryNameList.split(',')[5]
-                                              }
-                                              key={`selected6depth ${categoryNameList.split(',')[5]}`}
-                                            >
-                                              <ButtonFormatRadio
-                                                overFlow
-                                                branchValue={
-                                                  categoryNameList.split(',')[5]
-                                                }
-                                                titleText={
-                                                  categoryNameList.split(',')[5]
-                                                }
-                                                list={nextList5depth}
-                                                selected={selected6depth}
-                                                onChange={(e) =>
-                                                  handleRadioCheck(e)
-                                                }
-                                                // defaultChecked={}
-                                                checkedInput={radio6depthCheck}
-                                              />
-                                            </div>
-                                          )}
-                                      </>
-                                    )}
-
+                                        );
+                                      }
+                                      return null;
+                                    })}
                                     <p className="line"></p>
 
                                     {/* 교과정보 아코디언 리스트  */}
-                                    {radio1depthCheck.code !== '' &&
-                                    radio2depthCheck.code !== '' &&
-                                    radio3depthCheck.code !== '' &&
-                                    radio4depthCheck.code !== '' &&
-                                    radio5depthCheck.code !== '' &&
-                                    radio6depthCheck?.code !== '' &&
-                                    selected1depth !== '' &&
-                                    selected2depth !== '' &&
-                                    selected3depth !== '' &&
-                                    selected4depth !== '' &&
-                                    selected5depth !== '' ? (
+                                    {categoryList.length ===
+                                      selectedList.length &&
+                                    selectedList[selectedList.length - 1]
+                                      .selectedName ? (
                                       <AccordionWrapper>
                                         <Accordion
-                                          defaultChecked={isModifying}
-                                          title={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
-                                          id={`${radio1depthCheck.title}/${radio2depthCheck.title}/${radio3depthCheck.title}학년/${radio4depthCheck.title}`}
+                                          title={`${selectedList.flatMap((el) => el.selectedName).join('/')}`}
+                                          id={`${selectedList.flatMap((el) => el.selectedName).join('/')}`}
                                         >
                                           <RowListWrapper>
                                             <Search
@@ -3615,19 +2862,29 @@ export function Step2() {
                                             {searchValue.length > 1 && (
                                               <p className="line bottom_text">
                                                 {`총 
-                       			${
-                              categoryItemTreeData && itemTree.length
-                                ? itemTree.reduce(
-                                    (total, el) =>
-                                      total +
-                                      el.itemTreeList.filter((item) =>
-                                        item.name.includes(searchValue),
-                                      ).length,
-                                    0,
-                                  )
-                                : 0
-                            } 
-															건`}
+                                                                  ${
+                                                                    categoryItemTreeData &&
+                                                                    itemTree.length
+                                                                      ? itemTree.reduce(
+                                                                          (
+                                                                            total,
+                                                                            el,
+                                                                          ) =>
+                                                                            total +
+                                                                            el.itemTreeList.filter(
+                                                                              (
+                                                                                item,
+                                                                              ) =>
+                                                                                item.name.includes(
+                                                                                  searchValue,
+                                                                                ),
+                                                                            )
+                                                                              .length,
+                                                                          0,
+                                                                        )
+                                                                      : 0
+                                                                  } 
+                                                                  건`}
                                                 <ArrowButtonWrapper>
                                                   <button
                                                     onClick={() =>
@@ -3651,7 +2908,6 @@ export function Step2() {
                                                 <Loader width="50px" />
                                               </LoaderWrapper>
                                             )}
-
                                             {categoryItemTreeData ? (
                                               <AccordionItemWrapper>
                                                 {itemTree.length ? (
@@ -3785,81 +3041,6 @@ export function Step2() {
                                             )}
                                           </RowListWrapper>
                                         </Accordion>
-
-                                        <Accordion
-                                          title={'추가정보'}
-                                          id={'추가정보'}
-                                          $margin={'4px 0 0 0 '}
-                                          defaultChecked={isModifying}
-                                        >
-                                          <RowListWrapper>
-                                            {categoryAddInfoList ? (
-                                              <>
-                                                {[categoryItems[4]].map(
-                                                  (item) => (
-                                                    <div
-                                                      id={`${item.name}`}
-                                                      className={`etc1`}
-                                                      key={`etc1 ${item.idx}`}
-                                                    >
-                                                      <ButtonFormatMultiRadio
-                                                        branchValue={`${item.name}`}
-                                                        titleText={`${item.name}`}
-                                                        list={
-                                                          categoryAddInfoList[0]
-                                                        }
-                                                        selected={
-                                                          selectedCategoryEtc1
-                                                        }
-                                                        onChange={(e) =>
-                                                          handleMultiRadioCheck(
-                                                            e,
-                                                          )
-                                                        }
-                                                        checkedInputs={
-                                                          radioEtc1Check
-                                                        }
-                                                      />
-                                                    </div>
-                                                  ),
-                                                )}
-                                                {[categoryItems[5]].map(
-                                                  (item) => (
-                                                    <div
-                                                      id={`${item.name}`}
-                                                      className={`etc2`}
-                                                      key={`etc2 ${item.idx}`}
-                                                    >
-                                                      <ButtonFormatMultiRadio
-                                                        branchValue={`${item.name}`}
-                                                        titleText={`${item.name}`}
-                                                        list={
-                                                          categoryAddInfoList[1]
-                                                        }
-                                                        selected={
-                                                          selectedCategoryEtc2
-                                                        }
-                                                        onChange={(e) =>
-                                                          handleMultiRadioCheck(
-                                                            e,
-                                                          )
-                                                        }
-                                                        checkedInputs={
-                                                          radioEtc2Check
-                                                        }
-                                                      />
-                                                    </div>
-                                                  ),
-                                                )}
-                                              </>
-                                            ) : (
-                                              <ValueNone
-                                                textOnly
-                                                info="등록된 데이터가 없습니다"
-                                              />
-                                            )}
-                                          </RowListWrapper>
-                                        </Accordion>
                                       </AccordionWrapper>
                                     ) : (
                                       <ValueNoneWrapper>
@@ -3962,7 +3143,7 @@ export function Step2() {
                           )}
                         </>
                       )}
-                      {tabVeiw === '즐겨찾는 문항' && (
+                      {tabView === '즐겨찾는 문항' && (
                         <>
                           {favoriteQuizData && favoriteQuestionList ? (
                             <>
@@ -4084,7 +3265,7 @@ export function Step2() {
                           )}
                         </>
                       )}
-                      {tabVeiw === '개념' && (
+                      {tabView === '개념' && (
                         <>
                           <ConceptWrapper>
                             <ConceptDiscription>
@@ -4200,14 +3381,14 @@ export function Step2() {
                                     onSelectCard={setSelectedCardIndex}
                                     reportQuizitem={openReportProcess}
                                     deleteQuizItem={deleteQuizItem}
-                                    clickSwapQuizItem={() =>
-                                      clickSwapQuizItem(
-                                        similarItems as SimilarQuizList,
-                                        0,
-                                        initialItems,
-                                        similarItemIndex as number,
-                                      )
-                                    }
+                                    // clickSwapQuizItem={() =>
+                                    //   clickSwapQuizItem(
+                                    //     similarItems as SimilarQuizList,
+                                    //     itemIndex,
+                                    //     initialItems,
+                                    //     similarItemIndex as number,
+                                    //   )
+                                    // }
                                     code={dragItem.quizItemList
                                       .filter(
                                         (el: any) => el.type === 'QUESTION',

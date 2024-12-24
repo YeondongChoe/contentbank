@@ -31,7 +31,7 @@ import { postRefreshToken } from '../../utils/tokenHandler';
 import { windowOpenHandler } from '../../utils/windowHandler';
 
 export function Worksheet() {
-  const [tabVeiw, setTabVeiw] = useState<string>('학습지');
+  const [tabView, setTabView] = useState<string>('학습지');
   const [searchValue, setSearchValue] = useState<string>('');
   const [content, setContent] = useState<string[]>([]);
   const [startDate, setStartDate] = useState<string>('');
@@ -150,9 +150,8 @@ export function Worksheet() {
   const [onSearch, setOnSearch] = useState<boolean>(false);
 
   // 학습지 리스트 불러오기 api
-  //TODO 들어가는 값에 따라서 바꿔줘야 함.
   const getWorkbookList = async () => {
-    if (tabVeiw == '즐겨찾는 학습지') {
+    if (tabView == '즐겨찾는 학습지') {
       const res = await workbookInstance.get(
         !onSearch
           ? `/v1/workbook/favorite?pageIndex=${page}&pageUnit=${8}`
@@ -232,7 +231,7 @@ export function Worksheet() {
   useEffect(() => {
     workbookListRefetch();
     setSearchValue('');
-  }, [tabVeiw, page]);
+  }, [tabView, page]);
 
   // 검색 기능 함수
   const filterSearchValue = () => {
@@ -354,8 +353,8 @@ export function Worksheet() {
             length={2}
             menu={menuList}
             width={'300px'}
-            selected={tabVeiw}
-            setTabVeiw={setTabVeiw}
+            selected={tabView}
+            setTabView={setTabView}
             $margin={'10px 0'}
             onClickTab={changeTab}
             lineStyle
@@ -454,7 +453,7 @@ export function Worksheet() {
             selectedList={selectedList}
             totalCount={workbookList.pagination.totalCount}
             itemsCountPerPage={workbookList.pagination.pageUnit}
-            tabVeiw={tabVeiw}
+            tabView={tabView}
           ></WorkbookList>
         )}
       </>

@@ -17,6 +17,7 @@ import {
   CheckBoxI,
   ValueNone,
   Icon,
+  openToastifyAlert,
 } from '../../../atom';
 import { COLOR } from '../../../constants';
 import {
@@ -110,7 +111,7 @@ export function ProcessAddModal({
   //페이지네이션
   const [page, setPage] = useRecoilState(pageAtom);
   //탭
-  const [tabVeiw, setTabVeiw] = useState<string>('계정으로 추가');
+  const [tabView, setTabView] = useState<string>('계정으로 추가');
   //검색이름
   const [nameValue, setNameValue] = useState('');
   const [checkList, setCheckList] = useState<number[]>([]);
@@ -126,37 +127,54 @@ export function ProcessAddModal({
   };
 
   const [processList, setProcessList] = useState<processStepListProps[]>([]);
+  const [processDetailList, setProcessDetailList] =
+    useState<processDetailInfoProps>();
+
   useEffect(() => {
     if (processListData) {
       setProcessList(processListData);
     }
   }, [processListData]);
-  const [processDetailList, setProcessDetailList] =
-    useState<processDetailInfoProps>();
+
   useEffect(() => {
     if (processDetailInfo && isEdit) {
       setProcessDetailList(processDetailInfo);
     }
   }, [processDetailInfo]);
+
+  console.log('processList', processList);
+  console.log('processDetailList', processDetailList);
   const [selectedworkerAccountList, setselectedWorkerAccountList] = useState<
     ProcessWorkerAccountListProps[]
   >([]);
-  console.log(selectedworkerAccountList);
   const [selectedworkerAuthorityList, setselectedWorkerAuthorityList] =
     useState<ProcessWorkerAuthorityListProps[]>([]);
-  console.log(selectedworkerAuthorityList);
 
   const clickAccountListSave = () => {
+    const checkForDuplicateAuthority = (process: any) => {
+      return process.workers.some(
+        (worker: any) => worker.authority?.name !== '',
+      );
+    };
+
     if (isEdit) {
       const updatedProcessList =
         processDetailList?.steps?.map((process) => {
           if (process.stepSort === stepSort) {
+            if (checkForDuplicateAuthority(process)) {
+              openToastifyAlert({
+                type: 'error',
+                text: '해당 단계에서 이미 권한으로 추가하신 경우, 권한으로만 추가가 가능합니다',
+              });
+              return process; // 원래 데이터를 그대로 반환
+            }
+
             const updatedWorkersAccount = selectedworkerAccountList.map(
               (worker) => ({
                 idx: process.idx,
-                workerSort: 0, // 새로 추가되는 worker의 정렬 값 설정
-                createdBy: process.createdBy, // 필요하면 생성자 값 설정
-                createdAt: process.createdAt, // 현재 시간 설정
+                workerSort: 0,
+                createdBy: process.createdBy,
+                createdAt: process.createdAt,
                 account: {
                   idx: worker.idx,
                   id: worker.id,
@@ -164,13 +182,12 @@ export function ProcessAddModal({
                   authorityName: worker.authorityName,
                 },
                 authority: {
-                  idx: 0, // authority는 비워두거나 기본값 설정
+                  idx: 0,
                   name: '',
                 },
               }),
             );
 
-            // 기존 workers 배열과 updatedWorkers를 병합할 때, 중복되는 id를 제거
             const mergedWorkers = [
               ...process.workers,
               ...updatedWorkersAccount.filter(
@@ -187,11 +204,11 @@ export function ProcessAddModal({
               workers: mergedWorkers,
             };
           }
-          return process; // Ensure we return the unchanged process for other steps
-        }) || []; // Fallback to an empty array if steps is undefined
+          return process;
+        }) || [];
 
       setProcessDetailInfo({
-        idx: processDetailList?.idx ?? 0, // idx가 undefined이면 0을 기본값으로 사용
+        idx: processDetailList?.idx ?? 0,
         code: processDetailList?.code ?? '',
         companyCode: processDetailList?.companyCode ?? '',
         processName: processDetailList?.processName ?? '',
@@ -199,20 +216,27 @@ export function ProcessAddModal({
         isDelete: processDetailList?.isDelete ?? false,
         createdBy: processDetailList?.createdBy ?? '',
         createdAt: processDetailList?.createdAt ?? '',
-        lastModifiedBy: processDetailList?.lastModifiedBy ?? '', // 추가된 부분
-        lastModifiedAt: processDetailList?.lastModifiedAt ?? '', // 추가된 부분
-        steps: updatedProcessList, // Update only the steps property
+        lastModifiedBy: processDetailList?.lastModifiedBy ?? '',
+        lastModifiedAt: processDetailList?.lastModifiedAt ?? '',
+        steps: updatedProcessList,
       });
     } else {
       const updatedProcessList = processList.map((process) => {
         if (process.stepSort === stepSort) {
-          // selectedworkerList에 필요한 필드를 추가하여 workers 배열에 맞게 업데이트
+          if (checkForDuplicateAuthority(process)) {
+            openToastifyAlert({
+              type: 'error',
+              text: '해당 단계에서 이미 권한으로 추가하신 경우, 권한으로만 추가가 가능합니다',
+            });
+            return process; // 원래 데이터를 그대로 반환
+          }
+
           const updatedWorkersAccount = selectedworkerAccountList.map(
             (worker) => ({
               idx: 0,
-              workerSort: 0, // 새로 추가되는 worker의 정렬 값 설정
-              createdBy: '', // 필요하면 생성자 값 설정
-              createdAt: '', // 현재 시간 설정
+              workerSort: 0,
+              createdBy: '',
+              createdAt: '',
               account: {
                 idx: worker.idx,
                 id: worker.id,
@@ -220,13 +244,12 @@ export function ProcessAddModal({
                 authorityName: worker.authorityName,
               },
               authority: {
-                idx: 0, // authority는 비워두거나 기본값 설정
+                idx: 0,
                 name: '',
               },
             }),
           );
 
-          // 기존 workers 배열과 updatedWorkers를 병합할 때, 중복되는 id를 제거
           const mergedWorkers = [
             ...process.workers,
             ...updatedWorkersAccount.filter(
@@ -240,7 +263,7 @@ export function ProcessAddModal({
 
           return {
             ...process,
-            workers: mergedWorkers, // workers 배열에 필드가 추가된 worker들로 업데이트
+            workers: mergedWorkers,
           };
         }
         return process;
@@ -252,10 +275,23 @@ export function ProcessAddModal({
   };
 
   const clickAuthorityListSave = () => {
+    const checkForDuplicateAuthority = (process: any) => {
+      return process.workers.some((worker: any) => worker.account?.name !== '');
+    };
+
     if (isEdit) {
       const updatedProcessList =
         processDetailList?.steps?.map((process) => {
           if (process.stepSort === stepSort) {
+            // 중복 권한 확인
+            if (checkForDuplicateAuthority(process)) {
+              openToastifyAlert({
+                type: 'error',
+                text: '해당 단계에서 이미 사용자로 추가하신 경우, 사용자로만 추가가 가능합니다',
+              });
+              return process; // 원래 데이터를 그대로 반환
+            }
+
             const updatedWorkersAuthority = selectedworkerAuthorityList.map(
               (worker) => ({
                 idx: process.idx,
@@ -275,7 +311,6 @@ export function ProcessAddModal({
               }),
             );
 
-            // 기존 workers 배열과 updatedWorkers를 병합할 때, 중복되는 id를 제거
             const mergedWorkers = [
               ...process.workers,
               ...updatedWorkersAuthority.filter(
@@ -293,7 +328,7 @@ export function ProcessAddModal({
               workers: mergedWorkers,
             };
           }
-          return process; // Ensure we return the unchanged process for other steps
+          return process;
         }) || []; // Fallback to an empty array if steps is undefined
 
       setProcessDetailInfo({
@@ -312,7 +347,15 @@ export function ProcessAddModal({
     } else {
       const updatedProcessList = processList.map((process) => {
         if (process.stepSort === stepSort) {
-          // selectedworkerList에 필요한 필드를 추가하여 workers 배열에 맞게 업데이트
+          // 중복 권한 확인
+          if (checkForDuplicateAuthority(process)) {
+            openToastifyAlert({
+              type: 'error',
+              text: '해당 단계에서 이미 사용자로 추가하신 경우, 사용자로만 추가가 가능합니다',
+            });
+            return process; // 원래 데이터를 그대로 반환
+          }
+
           const updatedWorkersAuthority = selectedworkerAuthorityList.map(
             (worker) => ({
               idx: 0,
@@ -332,7 +375,6 @@ export function ProcessAddModal({
             }),
           );
 
-          // 기존 workers 배열과 updatedWorkers를 병합할 때, 중복되는 id를 제거
           const mergedWorkers = [
             ...process.workers,
             ...updatedWorkersAuthority.filter(
@@ -379,7 +421,7 @@ export function ProcessAddModal({
 
   const getProcessWorkerList = async () => {
     const res = await userInstance.get(
-      `/v1/process/${processIdx === null ? 0 : processIdx}/${stepSort}/worker?searchCondition=${tabVeiw === '계정으로 추가' ? 'USER' : tabVeiw === '권한으로 추가' ? 'AUTH' : 'USER'}&searchKeyword=${searchValue}`,
+      `/v1/process/${processIdx === null ? 0 : processIdx}/${stepSort}/worker?searchCondition=${tabView === '계정으로 추가' ? 'USER' : tabView === '권한으로 추가' ? 'AUTH' : 'USER'}&searchKeyword=${searchValue}&pageIndex=${page}&pageUnit=${8}`,
     );
     //console.log(`getCompanyList 결과값`, res);
     return res;
@@ -399,10 +441,10 @@ export function ProcessAddModal({
   });
 
   useEffect(() => {
-    if (tabVeiw) {
+    if (tabView) {
       processWorkerListRefetch();
     }
-  }, [tabVeiw, searchValue]);
+  }, [tabView, searchValue, page]);
 
   useEffect(() => {
     if (processWorkerListData) {
@@ -470,31 +512,32 @@ export function ProcessAddModal({
   };
 
   useEffect(() => {
-    if (tabVeiw === '권한으로 추가') {
+    if (tabView === '권한으로 추가') {
       setselectedWorkerAccountList([]);
       setCheckList([]);
-    } else if (tabVeiw === '계정으로 추가') {
+    } else if (tabView === '계정으로 추가') {
       setselectedWorkerAuthorityList([]);
       setCheckList([]);
     }
-  }, [tabVeiw]);
+  }, [tabView]);
 
   return (
     <Container>
       <Wrapper>
         <Title>작업자 추가</Title>
+        {/* {processList.map((list) => list.stepSort === stepSort)} */}
         <TabWrapper>
           <TabMenu
             length={2}
             menu={menuList}
             width={'450px'}
             lineStyle
-            selected={tabVeiw}
-            setTabVeiw={setTabVeiw}
+            selected={tabView}
+            setTabView={setTabView}
             onClickTab={changeTab}
           />
         </TabWrapper>
-        {tabVeiw === '계정으로 추가' && (
+        {tabView === '계정으로 추가' && (
           <>
             <Search
               value={searchValue}
@@ -570,7 +613,7 @@ export function ProcessAddModal({
             )}
           </>
         )}
-        {tabVeiw === '권한으로 추가' && (
+        {tabView === '권한으로 추가' && (
           <>
             <Search
               value={searchValue}
@@ -666,7 +709,7 @@ export function ProcessAddModal({
           action="확인"
           onClose={() => setIsProcessAlert(false)}
           onClick={() =>
-            tabVeiw === '계정으로 추가'
+            tabView === '계정으로 추가'
               ? clickAccountListSave()
               : clickAuthorityListSave()
           }
