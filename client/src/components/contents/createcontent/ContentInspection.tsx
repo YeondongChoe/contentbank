@@ -199,7 +199,7 @@ export function ContentInspection({
       <ContentsWrapper>
         <ContentListWrapper>
           <Title>문항 데이터</Title>
-          <ContentList>
+          {/* <ContentList>
             {dataFetched && (
               <>
                 <InspectionList
@@ -209,17 +209,10 @@ export function ContentInspection({
                   onItemClick={setOnItemClickData}
                   setCheckedList={setCheckedList}
                 />
-                {/* <InspectionList
-                  questionList={quizList}
-                  $height={`calc(100vh - 550px)`}
-                  showViewAllButton
-                  onItemClick={setOnItemClickData}
-                  setCheckedList={setCheckedList}
-                /> */}
               </>
             )}
             {!dataFetched && <Loader />}
-          </ContentList>
+          </ContentList> */}
         </ContentListWrapper>
 
         <ContentListWrapper>
