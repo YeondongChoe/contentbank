@@ -397,7 +397,7 @@ export function InspectionList({
                   }
                 })}
                 <span className="width_10 item_wrapper">
-                  <strong className="title">당담자</strong>
+                  <strong className="title">담당자</strong>
                   <span className="tag ellipsis">{item.createdBy}</span>
                 </span>
                 <i className="line"></i>

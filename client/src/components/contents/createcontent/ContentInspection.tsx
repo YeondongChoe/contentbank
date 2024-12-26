@@ -37,6 +37,7 @@ export function ContentInspection({
 }) {
   const { openModal } = useModal();
   const { closeModal } = useModal();
+  const queryClient = useQueryClient();
 
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [parsedStoredQuizList, setParsedStoredQuizList] = useState<
@@ -53,13 +54,11 @@ export function ContentInspection({
   const [inspectionReason, setInspectionReason] = useState<string>('');
   const [status, setStatus] = useState<string | null>(null);
   const [comment, setComment] = useState<string>('');
+  console.log('quizList', quizList);
 
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
-    window.opener.postMessage('popupClosed', '*');
-    window.opener.localStorage.clear();
-    window.close();
   };
 
   // 수정시 체크리스트 값 가져오기
@@ -79,8 +78,6 @@ export function ContentInspection({
       return;
     }
   }, []);
-  console.log('parsedStoredQuizList', parsedStoredQuizList);
-  console.log('quizList', quizList);
 
   // 마이페이지 데이터 불러오기 api
   const {
@@ -148,44 +145,15 @@ export function ContentInspection({
       }
     },
     onSuccess: (response) => {
-      //성공 시 리스트 리패치
-      //processNameListRefetch();
-      //저장 알람
-      // openToastifyAlert({
-      //   type: 'success',
-      //   text: '저장되었습니다.',
-      // });
       setIsSuccessAlertOpen(true);
+      //문항 다시 호출
+      queryClient.invalidateQueries({
+        queryKey: ['get-quizList'],
+      });
+
       closeModal();
     },
   });
-
-  // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
-  // const getQuiz = async () => {
-  //   const idxArray = parsedStoredQuizList.map((list) => list.idx);
-  //   const idxList = idxArray.join(',');
-  //   const res = await quizService.get(`/v1/quiz/${idxList}`);
-  //   return res.data.data.quizList;
-  // };
-  // const { data: quizData, refetch: quizDataRefetch } = useQuery({
-  //   queryKey: ['get-idx-quizList'],
-  //   queryFn: getQuiz,
-  //   meta: {
-  //     errorMessage: 'get-idx-quizList 에러 메세지',
-  //   },
-  //   enabled: parsedStoredQuizList.length > 0,
-  // });
-
-  // useEffect(() => {
-  //   if (parsedStoredQuizList.length > 0) quizDataRefetch();
-  // }, [parsedStoredQuizList]);
-
-  // useEffect(() => {
-  //   if (quizData) {
-  //     setQuizList(quizData);
-  //     setDataFetched(true);
-  //   }
-  // }, [quizData, setQuizList]);
 
   // 마지막으로 클릭된 문항 뷰어에 보이게
   useEffect(() => {
@@ -281,7 +249,16 @@ export function ContentInspection({
                                       {myInfoData?.data.data.name ===
                                         worker.account.name &&
                                       process.currentStep === step.stepSort ? (
-                                        <button className="active">
+                                        <button
+                                          className="active"
+                                          onClick={() => {
+                                            setInspectionArea(`검수의견`);
+                                            setInspectionReason(
+                                              `편집단계에서 추가 분류 요청`,
+                                            );
+                                            setIsAlertOpen(true);
+                                          }}
+                                        >
                                           <span className="name">
                                             {`${worker.account.name}(${worker.account.id})`}
                                           </span>
@@ -290,7 +267,15 @@ export function ContentInspection({
                                           </span>
                                         </button>
                                       ) : (
-                                        <button>
+                                        <button
+                                          onClick={() => {
+                                            setInspectionArea(`검수의견`);
+                                            setInspectionReason(
+                                              `편집단계에서 추가 분류 요청`,
+                                            );
+                                            setIsAlertOpen(true);
+                                          }}
+                                        >
                                           <span className="name">
                                             {`${worker.account.name}(${worker.account.id})`}
                                           </span>
@@ -305,7 +290,16 @@ export function ContentInspection({
                                       {myInfoData?.data.data.authority.name ===
                                         worker.authority.name &&
                                       process.currentStep === step.stepSort ? (
-                                        <button className="active">
+                                        <button
+                                          className="active"
+                                          onClick={() => {
+                                            setInspectionArea(`검수의견`);
+                                            setInspectionReason(
+                                              `편집단계에서 추가 분류 요청`,
+                                            );
+                                            setIsAlertOpen(true);
+                                          }}
+                                        >
                                           <span className="name">
                                             {worker.authority.name}
                                           </span>
@@ -314,7 +308,15 @@ export function ContentInspection({
                                           </span>
                                         </button>
                                       ) : (
-                                        <button>
+                                        <button
+                                          onClick={() => {
+                                            setInspectionArea(`검수의견`);
+                                            setInspectionReason(
+                                              `편집단계에서 추가 분류 요청`,
+                                            );
+                                            setIsAlertOpen(true);
+                                          }}
+                                        >
                                           <span className="name">
                                             {worker.authority.name}
                                           </span>
