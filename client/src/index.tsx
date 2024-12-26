@@ -25,7 +25,6 @@ import {
   AuthorityPage,
   FirstLoginPage,
   LoginPage,
-  ManagementsTreePage,
   MemberPage,
   MypagePage,
   QuizManagementListPage,
@@ -145,11 +144,6 @@ const router = createBrowserRouter([
       {
         path: '/no-authrized',
         element: <NoAuthrizedPage />,
-      },
-      //임시로 만들어둔 페이지 준비중인 페이지입니다.
-      {
-        path: '/content-manage/classify',
-        element: <ManagementsTreePage />,
       },
       {
         path: '/content-manage/report',
