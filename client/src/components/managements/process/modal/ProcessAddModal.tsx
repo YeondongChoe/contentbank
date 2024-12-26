@@ -169,6 +169,17 @@ export function ProcessAddModal({
               return process; // 원래 데이터를 그대로 반환
             }
 
+            if (
+              (process.stepName === 'EDITING' && process.workers.length > 0) ||
+              selectedworkerAccountList.length > 1
+            ) {
+              openToastifyAlert({
+                type: 'error',
+                text: '편집 단계는 1명만 등록 가능합니다.',
+              });
+              return process;
+            }
+
             const updatedWorkersAccount = selectedworkerAccountList.map(
               (worker) => ({
                 idx: process.idx,
@@ -231,6 +242,17 @@ export function ProcessAddModal({
             return process; // 원래 데이터를 그대로 반환
           }
 
+          if (
+            selectedworkerAccountList.length > 1 &&
+            process.stepName === 'EDITING'
+          ) {
+            openToastifyAlert({
+              type: 'error',
+              text: '편집 단계는 1명만 등록 가능합니다.',
+            });
+            return process;
+          }
+
           const updatedWorkersAccount = selectedworkerAccountList.map(
             (worker) => ({
               idx: 0,
@@ -290,6 +312,17 @@ export function ProcessAddModal({
                 text: '해당 단계에서 이미 사용자로 추가하신 경우, 사용자로만 추가가 가능합니다',
               });
               return process; // 원래 데이터를 그대로 반환
+            }
+
+            if (
+              (process.stepName === 'EDITING' && process.workers.length > 0) ||
+              selectedworkerAuthorityList.length > 1
+            ) {
+              openToastifyAlert({
+                type: 'error',
+                text: '편집 단계는 1명만 등록 가능합니다.',
+              });
+              return process;
             }
 
             const updatedWorkersAuthority = selectedworkerAuthorityList.map(
@@ -354,6 +387,17 @@ export function ProcessAddModal({
               text: '해당 단계에서 이미 사용자로 추가하신 경우, 사용자로만 추가가 가능합니다',
             });
             return process; // 원래 데이터를 그대로 반환
+          }
+
+          if (
+            selectedworkerAuthorityList.length > 1 &&
+            process.stepName === 'EDITING'
+          ) {
+            openToastifyAlert({
+              type: 'error',
+              text: '편집 단계는 1명만 등록 가능합니다.',
+            });
+            return process;
           }
 
           const updatedWorkersAuthority = selectedworkerAuthorityList.map(
