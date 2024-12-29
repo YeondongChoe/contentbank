@@ -25,6 +25,7 @@ import {
   Modal,
   openToastifyAlert,
   PaginationBox,
+  QuizGroupList,
   ValueNone,
 } from '../../components';
 import { COLOR } from '../../components/constants';
@@ -1062,147 +1063,11 @@ export function ContentInformationChange() {
               {state == null && (
                 <ScrollWrapper className="height">
                   <PerfectScrollbar>
-                    <ListWrapper
-                      ref={listWrapperRef}
-                      className={`list_wrapper `}
-                    >
-                      {questionList.map((quiz, index) => (
-                        <ItemWrapper
-                          key={quiz.idx}
-                          // height={itemHeight}
-                          className={`colum_item_2 `}
-                          classHeight={`auto`}
-                        >
-                          <TopButtonWrapper>
-                            <div className="quiz_top_wrap">
-                              <CheckBoxI
-                                $margin={'0 5px 0 0'}
-                                onChange={(e) =>
-                                  handleButtonCheck(e, quiz.code)
-                                }
-                                checked={
-                                  checkList.includes(quiz.code) ? true : false
-                                }
-                                id={quiz.code}
-                                value={quiz.code}
-                              />
-                              <span className={`title_top`}>
-                                {`${0} 건`}
-                                <Icon
-                                  onClick={() => openViewer(quiz.code)}
-                                  width={`15px`}
-                                  src={`/images/icon/entypo_popup.svg`}
-                                />
-                              </span>
-                            </div>
-                            <span>
-                              {quiz.quizCategoryList.length > 0 &&
-                                quiz.quizCategoryList?.[0]?.quizCategory
-                                  ?.문항타입 &&
-                                typeof quiz.quizCategoryList[0].quizCategory
-                                  .문항타입 === 'string' && (
-                                  <span
-                                    className={`${quiz.quizCategoryList[0].quizCategory?.문항타입 == '객관식' && 'green'}
-														${quiz.quizCategoryList[0].quizCategory?.문항타입 == '서술형' && 'gray'} 
-                  ${quiz.quizCategoryList[0].quizCategory?.문항타입 == '주관식' && 'yellow'} tag`}
-                                  >
-                                    {
-                                      quiz.quizCategoryList[0].quizCategory
-                                        ?.문항타입
-                                    }
-                                  </span>
-                                )}
-                            </span>
-                          </TopButtonWrapper>
-                          <ScrollWrapper
-                            className="items_height"
-                            // itemsHeight={`150px`}
-                          >
-                            <PerfectScrollbar>
-                              <div className="quiz_wrap">
-                                {quiz?.quizItemList?.map(
-                                  (el: {
-                                    code: any;
-                                    type: string;
-                                    content: any;
-                                  }) => (
-                                    <div
-                                      key={`${el?.code} quizItemList sortedList`}
-                                    >
-                                      {[
-                                        'BIG',
-                                        'TEXT',
-                                        'QUESTION',
-                                        'SMALL',
-                                        'EXAMPLE',
-                                        'CHOICES',
-                                        'ANSWER',
-                                        'COMMENTARY',
-                                        'HINT',
-                                        'CONCEPT',
-                                        'TITLE',
-                                        'TIP',
-                                      ].includes(el?.type) &&
-                                        el?.content && (
-                                          <MathViewer
-                                            data={el.content}
-                                          ></MathViewer>
-                                        )}
-                                    </div>
-                                  ),
-                                )}
-                              </div>
-                            </PerfectScrollbar>
-                          </ScrollWrapper>
-                          <ScrollWrapper>
-                            <PerfectScrollbar>
-                              <div className="class_wrap">
-                                {quiz.quizCategoryList.length > 0 ? (
-                                  quiz.quizCategoryList.map((item, idx) => {
-                                    const quizCategory =
-                                      item.quizCategory || {};
-
-                                    // quizCategory에서 각 항목을 문자열로 변환
-                                    const details = (
-                                      [
-                                        '교육과정',
-                                        '과목',
-                                        '교과',
-                                        '학년',
-                                        '학기',
-                                        '대단원',
-                                        '중단원',
-                                        '소단원',
-                                        '유형',
-                                      ] as const
-                                    )
-                                      .map((key) => {
-                                        const categoryArray = quizCategory[key]; // quizCategory 내부의 배열
-                                        if (Array.isArray(categoryArray)) {
-                                          return categoryArray
-                                            .map((sub) =>
-                                              sub.name ? sub.name : sub,
-                                            ) // name이 있으면 사용
-                                            .join(', '); // 배열 항목을 ', '로 결합
-                                        }
-                                        return ''; // 배열이 아니면 빈 문자열 반환
-                                      })
-                                      .filter(Boolean) // 빈 문자열 제거
-                                      .join(' / '); // '/'로 항목 연결
-
-                                    return (
-                                      <span key={idx}>{details || ''}</span>
-                                    );
-                                  })
-                                ) : (
-                                  <span>(분류없음)</span>
-                                )}
-                              </div>
-                            </PerfectScrollbar>
-                          </ScrollWrapper>
-                        </ItemWrapper>
-                      ))}
-                    </ListWrapper>
+                    <QuizGroupList
+                      questionList={questionList}
+                      checkList={checkList}
+                      handleButtonCheck={handleButtonCheck}
+                    />
                   </PerfectScrollbar>
                 </ScrollWrapper>
               )}
@@ -1769,28 +1634,6 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-
-  .groupedItemsContainer {
-    border: 3px solid ${COLOR.BORDER_BLUE};
-    position: relative;
-    margin: 10px 0;
-    padding: 10px;
-    background-color: #f9f9f9;
-    display: flex;
-    padding-top: 30px;
-    width: 100%;
-  }
-
-  .group-checkbox {
-    position: absolute;
-    top: 15px;
-  }
-  label.group_checkbox_label {
-    position: absolute;
-    top: 10px;
-    right: auto;
-    left: 30px;
-  }
 `;
 const PositionWrapper = styled.div`
   display: flex;
