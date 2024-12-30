@@ -64,7 +64,7 @@ export function ContentInformationChange() {
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]); // 문항 체크
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
-
+  const [isAllowed, setIsAllowed] = useState(false);
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchClassList, setSearchClassList] = useState<SearchClass[]>([]);
 
@@ -224,37 +224,22 @@ export function ContentInformationChange() {
       searchCategoryData,
     );
     // 검색 이후 리스트 값
-    if (searchCategoryData) {
+    if (searchCategoryData && isAllowed) {
       setQuestionList(searchCategoryData?.quizList);
 
       setTotalCount(searchCategoryData?.pagination?.totalCount);
     }
-  }, [searchCategoryData]);
+  }, [searchCategoryData, isAllowed]);
 
   useLayoutEffect(() => {
     console.log('questionList ----------*', questionList);
   }, [questionList]);
 
-  const removeGroupedContainers = () => {
-    const listWrapper = listWrapperRef.current;
-    const groupedContainers = document.querySelectorAll(
-      '.groupedItemsContainer',
-    );
-
-    if (groupedContainers && listWrapper) {
-      groupedContainers.forEach((container) => {
-        listWrapper.removeChild(container);
-      });
-    }
-  };
-
   useEffect(() => {}, [page]);
 
   // 데이터 변경시 리랜더링
   useEffect(() => {
-    removeGroupedContainers();
-
-    searchCategoryDataMutate();
+    if (isAllowed) searchCategoryDataMutate();
 
     setCheckList([]);
   }, [page]);
@@ -558,6 +543,9 @@ export function ContentInformationChange() {
       setSearchValue(divContent);
       console.log('Div content:', divContent);
     }
+
+    setIsAllowed(true);
+    searchCategoryDataMutate();
   };
 
   useEffect(() => {

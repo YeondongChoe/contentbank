@@ -624,6 +624,10 @@ export function ContentCopyEdit({
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       window.usePostJsonData(combinedContent);
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      window.iTeXEQ.latexrecovery();
     }
   }, [data]);
 

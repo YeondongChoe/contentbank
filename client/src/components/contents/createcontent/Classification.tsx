@@ -982,6 +982,7 @@ export function Classification({
         ) {
           const parentDiv = document.createElement('div') as HTMLElement;
           parentDiv.id = item.groupCode;
+          console.log('parentDiv---생성된', parentDiv);
           parentDiv.className = `groupedItemsContainer ${columnsCount == 2 ? 'colum_2' : 'colum_1'}`;
 
           const groupCheckbox = document.createElement('input');

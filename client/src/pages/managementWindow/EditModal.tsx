@@ -55,6 +55,7 @@ export function EditModal({
   const [isCheckedArr, setIsCheckedArr] = useState<boolean[]>([]);
   const [changeValue, setChangeValue] = useState<string>('');
   const [selectedIdx, setSelectedIdx] = useState<string | null>(null);
+  const [itemIdx, setItemIdx] = useState<string | null>(null);
   const [clickIndex, setClickIndex] = useState<number | null>(null);
   const [educationCurriculumList, setEducationCurriculumList] = useState<any[]>(
     [],
@@ -266,9 +267,9 @@ export function EditModal({
   const getCategoryMapDepth1 = async () => {
     if (idxNamePairs) {
       const res = await classificationInstance.get(
-        `/v1/category/map/${idxNamePairs[0].idx}`,
+        `/v1/category/${idxNamePairs[0].idx}`,
       );
-      const list = res.data.data.mapList;
+      const list = res.data.classes;
       console.log('셋팅에서 가져온 idx로 맵핑리스트 조회 -----', list);
       return list;
     }
@@ -308,9 +309,9 @@ export function EditModal({
   const getCategoryMap = async () => {
     if (selectedIdx) {
       const res = await classificationInstance.get(
-        `/v1/category/map/${selectedIdx}`,
+        `/v1/category/${itemIdx}/${selectedIdx}`,
       );
-      const list = res.data.data.mapList;
+      const list = res.data.categoryClassList;
       return list;
     }
   };
@@ -332,6 +333,7 @@ export function EditModal({
     const id = e.currentTarget.id;
     // console.log('id ----- ', id);
     setSelectedIdx(id);
+    setItemIdx(id);
     // 리스트가 조회된후
     const target = e.target as HTMLInputElement;
     const ischeck = target.checked;
