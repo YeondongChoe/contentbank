@@ -231,127 +231,8 @@ export function ContentInformationChange() {
     }
   }, [searchCategoryData]);
 
-  const groupElementsByCode = () => {
-    const listWrapper = listWrapperRef.current;
-    if (!listWrapper) return;
-
-    const groupMap: Record<string, HTMLElement> = {};
-
-    // 그룹 ID로 부모 요소 생성
-    questionList.forEach((item) => {
-      if (item.groupCode) {
-        if (!groupMap[item.groupCode]) {
-          const parentDiv = document.createElement('div') as HTMLElement;
-          parentDiv.id = item.groupCode;
-          parentDiv.className = `groupedItemsContainer`;
-
-          const groupCheckbox = document.createElement('input');
-          groupCheckbox.type = 'checkbox';
-          groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
-          groupCheckbox.className = 'group-checkbox';
-
-          const groupCheckboxLabel = document.createElement('label');
-          groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
-          groupCheckboxLabel.innerText = '그룹 선택';
-          groupCheckboxLabel.className = 'group_checkbox_label';
-
-          parentDiv.appendChild(groupCheckbox);
-          parentDiv.appendChild(groupCheckboxLabel);
-          // parentDiv.appendChild(ungroupButton);
-
-          groupMap[item.groupCode] = parentDiv;
-          listWrapper.appendChild(parentDiv);
-        }
-      }
-    });
-    // 동일한 그룹 ID를 가진 리스트 요소를 이동
-    questionList.forEach((item) => {
-      if (item.groupCode) {
-        console.log('Item Code:', item.code);
-        const element = document.getElementById(item.code);
-
-        console.log('동일한 그룹 ID를 가진 리스트 요소를 이동', element);
-        if (!element) {
-          console.warn(`Element with ID ${item.code} not found.`);
-          return;
-        }
-
-        const target =
-          element &&
-          (element.parentNode?.parentNode?.parentNode?.parentNode
-            ?.parentNode as HTMLElement);
-
-        console.log('target 이동될 타겟', target);
-
-        const parentDiv = groupMap[item.groupCode];
-
-        if (parentDiv && target && target instanceof HTMLElement) {
-          parentDiv.appendChild(target); // 기존 요소를 새 부모로 이동
-        } else {
-          // 이동될 타겟이 없는경우
-          removeGroupedContainers();
-        }
-      }
-    });
-  };
-  // 그룹 체크
-  const removeOnFromCheckList = () => {
-    setCheckList((prev) => prev.filter((item) => item !== 'on'));
-  };
-  // 그룹 체크박스 상태 변경 처리 함수
-  const handleGroupCheckboxChange = (e: Event) => {
-    const target = e.target as HTMLInputElement;
-
-    // group-checkbox인 경우에만 처리
-    if (target && target.classList.contains('group-checkbox')) {
-      const isChecked = target.checked;
-
-      // 그룹 컨테이너 내부의 모든 체크박스 선택
-      const parentDiv = target.closest('.groupedItemsContainer');
-      if (parentDiv) {
-        const childCheckboxes = parentDiv.querySelectorAll(
-          '.groupedItemsContainer input[type="checkbox"]',
-        );
-
-        // 모든 자식 체크박스 상태 업데이트
-        childCheckboxes.forEach((checkbox) => {
-          const inputElement = checkbox as HTMLInputElement;
-
-          // 체크 상태 동기화
-          inputElement.checked = isChecked;
-
-          // CheckList 업데이트 (React 상태 관리)
-          const id = inputElement.value;
-          if (isChecked) {
-            setCheckList((prev) => [...prev, id]);
-          } else {
-            setCheckList((prev) => prev.filter((el) => el !== id));
-          }
-        });
-        // 'on' 제거
-        removeOnFromCheckList();
-      }
-    }
-  };
-
-  useEffect(() => {
-    // 이벤트 리스너 등록
-    document.addEventListener('change', handleGroupCheckboxChange);
-
-    // 정리 함수: 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => {
-      document.removeEventListener('change', handleGroupCheckboxChange);
-    };
-  }, [checkList]);
-
   useLayoutEffect(() => {
     console.log('questionList ----------*', questionList);
-  }, [questionList]);
-  // 그룹화 작업
-  useLayoutEffect(() => {
-    setTimeout(() => {
-      groupElementsByCode();
-    }, 100);
   }, [questionList]);
 
   const removeGroupedContainers = () => {
@@ -1067,6 +948,7 @@ export function ContentInformationChange() {
                       questionList={questionList}
                       checkList={checkList}
                       handleButtonCheck={handleButtonCheck}
+                      setCheckList={setCheckList}
                     />
                   </PerfectScrollbar>
                 </ScrollWrapper>

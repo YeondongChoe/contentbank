@@ -17,6 +17,7 @@ interface QuizGroupListProps {
     event: React.ChangeEvent<HTMLInputElement>,
     code: string,
   ) => void;
+  setCheckList: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 interface GroupedQuestions {
@@ -34,6 +35,7 @@ export function QuizGroupList({
   questionList,
   checkList,
   handleButtonCheck,
+  setCheckList,
 }: QuizGroupListProps) {
   // 그룹화된 질문과 그룹화되지 않은 질문 분리
   const groupedQuestions: GroupedQuestions = useMemo(() => {
@@ -58,16 +60,44 @@ export function QuizGroupList({
     return { groups, ungroupedItems };
   }, [questionList]);
 
-  const handleGroupCheck = (groupCode: string, isChecked: boolean) => {
-    const items = groupedQuestions.groups[groupCode]?.items ?? [];
-    items.forEach((item) =>
-      handleButtonCheck(
-        {
-          target: { checked: isChecked },
-        } as React.ChangeEvent<HTMLInputElement>,
-        item.code,
-      ),
-    );
+  const handleGroupCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const target = e.target as HTMLInputElement;
+
+    // group-checkbox인 경우에만 처리
+    if (target && target.classList.contains('group_checkbox')) {
+      const isChecked = target.checked;
+
+      // 그룹 컨테이너 내부의 모든 체크박스 선택
+      const parentDiv = target.closest('.groupedItemsContainer');
+      if (parentDiv) {
+        const childCheckboxes = parentDiv.querySelectorAll(
+          '.groupedItemsContainer input[type="checkbox"]',
+        );
+
+        // 모든 자식 체크박스 상태 업데이트
+        childCheckboxes.forEach((checkbox) => {
+          const inputElement = checkbox as HTMLInputElement;
+
+          // 체크 상태 동기화
+          inputElement.checked = isChecked;
+
+          // CheckList 업데이트 (React 상태 관리)
+          const id = inputElement.value;
+          if (isChecked) {
+            setCheckList((prev) => [...prev, id]);
+          } else {
+            setCheckList((prev) => prev.filter((el) => el !== id));
+          }
+        });
+        // 'on' 제거
+        removeOnFromCheckList();
+      }
+    }
+  };
+
+  // 그룹 체크
+  const removeOnFromCheckList = () => {
+    setCheckList((prev) => prev.filter((item) => item !== 'on'));
   };
 
   return (
@@ -82,7 +112,7 @@ export function QuizGroupList({
               checked={group.items.every((item) =>
                 checkList.includes(item.code),
               )}
-              onChange={(e) => handleGroupCheck(groupCode, e.target.checked)}
+              onChange={(e) => handleGroupCheck(e)}
             />
             <label className="group_checkbox_label">그룹 선택</label>
           </div>
