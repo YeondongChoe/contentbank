@@ -223,7 +223,7 @@ export function Classification({
               // viewList: viewList[idxIndex] === 'true',
             }));
             filteredCategoriesDD.push(categories);
-          } else if (menuDetail.groupCode == 'A') {
+          } else {
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -254,12 +254,20 @@ export function Classification({
   }, [menuSettingData]);
 
   useEffect(() => {
-    if (idxNamePairsA[0] && Array.isArray(idxNamePairsA[0])) {
+    if (
+      idxNamePairsA[0] &&
+      idxNamePairsA[0][0].idx &&
+      Array.isArray(idxNamePairsA[0])
+    ) {
       console.log('idxNamePairsA ----- ', idxNamePairsA);
       console.log('idxNamePairsA[0].idx ----- ', idxNamePairsA[0][0].idx);
       fetchCategoryItems(idxNamePairsA[0][0].idx, setCategoriesA);
     }
-    if (idxNamePairsDD[0] && Array.isArray(idxNamePairsDD[0])) {
+    if (
+      idxNamePairsDD[0] &&
+      idxNamePairsDD[0][0].idx &&
+      Array.isArray(idxNamePairsDD[0])
+    ) {
       console.log('idxNamePairsDD ----- ', idxNamePairsDD);
       console.log('idxNamePairsDD[0].idx ----- ', idxNamePairsDD[0][0].idx);
       fetchCategoryItems(idxNamePairsDD[0][0].idx, setCategoriesDD1);
