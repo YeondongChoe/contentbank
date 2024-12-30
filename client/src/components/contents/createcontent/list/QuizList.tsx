@@ -62,6 +62,7 @@ export function QuizList({
   const [isPostMessage, setIsPostMessage] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [groupId, setGroupId] = useState<string | null>(null);
+  const [isAllowed, setIsAllowed] = useState(false);
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
@@ -229,21 +230,23 @@ export function QuizList({
 
   //문항 그룹 생성/해제 api
   const putGroup = async (items: QuizListType[]) => {
-    console.log('groupId ----- ', groupId);
-    console.log('group ----- ', items);
-    const quizList = items.map((item, index) => ({
-      idx: item.idx, // idx 값 가져오기
-      sort: index + 1, // 순번은 배열 순서대로 1부터 시작
-    }));
+    if (isAllowed) {
+      console.log('groupId ----- ', groupId);
+      console.log('group ----- ', items);
+      const quizList = items.map((item, index) => ({
+        idx: item.idx, // idx 값 가져오기
+        sort: index + 1, // 순번은 배열 순서대로 1부터 시작
+      }));
 
-    console.log('quizList ----- ', quizList);
-    const data = {
-      groupCode: groupId,
-      quizList: quizList,
-    };
-    const groupCode = await quizService.put(`/v1/quiz/group`, data);
+      console.log('quizList ----- ', quizList);
+      const data = {
+        groupCode: groupId,
+        quizList: quizList,
+      };
+      const groupCode = await quizService.put(`/v1/quiz/group`, data);
 
-    return groupCode.data.data.groupCode;
+      return groupCode.data.data.groupCode;
+    }
   };
 
   const { mutate: putGroupData, isPending } = useMutation({
@@ -270,6 +273,7 @@ export function QuizList({
       });
 
       // 초기화
+      setIsAllowed(false);
       queryClient.invalidateQueries({
         queryKey: ['get-quizList'],
         exact: true,
@@ -278,9 +282,12 @@ export function QuizList({
   });
 
   // 그룹으로 묶기
-  useEffect(() => {}, [groupId]);
+  useEffect(() => {
+    setIsAllowed(false);
+  }, [groupId]);
 
   const AddGroup = () => {
+    setIsAllowed(true);
     // 하나이상의 대발문은 그룹 불가능
     // 문제와 정답은 1:1 대응되도록 개수가 안맞으면 불가능
     // 체크값을 조건에 대응되게 그룹화후 div 생성
@@ -317,7 +324,7 @@ export function QuizList({
     }
     // 그룹화 DOM 생성
     // 서버에 그룹 상태 전송
-    if (!isPending) putGroupData(items);
+    if (!isPending && isAllowed) putGroupData(items);
     const parentDiv = document.createElement('div') as HTMLElement;
     parentDiv.id = groupId as string; // props로 전달받은 groupId를 id로 설정
     parentDiv.className = 'groupedItemsContainer';
@@ -363,7 +370,7 @@ export function QuizList({
         setGroupId(null);
         parentDiv.remove();
         // 서버에 그룹 상태 전송
-        if (!isPending) putGroupData(items);
+        if (!isPending && isAllowed) putGroupData(items);
         alert('그룹이 해제되었습니다.');
       }
     };
@@ -619,7 +626,7 @@ export function QuizList({
 
       // 서버에 그룹 상태 한 번에 전송
       console.log('최종 그룹 리스트 데이터 ---', itemsToSend);
-      if (!isPending && itemsToSend.length > 0) {
+      if (!isPending && isAllowed && itemsToSend.length > 0) {
         putGroupData(itemsToSend);
       }
     };

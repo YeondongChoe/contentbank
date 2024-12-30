@@ -932,6 +932,7 @@ export function ClassificationEdit({
           parentDiv.id = item.groupCode;
           parentDiv.className = `groupedItemsContainer ${columnsCount == 2 ? 'colum_2' : 'colum_1'}`;
 
+          console.log('생성된 그룹 div wrap', parentDiv);
           const groupCheckbox = document.createElement('input');
           groupCheckbox.type = 'checkbox';
           groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
