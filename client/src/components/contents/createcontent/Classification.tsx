@@ -349,11 +349,6 @@ export function Classification({
       setCategoryTypeList(groupsData.typeList);
     }
   }, [groupsData]);
-  useEffect(() => {
-    if (groupsData) {
-      setCategoryNameList(groupsData.nameList);
-    }
-  }, [groupsData]);
 
   // 라디오 버튼 설정
   const handleRadioCheck = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -949,6 +944,7 @@ export function Classification({
   const getQuiz = async () => {
     const idxArray = quizList.map((list) => list.idx);
     const idxList = idxArray.join(',');
+    console.log('진입시 불러올 문항 데이터 idx', idxList);
     const res = await quizService.get(`/v1/quiz/${idxList}`);
     return res.data.data.quizList;
   };
