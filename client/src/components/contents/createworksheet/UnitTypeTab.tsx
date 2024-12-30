@@ -157,15 +157,22 @@ export function UnitTypeTab({
     }
   };
 
+  //console.log('selectedList', selectedList);
   //버튼 클릭 함수
   const handleRadioCheck = (e: React.ChangeEvent<HTMLInputElement>) => {
     const radioValue = e.currentTarget.value; // 선택된 값
     const radioName = e.currentTarget.name; // radio 버튼의 name 값
     const radioClass = e.currentTarget.className; // radio 버튼의 class
+    const radioId = e.currentTarget.id.split('_')[0]; // radio 버튼의 id
+    //console.log('radioClass', radioClass);
+    //console.log('radioName', radioName);
+    //console.log('radioName', radioValue);
+    //console.log('radioId', radioId);
 
     // selectedList에서 해당 name에 맞는 항목을 찾아서 selected 값을 업데이트
     const updatedSelectedList = selectedList.map((item) => {
-      if (item.name === radioClass) {
+      if (item.name === radioId) {
+        //console.log('isMatch', item.name === radioId);
         return {
           ...item,
           selected: radioValue, // 선택된 값을 selected로 업데이트
@@ -177,7 +184,7 @@ export function UnitTypeTab({
 
     // 현재 선택된 항목의 인덱스
     const updateIndex = updatedSelectedList.findIndex(
-      (item) => item.name === radioClass,
+      (item) => item.name === radioId,
     );
 
     // 선택된 항목 이후의 값 초기화
@@ -195,12 +202,13 @@ export function UnitTypeTab({
     // pidxList를 업데이트 (radioValue를 pidx로 설정)
     const updatedPidxList: number[] = [];
     const indexToUpdate = selectedList.findIndex(
-      (item) => item.name === radioClass,
+      (item) => item.name === radioId,
     );
 
     if (indexToUpdate !== -1) {
       updatedPidxList[indexToUpdate] = Number(radioValue);
     }
+    //console.log('updatedPidxList', updatedPidxList);
 
     // 선택된 리스트를 순회하며 필요한 데이터 가져오기
     updatedSelectedList.forEach((list, index) => {
@@ -208,6 +216,9 @@ export function UnitTypeTab({
         const nextItem = updatedSelectedList[index + 1]; // 다음 항목
         const itemIdx = nextItem ? nextItem.idx : null; // 다음 항목의 idx
         const pidx = updatedPidxList[index]; // 현재 선택된 pidx
+        //console.log('nextItem', nextItem);
+        //console.log('itemIdx', itemIdx);
+        //console.log('pidx', pidx);
 
         if (itemIdx !== null && pidx !== undefined) {
           fetchCategoryList(itemIdx, pidx, index);
@@ -217,8 +228,9 @@ export function UnitTypeTab({
 
     // 마지막 항목인지 확인하고 `categoryItemTreeDataMutate` 실행
     const isLastItem =
-      updatedSelectedList.findIndex((item) => item.name === radioClass) ===
+      updatedSelectedList.findIndex((item) => item.name === radioId) ===
       updatedSelectedList.length - 1;
+    //console.log('isLastItem', isLastItem);
 
     if (isLastItem) {
       categoryItemTreeDataMutate();
