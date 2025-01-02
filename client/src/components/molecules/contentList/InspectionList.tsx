@@ -408,7 +408,7 @@ export function InspectionList({
                 <i className="line"></i>
                 <span className="width_10 item_wrapper">
                   <strong className="title">프로세스(단계)</strong>
-                  <span className="tag">{`${item.process?.step}/${item.process?.totalStep}(${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'APPROVAL' ? '승인' : ''})`}</span>
+                  <span className="tag">{`${item.process?.name}/()`}</span>
                 </span>
                 <i className="line"></i>
                 <span className="width_10 item_wrapper">

@@ -150,7 +150,6 @@ export function ContentInspection({
       queryClient.invalidateQueries({
         queryKey: ['get-quizList'],
       });
-
       closeModal();
     },
   });
@@ -252,9 +251,21 @@ export function ContentInspection({
                                         <button
                                           className="active"
                                           onClick={() => {
-                                            setInspectionArea(`검수의견`);
+                                            if (step.stepName === 'BUILD')
+                                              return;
+
+                                            setInspectionArea(
+                                              worker.state === 'APPROVAL'
+                                                ? '검수의견'
+                                                : worker.state === 'REJECT'
+                                                  ? '반려사유'
+                                                  : worker.state === 'HOLD'
+                                                    ? '보류사유'
+                                                    : '작업전',
+                                            );
                                             setInspectionReason(
-                                              `편집단계에서 추가 분류 요청`,
+                                              worker.account.commentList
+                                                .comment,
                                             );
                                             setIsAlertOpen(true);
                                           }}
@@ -262,16 +273,38 @@ export function ContentInspection({
                                           <span className="name">
                                             {`${worker.account.name}(${worker.account.id})`}
                                           </span>
-                                          <span className="tag">
-                                            {worker.account.authorityName}
-                                          </span>
+                                          {worker.state === 'APPROVAL' ? (
+                                            <span className="tag blue">
+                                              승인
+                                            </span>
+                                          ) : worker.state === 'REJECT' ? (
+                                            <span className="tag red">
+                                              반려
+                                            </span>
+                                          ) : (
+                                            <span className="tag">
+                                              {worker.account.authorityName}
+                                            </span>
+                                          )}
                                         </button>
                                       ) : (
                                         <button
                                           onClick={() => {
-                                            setInspectionArea(`검수의견`);
+                                            if (step.stepName === 'BUILD')
+                                              return;
+
+                                            setInspectionArea(
+                                              worker.state === 'APPROVAL'
+                                                ? '검수의견'
+                                                : worker.state === 'REJECT'
+                                                  ? '반려사유'
+                                                  : worker.state === 'HOLD'
+                                                    ? '보류사유'
+                                                    : '작업전',
+                                            );
                                             setInspectionReason(
-                                              `편집단계에서 추가 분류 요청`,
+                                              worker.account.commentList
+                                                .comment,
                                             );
                                             setIsAlertOpen(true);
                                           }}
@@ -279,9 +312,28 @@ export function ContentInspection({
                                           <span className="name">
                                             {`${worker.account.name}(${worker.account.id})`}
                                           </span>
-                                          <span className="tag">
-                                            {worker.account.authorityName}
-                                          </span>
+                                          {/* 첫단계는 검수요청 */}
+                                          {step.stepName === 'BUILD' ? (
+                                            <span className="tag blue">
+                                              검수요청
+                                            </span>
+                                          ) : (
+                                            <>
+                                              {worker.state === 'APPROVAL' ? (
+                                                <span className="tag blue">
+                                                  승인
+                                                </span>
+                                              ) : worker.state === 'REJECT' ? (
+                                                <span className="tag red">
+                                                  반려
+                                                </span>
+                                              ) : (
+                                                <span className="tag">
+                                                  {worker.account.authorityName}
+                                                </span>
+                                              )}
+                                            </>
+                                          )}
                                         </button>
                                       )}
                                     </li>
@@ -293,9 +345,21 @@ export function ContentInspection({
                                         <button
                                           className="active"
                                           onClick={() => {
-                                            setInspectionArea(`검수의견`);
+                                            if (step.stepName === 'BUILD')
+                                              return;
+
+                                            setInspectionArea(
+                                              worker.state === 'APPROVAL'
+                                                ? '검수의견'
+                                                : worker.state === 'REJECT'
+                                                  ? '반려사유'
+                                                  : worker.state === 'HOLD'
+                                                    ? '보류사유'
+                                                    : '작업전',
+                                            );
                                             setInspectionReason(
-                                              `편집단계에서 추가 분류 요청`,
+                                              worker.authority.commentList
+                                                .comment,
                                             );
                                             setIsAlertOpen(true);
                                           }}
@@ -303,16 +367,38 @@ export function ContentInspection({
                                           <span className="name">
                                             {worker.authority.name}
                                           </span>
-                                          <span className="tag">
-                                            {worker.authority.code}
-                                          </span>
+                                          {worker.state === 'APPROVAL' ? (
+                                            <span className="tag blue">
+                                              승인
+                                            </span>
+                                          ) : worker.state === 'REJECT' ? (
+                                            <span className="tag red">
+                                              반려
+                                            </span>
+                                          ) : (
+                                            <span className="tag">
+                                              {worker.authority.code}
+                                            </span>
+                                          )}
                                         </button>
                                       ) : (
                                         <button
                                           onClick={() => {
-                                            setInspectionArea(`검수의견`);
+                                            if (step.stepName === 'BUILD')
+                                              return;
+
+                                            setInspectionArea(
+                                              worker.state === 'APPROVAL'
+                                                ? '검수의견'
+                                                : worker.state === 'REJECT'
+                                                  ? '반려사유'
+                                                  : worker.state === 'HOLD'
+                                                    ? '보류사유'
+                                                    : '작업전',
+                                            );
                                             setInspectionReason(
-                                              `편집단계에서 추가 분류 요청`,
+                                              worker.authority.commentList
+                                                .comment,
                                             );
                                             setIsAlertOpen(true);
                                           }}
@@ -320,9 +406,27 @@ export function ContentInspection({
                                           <span className="name">
                                             {worker.authority.name}
                                           </span>
-                                          <span className="tag">
-                                            {worker.authority.code}
-                                          </span>
+                                          {step.stepName === 'BUILD' ? (
+                                            <span className="tag blue">
+                                              검수요청
+                                            </span>
+                                          ) : (
+                                            <>
+                                              {worker.state === 'APPROVAL' ? (
+                                                <span className="tag blue">
+                                                  승인
+                                                </span>
+                                              ) : worker.state === 'REJECT' ? (
+                                                <span className="tag red">
+                                                  반려
+                                                </span>
+                                              ) : (
+                                                <span className="tag">
+                                                  {worker.authority.code}
+                                                </span>
+                                              )}
+                                            </>
+                                          )}
                                         </button>
                                       )}
                                     </li>

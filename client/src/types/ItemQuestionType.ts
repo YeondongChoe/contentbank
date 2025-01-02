@@ -79,11 +79,28 @@ export type QuizListType = {
             id: string;
             name: string;
             authorityName: string;
+            commentList: {
+              idx: number;
+              comment: string;
+              createdAt: string;
+              createdBy: string;
+              lastModifiedAt: string;
+              lastModifiedBy: string;
+            };
           };
           authority: {
             code: string;
             name: string;
+            commentList: {
+              idx: number;
+              comment: string;
+              createdAt: string;
+              createdBy: string;
+              lastModifiedAt: string;
+              lastModifiedBy: string;
+            };
           };
+          state: string;
         }[];
       },
     ];
