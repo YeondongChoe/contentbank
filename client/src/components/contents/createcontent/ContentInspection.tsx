@@ -54,11 +54,17 @@ export function ContentInspection({
   const [inspectionReason, setInspectionReason] = useState<string>('');
   const [status, setStatus] = useState<string | null>(null);
   const [comment, setComment] = useState<string>('');
-  console.log('quizList', quizList);
-
   const [isSuccessAlertOpen, setIsSuccessAlertOpen] = useState(false);
+
   const closeSuccessAlert = () => {
     setIsSuccessAlertOpen(false);
+    window.opener.postMessage('inspectionPopupClosed', '*');
+    window.close();
+
+    //문항 다시 호출
+    queryClient.invalidateQueries({
+      queryKey: ['get-quizList'],
+    });
   };
 
   // 수정시 체크리스트 값 가져오기
@@ -97,7 +103,7 @@ export function ContentInspection({
     const idxArray = parsedStoredQuizList.map((list) => list.idx);
     const idxList = idxArray.join(',');
     const res = await quizService.get(`/v1/process/${idxList}`);
-    console.log(res);
+    //console.log(res);
     return res.data.data.quizList;
   };
   const { data: inspectionQuizData, refetch: inspectionQuizDataRefetch } =
@@ -146,18 +152,15 @@ export function ContentInspection({
     },
     onSuccess: (response) => {
       setIsSuccessAlertOpen(true);
-      //문항 다시 호출
-      queryClient.invalidateQueries({
-        queryKey: ['get-quizList'],
-      });
+
       closeModal();
     },
   });
 
   // 마지막으로 클릭된 문항 뷰어에 보이게
-  useEffect(() => {
-    console.log('onItemClickData------------', onItemClickData);
-  }, [checkedList]);
+  // useEffect(() => {
+  //   console.log('onItemClickData------------', onItemClickData);
+  // }, [checkedList]);
 
   useEffect(() => {}, [inspectionArea, inspectionReason]);
 
@@ -261,13 +264,17 @@ export function ContentInspection({
                                                   ? '반려사유'
                                                   : worker.state === 'HOLD'
                                                     ? '보류사유'
-                                                    : '작업전',
+                                                    : '',
                                             );
                                             setInspectionReason(
-                                              worker.account.commentList
-                                                .comment,
+                                              worker?.account?.comment
+                                                ?.comment ?? '',
                                             );
-                                            setIsAlertOpen(true);
+                                            setIsAlertOpen(
+                                              worker.state !== null
+                                                ? true
+                                                : false,
+                                            );
                                           }}
                                         >
                                           <span className="name">
@@ -300,13 +307,17 @@ export function ContentInspection({
                                                   ? '반려사유'
                                                   : worker.state === 'HOLD'
                                                     ? '보류사유'
-                                                    : '작업전',
+                                                    : '',
                                             );
                                             setInspectionReason(
-                                              worker.account.commentList
-                                                .comment,
+                                              worker?.account?.comment
+                                                ?.comment ?? '',
                                             );
-                                            setIsAlertOpen(true);
+                                            setIsAlertOpen(
+                                              worker.state !== null
+                                                ? true
+                                                : false,
+                                            );
                                           }}
                                         >
                                           <span className="name">
@@ -355,13 +366,17 @@ export function ContentInspection({
                                                   ? '반려사유'
                                                   : worker.state === 'HOLD'
                                                     ? '보류사유'
-                                                    : '작업전',
+                                                    : '',
                                             );
                                             setInspectionReason(
-                                              worker.authority.commentList
-                                                .comment,
+                                              worker?.authority?.comment
+                                                ?.comment ?? '',
                                             );
-                                            setIsAlertOpen(true);
+                                            setIsAlertOpen(
+                                              worker.state !== null
+                                                ? true
+                                                : false,
+                                            );
                                           }}
                                         >
                                           <span className="name">
@@ -394,13 +409,17 @@ export function ContentInspection({
                                                   ? '반려사유'
                                                   : worker.state === 'HOLD'
                                                     ? '보류사유'
-                                                    : '작업전',
+                                                    : '',
                                             );
                                             setInspectionReason(
-                                              worker.authority.commentList
-                                                .comment,
+                                              worker?.authority?.comment
+                                                ?.comment ?? '',
                                             );
-                                            setIsAlertOpen(true);
+                                            setIsAlertOpen(
+                                              worker.state !== null
+                                                ? true
+                                                : false,
+                                            );
                                           }}
                                         >
                                           <span className="name">
@@ -575,7 +594,6 @@ export function ContentInspection({
                 content: (
                   <InspectionModal
                     type={'보류'}
-                    item={onItemClickData}
                     onClick={postProcessData}
                     setComment={setComment}
                   />
@@ -596,7 +614,6 @@ export function ContentInspection({
                 content: (
                   <InspectionModal
                     type={'반려'}
-                    item={onItemClickData}
                     onClick={postProcessData}
                     setComment={setComment}
                   />
@@ -619,7 +636,6 @@ export function ContentInspection({
                 content: (
                   <InspectionModal
                     type={'승인'}
-                    item={onItemClickData}
                     onClick={postProcessData}
                     setComment={setComment}
                   />

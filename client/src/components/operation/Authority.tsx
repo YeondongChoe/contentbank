@@ -68,19 +68,19 @@ export const defaultPermissions = [
     checked: false,
     menuCode: 'isManageOperationChecked',
   },
-  { key: 'AM_isEdit', checked: true, menuCode: 'AM_isEdit' },
+  { key: 'AM_isEdit', checked: false, menuCode: 'AM_isEdit' },
   { key: 'AM_isManage', checked: false, menuCode: 'AM_isManage' },
-  { key: 'PM_isEdit', checked: true, menuCode: 'PM_isEdit' },
+  { key: 'PM_isEdit', checked: false, menuCode: 'PM_isEdit' },
   { key: 'PM_isManage', checked: false, menuCode: 'PM_isManage' },
-  { key: 'PSM_isEdit', checked: true, menuCode: 'PSM_isEdit' },
+  { key: 'PSM_isEdit', checked: false, menuCode: 'PSM_isEdit' },
   { key: 'PSM_isManage', checked: false, menuCode: 'PSM_isManage' },
-  { key: 'COM_isEdit', checked: true, menuCode: 'COM_isEdit' },
+  { key: 'COM_isEdit', checked: false, menuCode: 'COM_isEdit' },
   { key: 'COM_isManage', checked: false, menuCode: 'COM_isManage' },
-  { key: 'MIM_isEdit', checked: true, menuCode: 'MIM_isEdit' },
+  { key: 'MIM_isEdit', checked: false, menuCode: 'MIM_isEdit' },
   { key: 'MIM_isManage', checked: false, menuCode: 'MIM_isManage' },
-  { key: 'LOM_isEdit', checked: true, menuCode: 'LOM_isEdit' },
+  { key: 'LOM_isEdit', checked: false, menuCode: 'LOM_isEdit' },
   { key: 'LOM_isManage', checked: false, menuCode: 'LOM_isManage' },
-  { key: 'STM_isEdit', checked: true, menuCode: 'STM_isEdit' },
+  { key: 'STM_isEdit', checked: false, menuCode: 'STM_isEdit' },
   { key: 'STM_isManage', checked: false, menuCode: 'STM_isManage' },
   {
     key: 'isEditMenuChecked',
@@ -92,9 +92,9 @@ export const defaultPermissions = [
     checked: false,
     menuCode: 'isManageMenuChecked',
   },
-  { key: 'CCC_isEdit', checked: true, menuCode: 'CCC_isEdit' },
+  { key: 'CCC_isEdit', checked: false, menuCode: 'CCC_isEdit' },
   { key: 'CCC_isManage', checked: false, menuCode: 'CCC_isManage' },
-  { key: 'CMC_isEdit', checked: true, menuCode: 'CMC_isEdit' },
+  { key: 'CMC_isEdit', checked: false, menuCode: 'CMC_isEdit' },
   { key: 'CMC_isManage', checked: false, menuCode: 'CMC_isManage' },
 ];
 
@@ -911,7 +911,7 @@ export function Authority() {
     const hasChecked = checkList.some((item) => item.checked);
     setIsCheckNullError(!hasChecked);
 
-    if (!isCheckNullError) {
+    if (inputValue !== '' && !isCheckNullError) {
       setIsUpdateAuthority(true);
       setIsCreateNameError(false);
     }

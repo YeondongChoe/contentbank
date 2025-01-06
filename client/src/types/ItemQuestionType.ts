@@ -79,7 +79,7 @@ export type QuizListType = {
             id: string;
             name: string;
             authorityName: string;
-            commentList: {
+            comment: {
               idx: number;
               comment: string;
               createdAt: string;
@@ -91,7 +91,7 @@ export type QuizListType = {
           authority: {
             code: string;
             name: string;
-            commentList: {
+            comment: {
               idx: number;
               comment: string;
               createdAt: string;

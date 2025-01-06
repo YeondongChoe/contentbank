@@ -36,11 +36,11 @@ export function Inspection() {
     quizDataRefetch();
   };
 
-  //step3 학습지 생성 후 postMessage로 리스트 갱신
+  //검수작업 후 postMessage로 리스트 갱신
   useEffect(() => {
     // 메시지 이벤트 리스너 설정
     const handleMessage = (event: any) => {
-      if (event.data === 'popupClosed') {
+      if (event.data === 'inspectionPopupClosed') {
         callServerAPI();
       }
     };

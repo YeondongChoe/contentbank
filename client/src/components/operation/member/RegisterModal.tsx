@@ -33,7 +33,10 @@ type RegisterModalProps = {
   companyName: string;
   companyCorporateIdentifier: string;
   refetch: (
-    options?: RefetchOptions | undefined,
+    options?: RefetchOptions,
+  ) => Promise<QueryObserverResult<AxiosResponse<any, any> | null, Error>>;
+  listRefetch?: (
+    options?: RefetchOptions,
   ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
 };
 
@@ -44,6 +47,7 @@ export function RegisterModal({
   companyName,
   companyCorporateIdentifier,
   refetch,
+  listRefetch,
 }: RegisterModalProps) {
   const { closeModal } = useModal();
 
@@ -130,10 +134,10 @@ export function RegisterModal({
         });
         closeModal();
         refetch();
+        listRefetch && listRefetch();
       }
     },
   });
-  console.log(`${companyCorporateIdentifier}-${Id}`);
 
   const submitRegister = () => {
     //필수 항목 에러처리
@@ -143,7 +147,7 @@ export function RegisterModal({
       return;
     }
 
-    console.log('Name.lenth', Name.length);
+    //console.log('Name.lenth', Name.length);
     if (Name.length < 2) {
       setIsNameError(true);
       setNameErrorMessage('이름은 최소 2자 이상입니다');
@@ -376,6 +380,7 @@ export function RegisterModal({
                       setSelectedValue={setSelectedAuthority}
                       setSelectedCode={setSelectedCode}
                       heightScroll="150px"
+                      isnormalizedOptions
                     />
                   </SelectWrapper>
                 )}
