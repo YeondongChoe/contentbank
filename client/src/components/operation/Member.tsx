@@ -86,8 +86,11 @@ export function Member() {
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
-    enabled: companyIdxValue !== '0',
   });
+
+  useEffect(() => {
+    if (companyIdxValue !== '0') refetch();
+  }, [companyIdxValue]);
   // data 디렉토리
   const memberList = memberListData?.data.data;
 
@@ -289,7 +292,7 @@ export function Member() {
   };
 
   // 탭메뉴 클릭시 페이지네이션 초기화
-  //              && 리스트 데이터 전송값 변경
+  // && 리스트 데이터 전송값 변경
   const changeTab = () => {
     setPage(1);
   };
@@ -329,7 +332,7 @@ export function Member() {
     // 데이터 바뀔시 초기화
     setCheckList([]);
     // 비활성화 이후 토탈 멤버 api 재호출
-    if (memberListData) totalDataRefetch();
+    //if (memberListData) totalDataRefetch();
   }, [memberListData]);
 
   const tabMenuList = [
@@ -361,7 +364,7 @@ export function Member() {
     refetch();
   }, [page, searchKeywordValue, isUseFilter, changeUse]);
 
-  useEffect(() => {}, [memberList, totalMemberList]);
+  //useEffect(() => {}, [memberList, totalMemberList]);
 
   return (
     <Container ref={backgroundRef}>
@@ -434,7 +437,7 @@ export function Member() {
             </LoaderWrapper>
           ) : (
             <>
-              {totalMemberList && memberList.list.length !== 0 ? (
+              {memberList.list.length !== 0 ? (
                 <>
                   <ButtonWrapper>
                     <CheckBoxWrapper>

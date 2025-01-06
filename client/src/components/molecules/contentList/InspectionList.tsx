@@ -332,90 +332,96 @@ export function InspectionList({
       </List>
       <ListWrapper ref={backgroundRef}>
         <List margin={`10px 0`}>
-          {questionList.map((item: QuizListType) => (
-            <ListItem
-              key={item.code}
-              isChecked={checkList.includes(item.idx)}
-              onClick={(e) => handleButtonCheck(e, item.idx)}
-            >
-              <CheckBoxI
-                id={item.code}
-                value={item.idx}
-                $margin={`0 5px 0 0`}
-                checked={checkList.includes(item.idx)}
-                readOnly
-              />
-              <ItemLayout>
-                {selectedList.map((list) => {
-                  const matchedCategory = item.quizCategoryList.find(
-                    (category) =>
-                      Object.keys(category.quizCategory).some(
-                        (key) => key === list.name,
-                      ),
-                  );
-                  if (matchedCategory && list.view === true) {
-                    const matchedKey = Object.keys(
-                      matchedCategory.quizCategory,
-                    ).find((key) => key === list.name);
+          {questionList
+            // .sort(
+            //   (a, b) =>
+            //     new Date(a.lastModifiedAt).getTime() -
+            //     new Date(b.lastModifiedAt).getTime(),
+            // )
+            .map((item: QuizListType) => (
+              <ListItem
+                key={item.code}
+                isChecked={checkList.includes(item.idx)}
+                onClick={(e) => handleButtonCheck(e, item.idx)}
+              >
+                <CheckBoxI
+                  id={item.code}
+                  value={item.idx}
+                  $margin={`0 5px 0 0`}
+                  checked={checkList.includes(item.idx)}
+                  readOnly
+                />
+                <ItemLayout>
+                  {selectedList.map((list) => {
+                    const matchedCategory = item.quizCategoryList.find(
+                      (category) =>
+                        Object.keys(category.quizCategory).some(
+                          (key) => key === list.name,
+                        ),
+                    );
+                    if (matchedCategory && list.view === true) {
+                      const matchedKey = Object.keys(
+                        matchedCategory.quizCategory,
+                      ).find((key) => key === list.name);
 
-                    const codeValue =
-                      matchedKey &&
-                      Array.isArray(
+                      const codeValue =
+                        matchedKey &&
+                        Array.isArray(
+                          (
+                            matchedCategory.quizCategory as Record<
+                              string,
+                              Array<{ name: string }>
+                            >
+                          )[matchedKey],
+                        ) &&
                         (
                           matchedCategory.quizCategory as Record<
                             string,
                             Array<{ name: string }>
                           >
-                        )[matchedKey],
-                      ) &&
-                      (
-                        matchedCategory.quizCategory as Record<
-                          string,
-                          Array<{ name: string }>
-                        >
-                      )[matchedKey][0]?.name;
+                        )[matchedKey][0]?.name;
 
-                    return (
-                      <>
-                        <span className="width_10 item_wrapper">
-                          <span className="ellipsis">{codeValue}</span>
-                        </span>
-                        <i className="line"></i>
-                      </>
-                    );
-                  } else {
-                    if (list.view === true) {
                       return (
                         <>
                           <span className="width_10 item_wrapper">
-                            <span className="ellipsis"></span>
+                            <span className="ellipsis">{codeValue}</span>
                           </span>
                           <i className="line"></i>
                         </>
                       );
+                    } else {
+                      if (list.view === true) {
+                        return (
+                          <>
+                            <span className="width_10 item_wrapper">
+                              <span className="ellipsis"></span>
+                            </span>
+                            <i className="line"></i>
+                          </>
+                        );
+                      }
                     }
-                  }
-                })}
-                <span className="width_10 item_wrapper">
-                  <strong className="title">담당자</strong>
-                  <span className="tag ellipsis">{item.createdBy}</span>
-                </span>
-                <i className="line"></i>
-                <span className="width_10 item_wrapper">
-                  <strong className="title">등록일자</strong>
-                  <span className="tag">{item.createdAt}</span>
-                </span>
-                <i className="line"></i>
-                <span className="width_10 item_wrapper">
-                  <strong className="title">프로세스(단계)</strong>
-                  <span className="tag">{`${item.process?.name}/()`}</span>
-                </span>
-                <i className="line"></i>
-                <span className="width_10 item_wrapper">
-                  <strong className="title">상태</strong>
-                  <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'APPROVAL' ? '승인' : ''}`}</span>
-                </span>
-                {/* <span
+                  })}
+                  <span className="width_10 item_wrapper">
+                    <strong className="title">담당자</strong>
+                    <span className="tag ellipsis">{item.createdBy}</span>
+                  </span>
+                  <i className="line"></i>
+                  <span className="width_10 item_wrapper">
+                    <strong className="title">등록일자</strong>
+                    <span className="tag">{item.createdAt}</span>
+                  </span>
+                  <i className="line"></i>
+                  <span className="width_10 item_wrapper">
+                    <strong className="title">프로세스(단계)</strong>
+                    <span className="tag">{`${item.process?.name}/(역할)`}</span>
+                  </span>
+                  <i className="line"></i>
+                  <span className="width_10 item_wrapper">
+                    <strong className="title">상태</strong>
+                    <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'APPROVAL' ? '승인' : ''}`}</span>
+                  </span>
+                  {/* <span
                   className="width_80px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
@@ -885,9 +891,9 @@ export function InspectionList({
                     <span className="tag"></span>
                   )}
                 </span> */}
-              </ItemLayout>
-            </ListItem>
-          ))}
+                </ItemLayout>
+              </ListItem>
+            ))}
         </List>
       </ListWrapper>
 

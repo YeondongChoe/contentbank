@@ -408,6 +408,7 @@ export function Company() {
         <RegisterModal
           memberList={totalData?.data.data.list}
           refetch={companyAccountRefetch}
+          listRefetch={companyListRefetch}
           companyIdx={idxValue as string}
           companyCode={codeValue as string}
           companyName={nameValue}

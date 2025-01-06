@@ -21,7 +21,11 @@ import styled from 'styled-components';
 import { userInstance } from '../api/axios';
 import { useJwtDecode } from '../hooks/useJwtDecode';
 import { myAuthorityAtom } from '../store/myAuthorityAtom';
-import { openNaviationBoolAtom, pageIndexAtom } from '../store/utilAtom';
+import {
+  pageAtom,
+  openNaviationBoolAtom,
+  pageIndexAtom,
+} from '../store/utilAtom';
 import { accessMenuListProps } from '../types';
 import { getAuthorityCookie } from '../utils/cookies';
 
@@ -30,6 +34,8 @@ import { COLOR } from './constants';
 
 export function Navigation() {
   const token = getAuthorityCookie('accessToken');
+  const [page, setPage] = useRecoilState(pageAtom);
+
   const decodingInfo = useJwtDecode(token);
   const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const isOpenNavigation = useRecoilValue(openNaviationBoolAtom);
@@ -86,6 +92,8 @@ export function Navigation() {
     const depth2Value = e.currentTarget.children[0].children[1];
     if (depth1Value)
       setpageIndexValue([depth1Value.innerHTML, depth2Value.innerHTML]);
+    //네비게이션 클릭할때마다 페이지 네이션 초기화
+    setPage(1);
   };
 
   useEffect(() => {
@@ -884,7 +892,7 @@ export function Navigation() {
                             </clipPath>
                           </defs>
                         </svg>
-                        <span>문항 관리</span>
+                        <span style={{ display: 'none' }}>문항 관리</span>
                       </Link>
                     </button>
                   )}

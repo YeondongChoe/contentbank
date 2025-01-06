@@ -14,14 +14,12 @@ import { useModal } from '../../../../hooks';
 import { COLOR } from '../../../constants';
 
 type InspectionModalProps = {
-  item: any;
   type: string;
   onClick: () => void;
   setComment: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export function InspectionModal({
-  item,
   type,
   onClick,
   setComment,

@@ -120,12 +120,16 @@ export const getUserList = async ({
   isUseFilter: '' | 'Y' | 'N' | undefined;
   idxValue: string;
 }) => {
-  const res = await userInstance.get(
-    `/v1/account?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}&searchCondition=${idxValue}
-			`,
-  );
-  // console.log(`유저리스트 get 결과값`, res);
-  return res;
+  if (idxValue === '0') {
+    return null;
+  } else {
+    const res = await userInstance.get(
+      `/v1/account?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}&searchCondition=${idxValue}
+        `,
+    );
+    // console.log(`유저리스트 get 결과값`, res);
+    return res;
+  }
 };
 
 // 아이디 중복 확인 && 토탈 유저 수
