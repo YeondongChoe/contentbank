@@ -36,8 +36,8 @@ export function EditModal({
   userKey: string;
   companyIdx: number;
   refetch: (
-    options?: RefetchOptions | undefined,
-  ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
+    options?: RefetchOptions,
+  ) => Promise<QueryObserverResult<AxiosResponse<any, any> | null, Error>>;
 }) {
   const { closeModal } = useModal();
   const [member, setMember] = useState<{

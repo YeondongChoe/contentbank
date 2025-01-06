@@ -142,21 +142,20 @@ export function ProcessAddModal({
     }
   }, [processDetailInfo]);
 
-  console.log('processList', processList);
-  console.log('processDetailList', processDetailList);
+  //console.log('isEdit', isEdit);
+  //console.log('processList', processList);
+  //console.log('processDetailList', processDetailList);
   const [selectedworkerAccountList, setselectedWorkerAccountList] = useState<
     ProcessWorkerAccountListProps[]
   >([]);
+
   const [selectedworkerAuthorityList, setselectedWorkerAuthorityList] =
     useState<ProcessWorkerAuthorityListProps[]>([]);
 
   const clickAccountListSave = () => {
     const checkForDuplicateAuthority = (process: any) => {
-      return process.workers.some(
-        (worker: any) => worker.authority?.name !== '',
-      );
+      return process.workers.some((worker: any) => worker.authority !== null);
     };
-
     if (isEdit) {
       const updatedProcessList =
         processDetailList?.steps?.map((process) => {
@@ -242,16 +241,16 @@ export function ProcessAddModal({
             return process; // 원래 데이터를 그대로 반환
           }
 
-          if (
-            selectedworkerAccountList.length > 1 &&
-            process.stepName === 'EDITING'
-          ) {
-            openToastifyAlert({
-              type: 'error',
-              text: '편집 단계는 1명만 등록 가능합니다.',
-            });
-            return process;
-          }
+          // if (
+          //   selectedworkerAccountList.length > 1 &&
+          //   process.stepName === 'EDITING'
+          // ) {
+          //   openToastifyAlert({
+          //     type: 'error',
+          //     text: '편집 단계는 1명만 등록 가능합니다.',
+          //   });
+          //   return process;
+          // }
 
           const updatedWorkersAccount = selectedworkerAccountList.map(
             (worker) => ({
@@ -298,7 +297,7 @@ export function ProcessAddModal({
 
   const clickAuthorityListSave = () => {
     const checkForDuplicateAuthority = (process: any) => {
-      return process.workers.some((worker: any) => worker.account?.name !== '');
+      return process.workers.some((worker: any) => worker.account !== null);
     };
 
     if (isEdit) {
