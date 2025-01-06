@@ -109,11 +109,11 @@ export function TagMapping() {
     if (queryValue) {
       const groupIdx = queryValue.split('/')[1];
       const res = await classificationInstance.get(
-        `/v1/category/map/${groupIdx}`,
+        `/v1/category/map/flat/${groupIdx}`,
       );
 
-      const list = res.data.data.mapList;
-      console.log(',list-----', list);
+      const list = res.data.data.itemList;
+      console.log('/v1/category/map/flat/ ,list-----', list);
       return list;
     }
   };
