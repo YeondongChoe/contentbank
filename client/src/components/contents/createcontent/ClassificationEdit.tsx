@@ -1094,14 +1094,12 @@ export function ClassificationEdit({
         });
 
         // order 변수를 선언 및 초기화
-        const order: Record<string, number> = {
-          교육과정: 0,
-          학교급: 1,
-          학년: 2,
-          학기: 3,
-          교과: 4,
-          과목: 5,
-        };
+        const order: Record<string, number> = {};
+
+        // titleA 배열을 순회하며 order에 키-값 추가
+        titleA.forEach((title, index) => {
+          order[title] = index;
+        });
 
         // order에 따른 정렬된 배열 만들기
         const sortedArray: (RadioStateType | null)[] = new Array(
@@ -1148,12 +1146,7 @@ export function ClassificationEdit({
         const newFinalList: RadioStateType[] = [];
         // 라디오 버튼에 들어갈 요소 재정의
         const keysOrder = [
-          '교육과정',
-          '학교급',
-          '학년',
-          '학기',
-          '교과',
-          '과목',
+          ...titleA,
           'itemTreeIdxList',
           '행동요소1',
           '행동요소2',
