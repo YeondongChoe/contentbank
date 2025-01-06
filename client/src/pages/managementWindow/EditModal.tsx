@@ -1,19 +1,11 @@
 import * as React from 'react';
 import { useState, useEffect, useRef, useMemo } from 'react';
 
-import {
-  QueryObserverResult,
-  RefetchOptions,
-  useMutation,
-  useQuery,
-} from '@tanstack/react-query';
-import { AxiosResponse } from 'axios';
-import { Controller, useForm } from 'react-hook-form';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import styled from 'styled-components';
 
 import { classificationInstance, quizService } from '../../api/axios';
 import {
-  ItemSelectProps,
   AlertBar,
   Label,
   Input,
@@ -30,8 +22,8 @@ interface CategoryItem {
   idx: number;
   name: string;
   code: string;
-  depth: number;
-  isUse: boolean;
+  depth?: number;
+  isUse?: boolean;
   children?: CategoryItem[];
 }
 
@@ -52,20 +44,17 @@ export function EditModal({
 }) {
   const { closeModal } = useModal();
 
-  const [isCheckedArr, setIsCheckedArr] = useState<boolean[]>([]);
   const [changeValue, setChangeValue] = useState<string>('');
-  const [selectedIdx, setSelectedIdx] = useState<string | null>(null);
-  const [itemIdx, setItemIdx] = useState<string | null>(null);
-  const [clickIndex, setClickIndex] = useState<number | null>(null);
-  const [educationCurriculumList, setEducationCurriculumList] = useState<any[]>(
-    [],
-  );
+
   //최초 1뎁스
   const [listDepth1, setListDepth1] = useState<CategoryItem[]>([]);
   //다음 뎁스 아이템들
-  const [childItems, setChildItems] = useState<CategoryItem | null>(null);
+  const [childItemsMap, setChildItemsMap] = useState<
+    Record<string, CategoryItem[]>
+  >({});
+  // 선택된 뎁스 아이템들
+  const [checkedValues, setCheckedValues] = useState<any[]>([]);
 
-  const [tagCheckList, setTagCheckList] = useState<string[]>([]);
   const [tagDataList, setTagDataList] = useState<CategoryItem[]>([]);
   const searchEditDivRef = useRef<HTMLDivElement | null>(null);
 
@@ -243,225 +232,108 @@ export function EditModal({
       console.log('categoryList --------', categoryList);
       // 체크 상태에 동기화
       setTagDataList(categoryList);
-      setTagCheckList(
-        categoryList.map((item) => `${item.code}${item.name}-items`),
+      setCheckedValues(
+        categoryList.map((item) => `${item.code}/${item.name}-items`),
       );
     }
   }, []);
 
   useEffect(() => {
     console.log(
-      'tagDataList, tagCheckList --------',
+      '가져온 리스트에 해당하는 값은 최초에 체크된 상태로, tagCheckList --------',
       tagDataList,
-      tagCheckList,
+      checkedValues,
     );
-  }, [tagDataList, tagCheckList]);
-
-  // 셋팅 idx, name 리스트
-  useEffect(() => {
-    // 그룹 코드 호출
-    // console.log('셋팅에서 가져온 그룹 idx, name ---- ', idxNamePairs);
-  }, [idxNamePairs]);
-
-  // 첫번째 맵핑 리스트 조회
-  const getCategoryMapDepth1 = async () => {
-    if (idxNamePairs) {
-      const res = await classificationInstance.get(
-        `/v1/category/${idxNamePairs[0].idx}`,
-      );
-      const list = res.data.classes;
-      console.log('셋팅에서 가져온 idx로 맵핑리스트 조회 -----', list);
-      return list;
-    }
-  };
-
-  const { data: mappingData, refetch: mappingDataRefetch } = useQuery({
-    queryKey: ['get-categoryMap'], // 쿼리 키를 unique하게 설정
-    queryFn: getCategoryMapDepth1, // groupIdx 추출
-    enabled: !!idxNamePairs,
-    meta: {
-      errorMessage: 'get-categoryMap 에러 메세지',
-    },
-  });
-
-  // 1차적으로 리스트 체크박스로 뿌려준 뒤
-  useEffect(() => {
-    if (mappingData) {
-      // children 속성을 제외한 새로운 배열 생성
-      // TODO : api 변경시 내부 구조도 변경
-      const processedData = (mappingData as CategoryItem[]).map(
-        ({ children, ...rest }) => rest,
-      );
-
-      // listDepth1에 첫줄 체크박스
-      setListDepth1(processedData);
-    }
-  }, [mappingData]);
-  useEffect(() => {
-    // console.log('listDepth1 -----', listDepth1);
-    // 첫번째 배열의 길이만큼 체크박스 상태값
-    const isCheckedArrArray = listDepth1.map(() => false);
-    // isCheckedArr 상태값 설정
-    setIsCheckedArr(isCheckedArrArray);
-  }, [listDepth1]);
-
-  // 다음 뎁스 맵핑 api 호출
-  const getCategoryMap = async () => {
-    if (selectedIdx) {
-      const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${selectedIdx}`,
-      );
-      const list = res.data.categoryClassList;
-      return list;
-    }
-  };
-
-  const { data: childItemsData, refetch: fetchChildItems } = useQuery({
-    queryKey: ['get-categoryMap', selectedIdx],
-    queryFn: getCategoryMap, // 선택된 idx로 API 호출
-    enabled: selectedIdx !== null,
-    meta: {
-      errorMessage: `get-categoryMap 에러 메세지-${selectedIdx}`,
-    },
-  });
-
-  // 클릭시 다음 단계
-  const toggleAccordion = async (
-    e: React.MouseEvent<HTMLButtonElement>,
-    index: number,
-  ) => {
-    const id = e.currentTarget.id;
-    // console.log('id ----- ', id);
-    setSelectedIdx(id);
-    setItemIdx(id);
-    // 리스트가 조회된후
-    const target = e.target as HTMLInputElement;
-    const ischeck = target.checked;
-    console.log(target);
-    console.log(ischeck);
-    const isCheckedArrCopy = [...isCheckedArr];
-    // 클릭된 index의 값을 ischeck로 변경
-    isCheckedArrCopy[index] = ischeck;
-
-    setIsCheckedArr(isCheckedArrCopy);
-    setClickIndex(index + 1);
-  };
-
-  useEffect(() => {
-    // console.log('isCheckedArr ---------- ', isCheckedArr);
-  }, [isCheckedArr, clickIndex]);
-
-  useEffect(() => {
-    // console.log('clickIndex ----- ', clickIndex);
-    // console.log('selectedIdx ----- ', selectedIdx);
-    if (selectedIdx) fetchChildItems();
-  }, [selectedIdx]);
-
-  //선탣된 데이터 로드 후 하단으로 펼침
-  const addChildDom = () => {
-    // 자식 데이터 로드
-    if (childItemsData && clickIndex) {
-      // console.log('childItemsData[index] ----- ', childItemsData[clickIndex]);
-      const items = childItemsData[clickIndex];
-      setChildItems(items);
-    }
-  };
-  useEffect(() => {
-    addChildDom();
-  }, [childItemsData]);
-
-  useEffect(() => {}, [childItems]);
-
-  // 보이는 ui 체크 핸들러
-  const handleCheckboxChange = (code: string) => {
-    setTagCheckList((prev) =>
-      prev.includes(code)
-        ? prev.filter((item) => item !== code)
-        : [...prev, code],
-    );
-  };
-  // 보내질 데이터 핸들러
-  const handleCheckData = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    idx: number,
-    name: string,
-    code: string,
-    depth: number,
-  ) => {
-    // 클릭시 체크상태를 확인 후
-    // console.log(e.currentTarget.checked, idx, name, code, depth);
-    const isChecked = e.currentTarget.checked;
-    setTagDataList((prevTagDataList) => {
-      // 체크된 경우, 리스트에 아이템 추가
-      if (isChecked) {
-        // 이미 리스트에 아이템이 있는지 확인하여 중복 방지
-        const exists = prevTagDataList.some((item) => item.idx === idx);
-        if (!exists) {
-          return [...prevTagDataList, { idx, name, code, depth, isUse: true }];
-        }
-        return prevTagDataList; // 이미 존재하면 기존 리스트 반환
-      } else {
-        // 체크가 해제된 경우, 리스트에서 해당 아이템 제거
-        return prevTagDataList.filter((item) => item.idx !== idx);
-      }
-    });
-
-    // 디버깅용으로 현재 상태를 콘솔에 출력
-    console.log(`체크박스 ${isChecked ? '선택됨' : '선택 해제됨'}:`, {
-      idx,
-      name,
-      code,
-      depth,
-    });
-  };
-
-  useEffect(() => {
-    console.log('tagDataList ------- ', tagDataList);
-  }, [tagDataList]);
+  }, [tagDataList, checkedValues]);
 
   useEffect(() => {
     change({
-      tag: tagCheckList,
+      tag: checkedValues,
       changeValue: changeValue,
     });
-  }, [changeValue, tagCheckList]);
+  }, [changeValue, checkedValues]);
 
-  const renderChildren = (children: CategoryItem[] | undefined) => {
-    if (!children || children.length === 0) return null;
+  // 변경할 분류 리스트
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (idxNamePairs[0]?.idx) {
+        const res = await classificationInstance.get(
+          `/v1/category/class/${idxNamePairs[0].idx}`,
+        );
+        setListDepth1(res?.data?.data?.categoryClassList || []);
+      }
+    };
 
-    return (
-      <div className="child-items">
-        {children.map((child) => (
-          <div
-            key={child.idx}
-            className="child-item"
-            style={{ paddingLeft: `${child.depth * 10}px` }}
-          >
-            <label>
-              <input
-                type="checkbox"
-                checked={tagCheckList.includes(
-                  `${child.code}${child.name}-items`,
-                )}
-                onChange={(e) => {
-                  handleCheckboxChange(`${child.code}${child.name}-items`);
-                  handleCheckData(
-                    e,
-                    child.idx,
-                    child.name,
-                    child.code,
-                    child.depth,
-                  );
-                }}
-              />
-              {child.name}
-            </label>
-            {/* 재귀적으로 하위 children 렌더링 */}
-            {renderChildren(child.children)}
-          </div>
-        ))}
-      </div>
+    fetchInitialData();
+  }, [idxNamePairs]);
+
+  const fetchChildItems = async (itemIdx: string, parentIdx: string) => {
+    if (!itemIdx || !parentIdx) return [];
+
+    const res = await classificationInstance.get(
+      `/v1/category/${itemIdx}/${parentIdx}`,
     );
+    return res?.data?.data?.categoryClassList || [];
+  };
+
+  const handleCheckboxChange = async (
+    isChecked: boolean,
+    uniqueKey: string,
+    depth: number,
+    idx: number,
+  ) => {
+    setCheckedValues((prev) =>
+      isChecked
+        ? [...prev, uniqueKey]
+        : prev.filter((value) => value !== uniqueKey),
+    );
+
+    // 고유 키를 분리하여 idx와 name 추출
+    const [code, name] = uniqueKey.split('/');
+
+    if (isChecked && depth < idxNamePairs.length - 1) {
+      const nextIdx = idxNamePairs[depth + 1]?.idx;
+      if (!nextIdx) return;
+
+      const childItems = await fetchChildItems(nextIdx, idx.toString());
+      setChildItemsMap((prev) => ({
+        ...prev,
+        [uniqueKey]: childItems,
+      }));
+    } else {
+      setChildItemsMap((prev) => {
+        const updatedMap = { ...prev };
+        delete updatedMap[uniqueKey];
+        return updatedMap;
+      });
+    }
+  };
+
+  const renderRecursiveItems = (items: CategoryItem[], depth: number) => {
+    return items.map((item) => (
+      <div key={item.idx} style={{ marginLeft: depth * 20 }}>
+        <label>
+          <input
+            type="checkbox"
+            checked={checkedValues.includes(`${item.code}/${item.name}-items`)}
+            onChange={(e) =>
+              handleCheckboxChange(
+                e.target.checked,
+                `${item.code}/${item.name}-items`,
+                depth,
+                item.idx,
+              )
+            }
+          />
+          {item.name}
+        </label>
+        {childItemsMap[`${item.code}/${item.name}-items`] &&
+          renderRecursiveItems(
+            childItemsMap[`${item.code}/${item.name}-items`],
+            depth + 1,
+          )}
+      </div>
+    ));
   };
 
   return (
@@ -476,41 +348,7 @@ export function EditModal({
       <Title>문항 수정{state == '복제' && ' 후 복제'}</Title>
       <p className="sub_title">총 {sortedQuizList.length}문항에 대해</p>
       <p>변경할 분류</p>
-      <TagMappingList>
-        {listDepth1.map((item, index) => (
-          <div key={`${item.idx}`}>
-            <button
-              type="button"
-              id={`${item.idx}`}
-              className="tag_item"
-              onClick={(e) => toggleAccordion(e, index)}
-            >
-              <label>
-                <input
-                  type="checkbox"
-                  checked={tagCheckList.includes(
-                    `${item.code}${item.name}-items`,
-                  )}
-                  onChange={(e) => {
-                    handleCheckboxChange(`${item.code}${item.name}-items`);
-                    handleCheckData(
-                      e,
-                      item.idx,
-                      item.name,
-                      item.code,
-                      item.depth,
-                    );
-                  }}
-                />
-                {item.name}
-              </label>
-            </button>
-            {isCheckedArr[index] &&
-              childItems &&
-              renderChildren(childItems.children)}
-          </div>
-        ))}
-      </TagMappingList>
+      <TagMappingList>{renderRecursiveItems(listDepth1, 0)}</TagMappingList>
       <p>
         변경할 내용 (현재 검색어 :
         {beforeText.length ? (
