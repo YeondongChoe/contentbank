@@ -30,7 +30,6 @@ import {
 import { quizService, resourceServiceInstance } from '../../../api/axios';
 import { ProcessListModal } from '../../../components/managements/process';
 import { useModal } from '../../../hooks';
-import { myAuthorityAtom } from '../../../store/myAuthorityAtom';
 import { quizListAtom } from '../../../store/quizListAtom';
 import { pageAtom } from '../../../store/utilAtom';
 import { QuizListType } from '../../../types';
@@ -74,7 +73,6 @@ export function ContentList({
 }: ContentListProps) {
   const { openModal } = useModal();
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
-  const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<number[]>([]);
@@ -436,14 +434,6 @@ export function ContentList({
     target?.classList.remove('on');
   };
 
-  console.log('myAuthority ---- ', myAuthority);
-
-  // console.log('문항 제작 ---- ', myAuthority?.QE);
-  // console.log('문항 제작 편집 ---- ', myAuthority?.QE?.isEdit);
-  // console.log('문항 제작 관리 ---- ', myAuthority?.QE?.isManage);
-  // console.log('문항 관리 ---- ', myAuthority?.QM);
-  // console.log('검수 관리  ---- ', myAuthority?.IM);
-
   return (
     <>
       <Total> Total : {totalCount ? totalCount : 0}</Total>
@@ -463,7 +453,30 @@ export function ContentList({
               <span className="title_top">전체선택</span>
             </CheckBoxWrapper>
             <ActionButtonWrapper>
-              {myAuthority?.QE?.isEdit ? (
+              <Button
+                width="100px"
+                height="35px"
+                fontSize="14px"
+                $borderRadius="7px"
+                $filled
+                onClick={() => openProcessListModal()}
+                disabled={isEnabled}
+                cursor
+              >
+                검수 요청
+              </Button>
+              <Button
+                width="130px"
+                height="35px"
+                fontSize="14px"
+                $borderRadius="7px"
+                onClick={() => {}}
+                disabled={isEnabled}
+                cursor
+              >
+                검수 요청 취소
+              </Button>
+              {/* {myAuthority?.QE?.isEdit ? (
                 <>
                   <Button
                     width="100px"
@@ -506,7 +519,7 @@ export function ContentList({
                     프로세스 요청
                   </Button>
                 </>
-              )}
+              )} */}
               <Button
                 width="100px"
                 height="35px"
