@@ -58,6 +58,7 @@ export type QuizListType = {
   process?: {
     idx: number;
     name: string;
+    stepName: string;
     state: string;
     step: number;
     totalStep: number;

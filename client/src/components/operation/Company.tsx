@@ -811,6 +811,8 @@ export function Company() {
         queryClient.invalidateQueries({
           queryKey: ['get-companyAccessMenu', codeValue],
         });
+        //수정로드
+        window.location.reload();
       },
     });
 
