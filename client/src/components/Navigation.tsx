@@ -12,7 +12,6 @@ import {
   MdOutlineMedicalInformation,
   MdAccountBalance,
 } from 'react-icons/md';
-import { TbReportMoney } from 'react-icons/tb';
 import { VscGraph } from 'react-icons/vsc';
 import { Link, useNavigate } from 'react-router-dom';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -20,7 +19,6 @@ import styled from 'styled-components';
 
 import { userInstance } from '../api/axios';
 import { useJwtDecode } from '../hooks/useJwtDecode';
-import { myAuthorityAtom } from '../store/myAuthorityAtom';
 import {
   pageAtom,
   openNaviationBoolAtom,
@@ -28,21 +26,18 @@ import {
 } from '../store/utilAtom';
 import { accessMenuListProps } from '../types';
 import { getAuthorityCookie } from '../utils/cookies';
+import { postRefreshToken } from '../utils/tokenHandler';
 
-import { Label, openToastifyAlert } from './atom';
+import { Label } from './atom';
 import { COLOR } from './constants';
 
 export function Navigation() {
   const token = getAuthorityCookie('accessToken');
   const [page, setPage] = useRecoilState(pageAtom);
-
   const decodingInfo = useJwtDecode(token);
-  const [myAuthority, setMyAuthority] = useRecoilState(myAuthorityAtom);
   const isOpenNavigation = useRecoilValue(openNaviationBoolAtom);
   const setpageIndexValue = useSetRecoilState(pageIndexAtom);
   const navigate = useNavigate();
-  //[menuType 코드] null: 전체 조회, view: 화면 url만 조회
-  const [menuType, setMenuType] = useState(null);
   //기업코드
   const [codeValue, setCodeValue] = useState<string | null>(null);
   //접근 메뉴 리스트
@@ -58,20 +53,36 @@ export function Navigation() {
 
   //접근 메뉴 리스트 불러오기 api
   const getAccessMenu = async () => {
-    const res = await userInstance.get(`/v1/company/access/${codeValue}`);
-    //console.log(`getAccessMenu 결과값`, res);
-    return res;
+    try {
+      const res = await userInstance.get(`/v1/company/access/${codeValue}`);
+      return res;
+    } catch (error: any) {
+      if (error.response?.data?.code === 'GE-002') {
+        // 토큰 만료 에러 코드 확인 후 토큰 갱신
+        await postRefreshToken();
+        // 토큰 갱신 후 다시 API 호출
+        const retryRes = await userInstance.get(
+          `/v1/company/access/${codeValue}`,
+        );
+        return retryRes;
+      } else {
+        throw error; // 다른 에러는 그대로 throw
+      }
+    }
   };
 
-  const { data: companyAccessMenuData, refetch: companyAccessMenuRefetch } =
-    useQuery({
-      queryKey: ['get-companyAccessMenu', codeValue],
-      queryFn: getAccessMenu,
-      meta: {
-        errorMessage: 'get-companyAccessMenu 에러 메세지',
-      },
-      enabled: !!codeValue,
-    });
+  const {
+    data: companyAccessMenuData,
+    refetch: companyAccessMenuRefetch,
+    isLoading,
+  } = useQuery({
+    queryKey: ['get-companyAccessMenu', codeValue],
+    queryFn: getAccessMenu,
+    meta: {
+      errorMessage: 'get-companyAccessMenu 에러 메세지',
+    },
+    enabled: !!codeValue,
+  });
 
   useEffect(() => {
     if (codeValue !== null) companyAccessMenuRefetch();
@@ -96,16 +107,6 @@ export function Navigation() {
     setPage(1);
   };
 
-  useEffect(() => {
-    if (decodingInfo) {
-      console.log(
-        'decodingInfo-----------------01',
-        decodingInfo.permissionList,
-      );
-      setMyAuthority(decodingInfo.permissionList);
-    }
-  }, [decodingInfo]);
-
   return (
     <>
       {isOpenNavigation ? (
@@ -127,7 +128,8 @@ export function Navigation() {
               </strong>
 
               {/* 문항 제작 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'QE')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'QE')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -173,7 +175,8 @@ export function Navigation() {
               ) : null}
 
               {/* 학습지 제작 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'WE')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'WE')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -240,7 +243,8 @@ export function Navigation() {
               </strong>
 
               {/* 문항 관리 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'QM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'QM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -318,7 +322,8 @@ export function Navigation() {
               ) : null}
 
               {/* 신고 문항 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'RM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'RM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -346,7 +351,8 @@ export function Navigation() {
               ) : null}
 
               {/* 검수 관리 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'IM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'IM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -379,7 +385,8 @@ export function Navigation() {
               </strong>
 
               {/* 기업 관리 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'COM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'COM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -407,7 +414,8 @@ export function Navigation() {
               ) : null}
 
               {/* 회원관리 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'AM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'AM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -453,7 +461,8 @@ export function Navigation() {
               ) : null}
 
               {/* 권한관리 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'PM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'PM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -499,7 +508,8 @@ export function Navigation() {
               ) : null}
 
               {/* 프로세스 관리 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'PSM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'PSM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -527,7 +537,8 @@ export function Navigation() {
               ) : null}
 
               {/* 메타정보 관리 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'MIM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'MIM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -555,7 +566,8 @@ export function Navigation() {
               ) : null}
 
               {/* 로그 관리 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'LOM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'LOM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -583,7 +595,8 @@ export function Navigation() {
               ) : null}
 
               {/* 통계 관리 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'STM')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'STM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -629,7 +642,8 @@ export function Navigation() {
               </strong>
 
               {/* 콘텐츠 제작 설정 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'CCC')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'CCC')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -657,7 +671,8 @@ export function Navigation() {
               ) : null}
 
               {/* 콘텐츠 관리 설정 */}
-              {accessMenuList.filter((menu) => menu.menuCode === 'CMC')[0]
+              {companyAccessMenuData &&
+              accessMenuList.filter((menu) => menu.menuCode === 'CMC')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
