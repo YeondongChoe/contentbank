@@ -122,6 +122,7 @@ export function Classification({
   const [categoryNameList, setCategoryNameList] = useState<string>('');
   //첫번째 카테고리 선택 리스트
   const [idxNamePairsA, setIdxNamePairsA] = useState<IdxNamePair[][]>([]);
+  const [titleA, setTitleA] = useState<string[]>([]);
   const [idxNamePairsDD, setIdxNamePairsDD] = useState<IdxNamePair[][]>([]);
   const [groupId, setGroupId] = useState<string | null>(null);
   const [categoriesA, setCategoriesA] = useState<ItemCategoryType[]>([]);
@@ -218,19 +219,22 @@ export function Classification({
               idx,
               name: nameList[idxIndex],
               code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              // viewList: viewList[idxIndex] === 'true',
+              inputType: inputList[idxIndex],
+              searchList: searchList[idxIndex],
+              // viewList: viewList[idxIndex] ,
             }));
             filteredCategoriesDD.push(categories);
           } else {
+            // 단원 분류 타이틀
+            setTitleA(nameList);
+
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
               code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
+              inputType: inputList[idxIndex],
+              searchList: searchList[idxIndex],
+              viewList: viewList[idxIndex],
             }));
             filteredCategoriesA.push(categories);
           }
@@ -252,6 +256,9 @@ export function Classification({
       // 첫번째 카테고리의 그룹 아이템 조회
     }
   }, [menuSettingData]);
+  useEffect(() => {
+    // console.log('---------titleA ----- ', titleA);
+  }, [titleA]);
 
   useEffect(() => {
     if (
@@ -1798,7 +1805,7 @@ export function Classification({
                       <div className="1depth" id={`${categoriesA[0].code}`}>
                         <ButtonFormatRadio
                           branchValue={`${categoriesA[0].code}`}
-                          titleText={`${categoriesA[0].code}`}
+                          titleText={`${titleA[0]}`}
                           list={categoriesA}
                           selected={selectedDepth['1depth'] || ''}
                           onChange={(e) => handleRadioCheck(e)}
@@ -1822,7 +1829,7 @@ export function Classification({
                               <ButtonFormatRadio
                                 key={`${nextLists[depth][0]?.idx}`}
                                 branchValue={`${nextLists[depth][0]?.idx}`}
-                                titleText={`${nextLists[depth][0]?.code}`}
+                                titleText={`${titleA[index + 1]}`}
                                 list={nextLists[depth]}
                                 selected={selectedDepth[depth] || ''}
                                 onChange={(e) => handleRadioCheck(e)}
