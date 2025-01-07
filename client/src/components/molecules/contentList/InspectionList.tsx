@@ -35,7 +35,6 @@ import { selectedListType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
-import { ProcessListModal } from '../../managements/process';
 
 type InspectionListProps = {
   list: QuizListType[] | any[]; // TODO

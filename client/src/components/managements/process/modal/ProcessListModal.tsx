@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import {
+  useQuery,
+  useMutation,
+  QueryObserverResult,
+  RefetchOptions,
+} from '@tanstack/react-query';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import ReactToPrint from 'react-to-print';
@@ -16,6 +21,9 @@ import { COLOR } from '../../../constants';
 
 type ProcessModalProps = {
   list: any[];
+  refech?: (
+    options?: RefetchOptions | undefined,
+  ) => Promise<QueryObserverResult<any, Error>>;
 };
 
 type ProcessListProps = {
@@ -24,8 +32,9 @@ type ProcessListProps = {
   name: string;
 };
 
-export function ProcessListModal({ list }: ProcessModalProps) {
+export function ProcessListModal({ list, refech }: ProcessModalProps) {
   const { closeModal } = useModal();
+
   const [processList, setProcessList] = useState<ProcessListProps[]>();
   const [processCode, setProcessCode] = useState<string | null>(null);
   const [processIdxList, setProcessIdxList] = useState<number[]>([]);
@@ -37,23 +46,7 @@ export function ProcessListModal({ list }: ProcessModalProps) {
     const idxList = list.map((quiz) => quiz.idx);
     if (idxList) setProcessIdxList(idxList);
   }, [list]);
-  // const getQuiz = async () => {
-  //   const res = await quizService.get(`/v1/quiz/${idxList}`);
-  //   // console.log('list data----------', res);
-  //   return res.data.data;
-  // };
-  // const {
-  //   data: quizData,
-  //   isLoading,
-  //   error: quizDataError,
-  //   refetch: quizDataRefetch,
-  // } = useQuery({
-  //   queryKey: ['get-idx-quizList'],
-  //   queryFn: getQuiz,
-  //   meta: {
-  //     errorMessage: 'get-idx-quizList 에러 메세지',
-  //   },
-  // });
+
   console.log('processList', processList);
 
   //프로세스 리스트 불러오기 api
@@ -108,6 +101,7 @@ export function ProcessListModal({ list }: ProcessModalProps) {
         type: 'success',
         text: '저장되었습니다.',
       });
+      refech && refech();
       setProcessCode(null);
       setProcessIdxList([]);
       closeModal();
@@ -127,35 +121,6 @@ export function ProcessListModal({ list }: ProcessModalProps) {
     }
   };
 
-  // useEffect(() => {
-  //   setProcessList([
-  //     {
-  //       title: '프로세스명01',
-  //       type: 'string',
-  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
-  //     },
-  //     {
-  //       title: '프로세스명02',
-  //       type: 'string',
-  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
-  //     },
-  //     {
-  //       title: '프로세스명03',
-  //       type: 'string',
-  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
-  //     },
-  //     {
-  //       title: '프로세스명04',
-  //       type: 'string',
-  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
-  //     },
-  //     {
-  //       title: '프로세스명05',
-  //       type: 'string',
-  //       card: [{ name: 'string', id: 'string', authority: 'string' }],
-  //     },
-  //   ]);
-  // }, []);
   return (
     <Container>
       <Title>프로세스 리스트</Title>
