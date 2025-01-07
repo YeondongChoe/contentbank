@@ -21,11 +21,12 @@ const sampleTags = ['교과', '수학', '과학', '영어', '역사', '물리', 
 
 interface CategoryItem {
   idx: number;
+  classIdx: number;
   name: string;
   code: string;
   depth: number;
+  parentClassIdx: number | null;
   isUse: boolean;
-  children?: CategoryItem[];
 }
 
 export function TagMapping() {
@@ -61,20 +62,22 @@ export function TagMapping() {
 
   const [activeMappingItem, setActiveMappingItem] = useState<{
     idx: number;
+    classIdx: number;
     name: string;
     code: string;
     depth: number;
+    parentClassIdx: number | null;
     isUse: boolean;
-    children?: any[];
   } | null>(null);
 
   const handleTagMappingClick = (item: {
     idx: number;
+    classIdx: number;
     name: string;
     code: string;
     depth: number;
+    parentClassIdx: number | null;
     isUse: boolean;
-    children?: any[];
   }) => {
     setActiveMappingItem(activeMappingItem === item ? null : item);
 
@@ -138,38 +141,34 @@ export function TagMapping() {
     if (!activeMappingItem) return;
     console.log('선택된 요소 activeMappingItem ', activeMappingItem);
 
-    const addTags = (item: CategoryItem, depth: number) => {
-      // const isActiveItem = document.querySelector(`.on_map_item`);
-      console.log('순회되는 요소 item ', item);
+    //TODO : 자식요소가아닌 선택된 태그의 다음으로
+    // const addTags = (item: CategoryItem, depth: number) => {
+    //   // const isActiveItem = document.querySelector(`.on_map_item`);
+    //   console.log('순회되는 요소 item ', item);
 
-      if (item.idx === activeMappingItem.idx) {
-        // children이 undefined일 수 있으므로 빈 배열로 초기화
+    //   if (item.idx === activeMappingItem.idx) {
+    //     // children이 undefined일 수 있으므로 빈 배열로 초기화
 
-        // 코드네임 찾기 / 카테고리 순서에서 다음 순번 이름
+    //     // 코드네임 찾기 / 카테고리 순서에서 다음 순번 이름
 
-        checkList.forEach((tagName) => {
-          (item.children as CategoryItem[]).push({
-            idx: Math.random(), // 태그에 대한 고유 idx 값을 생성
-            name: tagName,
-            code: selectedNextItem?.name as string, // 필요한 코드값 설정
-            depth: item.depth + 1,
-            isUse: false,
-          });
-        });
-      }
-    };
+    //     checkList.forEach((tagName) => {
+    //       (item.children as CategoryItem[]).push({
+    //         idx: Math.random(), // 태그에 대한 고유 idx 값을 생성
+    //         name: tagName,
+    //         code: selectedNextItem?.name as string, // 필요한 코드값 설정
+    //         depth: item.depth + 1,
+    //         isUse: false,
+    //       });
+    //     });
+    //   }
+    // };
 
     const findAndProcessItem = (list: CategoryItem[], targetIdx: number) => {
       list.forEach((item) => {
         // item의 idx가 targetIdx와 같으면 처리
-        if (item.idx === targetIdx) {
-          addTags(item, item.depth);
-        }
-
-        // 자식 항목이 있다면 자식 항목도 순회
-        if (item.children) {
-          findAndProcessItem(item.children, targetIdx); // 자식 항목에 대해 재귀적으로 처리
-        }
+        // if (item.idx === targetIdx) {
+        //   addTags(item, item.depth);
+        // }
       });
     };
 
@@ -183,13 +182,37 @@ export function TagMapping() {
     console.log('MappingList ------------- ', mappingList);
   }, [mappingList]);
 
-  // 변경 매핑 데이터 전송 api
-  const postCategoryMapData = async (data: {
-    itemGroupIdx: number;
-    categoryClass: any[];
-  }) => {
+  // 변경 매핑 데이터 전송 api //TODO
+  const postCategoryMapData = async () => {
+    const groupIdx = 0;
+    const data = {
+      modificationList: [
+        {
+          type: 'CREATE',
+          idx: null,
+          classIdx: 1,
+          parentClassIdx: 2,
+          isUse: true,
+        },
+        {
+          type: 'UPDATE',
+          idx: 3,
+          classIdx: 4,
+          parentClassIdx: 5,
+          isUse: false,
+        },
+        {
+          type: 'DELETE',
+          idx: 6,
+          classIdx: null,
+          parentClassIdx: null,
+          isUse: false,
+        },
+      ],
+    };
+
     const response = await classificationInstance.post(
-      '/v1/category/class/map',
+      `/v1/category/class/map/flat/${groupIdx}`,
       data,
     );
     return response.data;
@@ -217,11 +240,6 @@ export function TagMapping() {
     // 필터링된 데이터로 변환하는 함수
     const filterActiveItems = (list: CategoryItem[]) => {
       return list.reduce((acc: any[], item) => {
-        // 자식 항목들 필터링
-        const filteredChildren = item.children
-          ? filterActiveItems(item.children)
-          : [];
-
         // 활성화된 항목만 포함
         if (item.isUse) {
           acc.push({
@@ -230,7 +248,6 @@ export function TagMapping() {
             code: item.code,
             depth: item.depth,
             isUse: item.isUse,
-            children: filteredChildren, // 자식 항목들도 동일하게 필터링
           });
         }
 
@@ -244,7 +261,7 @@ export function TagMapping() {
     };
 
     console.log('활성화된 데이터만 업데이트 --- ', requestData);
-    if (!isPending) sendCategoryData(requestData);
+    // if (!isPending) sendCategoryData(requestData);
   };
 
   // const handleAddTag = () => {
@@ -371,34 +388,41 @@ export function TagMapping() {
   useEffect(() => {
     const fetchInitialCategory = async () => {
       if (mappingData) {
-        console.log(',mappingData-----', mappingData);
         if (mappingData.length > 0) {
-          setMappingList(mappingData);
-        } else if (mappingData.length === 0 && selectedList.length > 0) {
-          const idx = selectedList[0].type;
+          // 요소의 parentClassIdx 가 요소의classIdx 와 동일한경우 classIdx의 하단으로 솔팅
+          // 1. classIdx를 기준으로 객체를 그룹화
+          const mappingMap = new Map<number, any[]>();
+          mappingData.forEach((item: { classIdx: number }) => {
+            if (!mappingMap.has(item.classIdx)) {
+              mappingMap.set(item.classIdx, []);
+            }
+            mappingMap.get(item.classIdx)?.push(item);
+          });
 
-          const res = await classificationInstance.get(
-            `/v1/category/class/${idx}`,
-          );
-          // console.log(
-          //   '저장 된 리스트가 없을경우 최초 첫번째 카테고리 리스트 데이터 복제 ----- ',
-          //   idx,
-          //   res.data.data.categoryClassList,
-          // );
-          const categoryClassList = res.data.data.categoryClassList;
-          // categoryClassList 데이터를 CategoryItem 구조로 변환
-          const list: CategoryItem[] = categoryClassList.map(
-            (item: { idx: any; name: any; code: any }) => ({
-              idx: item.idx,
-              name: item.name,
-              code: item.code,
-              depth: 0, // 기본 depth 설정
-              isUse: true, // 기본 isUse 설정
-              children: [], // 기본 빈 배열
-            }),
-          );
+          // 2. 정렬 로직
+          const sortedData: any[] = [];
+          const visited = new Set(); // 방문한 객체 추적
 
-          setMappingList([...list]);
+          const addToSortedList = (item: any) => {
+            if (visited.has(item.idx)) return; // 이미 처리된 항목은 무시
+            visited.add(item.idx);
+            sortedData.push(item);
+
+            // 현재 객체를 부모로 참조하는 객체를 재귀적으로 추가
+            const children = mappingMap.get(item.classIdx);
+            if (children) {
+              children.forEach(addToSortedList);
+            }
+          };
+
+          // 3. parentClassIdx가 없는 루트 객체부터 시작
+          mappingData
+            .filter(
+              (item: { parentClassIdx: null }) => item.parentClassIdx === null,
+            )
+            .forEach(addToSortedList);
+
+          setMappingList(sortedData);
         }
       }
     };

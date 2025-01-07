@@ -12,33 +12,30 @@ import { useDnD } from '../../../components/molecules';
 
 interface CategoryItem {
   idx: number;
-  classIdx: number;
   name: string;
   code: string;
   depth: number;
-  parentClassIdx: number | null;
   isUse: boolean;
+  children?: CategoryItem[];
 }
 
 interface MappingListProps {
   mappingList: CategoryItem[];
   activeItem: {
     idx: number;
-    classIdx: number;
     name: string;
     code: string;
     depth: number;
-    parentClassIdx: number | null;
     isUse: boolean;
+    children?: any[];
   } | null;
   handleTagClick: (item: {
     idx: number;
-    classIdx: number;
     name: string;
     code: string;
     depth: number;
-    parentClassIdx: number | null;
     isUse: boolean;
+    children?: any[];
   }) => void;
   moveTag: (
     dragIndex: number,
@@ -85,6 +82,9 @@ export function MappingList({
     const initializeSwitchState = (list: CategoryItem[]) => {
       list.forEach((item) => {
         initialSwitchState[item.idx] = item.isUse; // item.isUse 값을 기반으로 초기화
+        if (item.children && item.children.length > 0) {
+          initializeSwitchState(item.children); // 자식 항목이 있을 경우 재귀적으로 처리
+        }
       });
     };
 
@@ -142,6 +142,9 @@ export function MappingList({
           isCheckBoxChecked={selectedCheckBoxState[el.idx] || false}
           toggleCheckBox={toggleCheckBoxState}
         />
+        {el.children &&
+          el.children.length > 0 &&
+          renderMappingList(el.children, depth + 1)}
       </div>
     ));
   };
@@ -158,22 +161,20 @@ export function MappingList({
 interface DraggableMappingItemProps {
   item: {
     idx: number;
-    classIdx: number;
     name: string;
     code: string;
     depth: number;
-    parentClassIdx: number | null;
     isUse: boolean;
+    children?: any[];
   };
   index: number;
   activeItem: {
     idx: number;
-    classIdx: number;
     name: string;
     code: string;
     depth: number;
-    parentClassIdx: number | null;
     isUse: boolean;
+    children?: any[];
   } | null;
   handleTagClick: (item: {
     idx: number;
@@ -181,7 +182,7 @@ interface DraggableMappingItemProps {
     name: string;
     code: string;
     depth: number;
-    parentClassIdx: number | null;
+    parentClassIdx: number;
     isUse: boolean;
   }) => void;
   moveTag: (dragIndex: number, hoverIndex: number) => void;
@@ -220,7 +221,7 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
         ref={ref}
         className={`gap ${activeItem === item ? 'on_map_item' : ''}  ${!isSwitchOn ? 'inactive_tag' : ''}`}
         onClick={() => {
-          handleTagClick(item);
+          // handleTagClick(item);
           toggleExpanded(item);
         }}
         style={{ opacity: isDragging ? 0.5 : 1 }}
@@ -250,11 +251,11 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
         </TagsButtonWrapper>
         {/* <span className="category_sub_title end">{`${item.children?.length || 0}개의 태그`}</span> */}
       </Tags>
-      {/* {activeItem === item && item.children && item.children.length == 0 && (
+      {activeItem === item && item.children && item.children.length == 0 && (
         <InfoButtonWrapper>
           + ‘태그 선택’에서 매핑할 태그를 선택해주세요.
         </InfoButtonWrapper>
-      )} */}
+      )}
     </>
   );
 };

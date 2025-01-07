@@ -52,6 +52,7 @@ interface RadioStateType {
   checkValue: number;
   code: string;
   key: string;
+  classification: string;
 }
 
 interface ItemTreeIdxListType {
@@ -362,15 +363,26 @@ export function Classification({
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
-    const itemId =
+    const id =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
+    const itemId = id?.split('/') as string[];
+
     console.log('depth-----,itemId----------', depth, itemId);
     const className = e.currentTarget.className || 'default-class';
     const name = e.currentTarget.name || 'default-name';
     const value = e.currentTarget.value;
 
-    console.log('className:', className, 'name:', name, 'value:', value);
+    console.log(
+      'className:',
+      className,
+      'name:',
+      name,
+      'value:',
+      value,
+      'classification:',
+      itemId[1],
+    );
 
     if (!depth || !itemId) return;
 
@@ -394,7 +406,8 @@ export function Classification({
         title: name,
         checkValue: Number(value),
         code: className,
-        key: itemId,
+        key: itemId[0],
+        classification: itemId[1],
       },
     }));
 
@@ -524,9 +537,10 @@ export function Classification({
     const depth =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.classList[0];
-    const itemId =
+    const id =
       e.target.parentElement?.parentElement?.parentElement?.parentElement
         ?.parentElement?.id;
+    const itemId = id?.split('/') as string[];
 
     const title = e.currentTarget.name;
     const code = e.currentTarget.className;
@@ -556,7 +570,8 @@ export function Classification({
                 title: title,
                 checkValue: Number(value),
                 code: code,
-                key: itemId as string,
+                key: itemId[0],
+                classification: itemId[1],
               },
             ];
           }
@@ -586,7 +601,8 @@ export function Classification({
                 title: title,
                 checkValue: Number(value),
                 code: code,
-                key: itemId as string,
+                key: itemId[0],
+                classification: itemId[1],
               },
             ];
           }
@@ -707,58 +723,45 @@ export function Classification({
     setCheckedItems([]);
   };
 
-  const sortedArr = (): CategoryGroup[] => {
+  const transformData = (): CategoryGroup[] => {
     console.log('아이템트리키 들어가야할 목록', unitClassificationList);
 
-    const quizCategory: CategoryGroup = {};
+    return unitClassificationList.map((group) => {
+      const result: CategoryGroup = {};
 
-    unitClassificationList.forEach((classification) => {
-      classification.forEach((item) => {
-        if (Array.isArray(item)) {
-          // 배열 처리 (예: 난이도, 문항타입)
-          item.forEach((nestedItem) => {
-            if (
-              typeof nestedItem === 'object' &&
-              typeof nestedItem.code === 'string' &&
-              typeof nestedItem.title === 'string'
-            ) {
-              if (!quizCategory[nestedItem.code]) {
-                quizCategory[nestedItem.code] = [];
-              }
-              quizCategory[nestedItem.code]?.push({
-                code: nestedItem.code,
-                name: nestedItem.title,
-              });
-            }
-          });
-        } else if (
+      group.forEach((item) => {
+        if (
+          item &&
           typeof item === 'object' &&
           'code' in item &&
-          'title' in item
+          'title' in item &&
+          'classification' in item &&
+          typeof (item as RadioStateType).code === 'string' &&
+          typeof (item as RadioStateType).title === 'string' &&
+          typeof (item as RadioStateType).classification === 'string'
         ) {
-          // 일반적인 객체 처리
-          const typedItem = item as { code: string; title: string };
-          if (!quizCategory[typedItem.code]) {
-            quizCategory[typedItem.code] = [];
+          // classification 값이 없으면 초기화
+          if (!result[item.classification]) {
+            result[item.classification] = [];
           }
-          quizCategory[typedItem.code]?.push({
-            code: typedItem.code,
-            name: typedItem.title,
+
+          // 존재하는 경우 push
+          result[item.classification]!.push({
+            code: item.code,
+            name: item.title,
           });
         }
       });
-    });
 
-    // CategoryGroup[]로 변환
-    const categoryList: CategoryGroup[] = [quizCategory];
-    return categoryList;
+      return result;
+    });
   };
   // 분류 등록 버튼
   const onSubmit = () => {
     // 최종적으로 전송 될 데이터
     console.log('퀴즈코드리스트 들어가야할 목록', checkedList);
 
-    const categoryListArr: CategoryGroup[] = sortedArr();
+    const categoryListArr: CategoryGroup[] = transformData();
     console.log('categoryList 들어가야할 목록------', categoryListArr);
 
     const data: QuizClassificationData = {
@@ -1169,6 +1172,7 @@ export function Classification({
               checkValue: 0,
               code: key,
               key: key,
+              classification: 'classification',
             });
           }
         });
@@ -1795,7 +1799,10 @@ export function Classification({
                   {idxNamePairsA && categoriesA.length > 0 && (
                     <>
                       {/* 첫 번째 버튼: 1depth */}
-                      <div className="1depth" id={`${categoriesA[0].code}`}>
+                      <div
+                        className="1depth"
+                        id={`${categoriesA[0].code}/${titleA[0]}`}
+                      >
                         <ButtonFormatRadio
                           branchValue={`${categoriesA[0].code}`}
                           titleText={`${titleA[0]}`}
@@ -1817,7 +1824,7 @@ export function Classification({
                             <div
                               className={depth}
                               key={depth}
-                              id={`${nextLists[depth][0]?.code || ''}`}
+                              id={`${nextLists[depth][0]?.code || ''}/${titleA[index + 1]}`}
                             >
                               <ButtonFormatRadio
                                 key={`${nextLists[depth][0]?.idx}`}
