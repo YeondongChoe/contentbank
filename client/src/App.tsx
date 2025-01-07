@@ -153,8 +153,7 @@ export function App() {
           location.pathname !== '/contentEditingSetting' &&
           location.pathname !== '/inspection' &&
           location.pathname !== '/inspectionManagementSetting' &&
-          location.pathname !== '/content-preview/report' &&
-          location.pathname !== '/no-authrized' && <Navigation />}
+          location.pathname !== '/content-preview/report' && <Navigation />}
         <MainWrapper>
           {getAuthorityCookie('accessToken') &&
             location.pathname !== '/login' &&
@@ -179,8 +178,7 @@ export function App() {
             location.pathname !== '/contentEditingSetting' &&
             location.pathname !== '/inspection' &&
             location.pathname !== '/inspectionManagementSetting' &&
-            location.pathname !== '/content-preview/report' &&
-            location.pathname !== '/no-authrized' && <Header />}
+            location.pathname !== '/content-preview/report' && <Header />}
           <BodyWrapper>
             <ToastifyAlert />
             <Outlet />
