@@ -231,7 +231,7 @@ export function ContentCreating({
     const res = await resourceServiceInstance.get(
       `/v1/menu/path?url=contentDtEditingSetting`,
     );
-    // console.log('getMenuSetting--------', res);
+    console.log('getMenuSetting--------', res);
     return res.data.data;
   };
   const { data: menuSettingData, refetch: menuSettingRefetch } = useQuery({

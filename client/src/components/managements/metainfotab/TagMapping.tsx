@@ -87,27 +87,6 @@ export function TagMapping() {
   const query = new URLSearchParams(location.search);
   const queryValue = query.get('state');
 
-  // useEffect(() => {
-  //   if (queryValue) {
-  //     console.log('query', queryValue.split('/')[1]);
-
-  //     // 최초 집입시 그룹아이템의 idx 값으로 조회
-  //     const groupIdx = queryValue.split('/')[1];
-  //     const getCategoryMap = async () => {
-  //       const res = await classificationInstance.get(
-  //         `/v1/category/map/${groupIdx}`,
-  //       );
-  //       console.log(
-  //         '선택된 idx에 따른 항목 조회 ----- ',
-  //         res.data.data?.mapList,
-  //       );
-  //       setMappingList(res.data.data?.mapList);
-  //     };
-
-  //     getCategoryMap();
-  //   }
-  // }, []);
-
   const getCategoryMap = async () => {
     if (queryValue) {
       const groupIdx = queryValue.split('/')[1];
@@ -132,9 +111,21 @@ export function TagMapping() {
 
   const moveMappingTag = (dragIndex: number, hoverIndex: number) => {
     const updatedList = [...mappingList];
+    const list = [...mappingList];
     const draggedItem = updatedList.splice(dragIndex, 1)[0];
+    const hoverItem = list.splice(hoverIndex, 1)[0];
     updatedList.splice(hoverIndex, 0, draggedItem);
-    setMappingList(updatedList);
+
+    // 같은 parentClassIdx를 가진 요소끼리만 이동 가능하도록 조건 추가
+    if (
+      draggedItem.parentClassIdx == hoverItem.parentClassIdx &&
+      draggedItem.depth == hoverItem.depth
+    ) {
+      console.log('draggedItem ----', draggedItem);
+      console.log('hoverItem ----', hoverItem);
+      console.log('이동후 업데이트 된 리스트 ----', updatedList);
+      setMappingList(updatedList);
+    }
   };
 
   const addTagsToNextDepth = () => {
@@ -318,6 +309,7 @@ export function TagMapping() {
   //  setTagList()
   // }, [tagList]);
 
+  // 태그 선택
   useEffect(() => {
     console.log('다음 idx 값으로 클래스 조회', selectedNextItem);
     // 아이템 선택시 다음 인덱스 로 리스트 불러오기
@@ -373,31 +365,22 @@ export function TagMapping() {
     }
   };
 
-  // const handleTagClick = (item: string) => {
-  //   setActiveItem(activeItem === item ? null : item);
-  // };
-
-  // const moveTag = (dragIndex: number, hoverIndex: number) => {
-  //   const updatedList = [...mappingList];
-  //   const draggedItem = updatedList.splice(dragIndex, 1)[0];
-  //   updatedList.splice(hoverIndex, 0, draggedItem);
-  //   setMappingList(updatedList);
-  // };
-
   // 매핑에서 선택된 태그 기준으로 태그선택 데이터 넣기
   useEffect(() => {
     const fetchInitialCategory = async () => {
       if (mappingData) {
         if (mappingData.length > 0) {
           // 요소의 parentClassIdx 가 요소의classIdx 와 동일한경우 classIdx의 하단으로 솔팅
-          // 1. classIdx를 기준으로 객체를 그룹화
+          // 1. parentClassIdx 기준으로 객체를 그룹화
           const mappingMap = new Map<number, any[]>();
-          mappingData.forEach((item: { classIdx: number }) => {
-            if (!mappingMap.has(item.classIdx)) {
-              mappingMap.set(item.classIdx, []);
+          mappingData.forEach((item: { parentClassIdx: number }) => {
+            if (!mappingMap.has(item.parentClassIdx)) {
+              mappingMap.set(item.parentClassIdx, []);
             }
-            mappingMap.get(item.classIdx)?.push(item);
+            mappingMap.get(item.parentClassIdx)?.push(item);
           });
+
+          console.log('mappingMap ------- ', mappingMap);
 
           // 2. 정렬 로직
           const sortedData: any[] = [];
