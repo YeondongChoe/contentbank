@@ -327,7 +327,7 @@ export function ContentList({
     console.log('sortedList ---', sortedList);
     openModal({
       title: '',
-      content: <ProcessListModal list={sortedList} />,
+      content: <ProcessListModal list={sortedList} refech={quizDataRefetch} />,
     });
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
@@ -770,7 +770,7 @@ export function ContentList({
                 <i className="line"></i>
                 <span className="width_10 item_wrapper">
                   <strong className="title">상태</strong>
-                  <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'COMPLETE' ? '검수완료' : item.process?.state === 'REVIEW' ? `검수중(${item.process?.step}/${item.process?.totalStep})` : ''}`}</span>
+                  <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'COMPLETE' ? '검수완료' : item.process?.state === 'REVIEW' ? `검수중(${item.process?.step}/${item.process?.totalStep})` : ''}`}</span>
                 </span>
                 {/* <span
                   className="width_80px tooltip_wrapper item_wrapper"
