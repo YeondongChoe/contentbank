@@ -414,7 +414,7 @@ export function InspectionList({
                   <i className="line"></i>
                   <span className="width_10 item_wrapper">
                     <strong className="title">프로세스(단계)</strong>
-                    <span className="tag">{`${item.process?.name}/(역할)`}</span>
+                    <span className="tag">{`${item.process?.name}/(${item.process?.stepName === 'REVIEW' ? '검수' : item.process?.stepName === 'EDITING' ? '편집' : ''})`}</span>
                   </span>
                   <i className="line"></i>
                   <span className="width_10 item_wrapper">

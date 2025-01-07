@@ -71,26 +71,24 @@ export function Navigation() {
     }
   };
 
-  const {
-    data: companyAccessMenuData,
-    refetch: companyAccessMenuRefetch,
-    isLoading,
-  } = useQuery({
-    queryKey: ['get-companyAccessMenu', codeValue],
-    queryFn: getAccessMenu,
-    meta: {
-      errorMessage: 'get-companyAccessMenu 에러 메세지',
-    },
-    enabled: !!codeValue,
-  });
+  const { data: companyAccessMenuData, refetch: companyAccessMenuRefetch } =
+    useQuery({
+      queryKey: ['get-companyAccessMenu', codeValue],
+      queryFn: getAccessMenu,
+      meta: {
+        errorMessage: 'get-companyAccessMenu 에러 메세지',
+      },
+      enabled: !!codeValue,
+    });
 
   useEffect(() => {
     if (codeValue !== null) companyAccessMenuRefetch();
   }, [codeValue]);
 
   useEffect(() => {
-    if (companyAccessMenuData)
+    if (companyAccessMenuData) {
       setAccessMenuList(companyAccessMenuData?.data.data.accessMenuList);
+    }
   }, [companyAccessMenuData]);
 
   const moveMainpage = () => {
@@ -128,8 +126,7 @@ export function Navigation() {
               </strong>
 
               {/* 문항 제작 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'QE')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'QE')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -175,8 +172,7 @@ export function Navigation() {
               ) : null}
 
               {/* 학습지 제작 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'WE')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'WE')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -243,8 +239,7 @@ export function Navigation() {
               </strong>
 
               {/* 문항 관리 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'QM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'QM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -322,8 +317,7 @@ export function Navigation() {
               ) : null}
 
               {/* 신고 문항 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'RM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'RM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -351,8 +345,7 @@ export function Navigation() {
               ) : null}
 
               {/* 검수 관리 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'IM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'IM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
@@ -385,13 +378,12 @@ export function Navigation() {
               </strong>
 
               {/* 기업 관리 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'COM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'COM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.COM?.isEdit ? (
+                  decodingInfo?.permissionList?.COM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/company'}>
                         <FaRegBuilding
@@ -414,13 +406,12 @@ export function Navigation() {
               ) : null}
 
               {/* 회원관리 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'AM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'AM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.AM?.isEdit ? (
+                  decodingInfo?.permissionList?.AM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/member'}>
                         <svg
@@ -461,13 +452,12 @@ export function Navigation() {
               ) : null}
 
               {/* 권한관리 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'PM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'PM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.PM?.isEdit ? (
+                  decodingInfo?.permissionList?.PM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/authority'}>
                         <svg
@@ -508,13 +498,12 @@ export function Navigation() {
               ) : null}
 
               {/* 프로세스 관리 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'PSM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'PSM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.PSM?.isEdit ? (
+                  decodingInfo?.permissionList?.PSM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/process'}>
                         <GiProcessor
@@ -537,13 +526,12 @@ export function Navigation() {
               ) : null}
 
               {/* 메타정보 관리 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'MIM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'MIM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.MIM?.isEdit ? (
+                  decodingInfo?.permissionList?.MIM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/metainfo'}>
                         <MdOutlineMedicalInformation
@@ -566,13 +554,12 @@ export function Navigation() {
               ) : null}
 
               {/* 로그 관리 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'LOM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'LOM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.LOM?.isEdit ? (
+                  decodingInfo?.permissionList?.LOM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/classify'}>
                         <MdManageHistory
@@ -595,13 +582,12 @@ export function Navigation() {
               ) : null}
 
               {/* 통계 관리 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'STM')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'STM')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.STM?.isEdit ? (
+                  decodingInfo?.permissionList?.STM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/classify'}>
                         <VscGraph
@@ -642,13 +628,12 @@ export function Navigation() {
               </strong>
 
               {/* 콘텐츠 제작 설정 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'CCC')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'CCC')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.CCC?.isEdit ? (
+                  decodingInfo?.permissionList?.CCC?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/creatingcontentSetting'}>
                         <IoSettingsOutline
@@ -671,13 +656,12 @@ export function Navigation() {
               ) : null}
 
               {/* 콘텐츠 관리 설정 */}
-              {companyAccessMenuData &&
-              accessMenuList.filter((menu) => menu.menuCode === 'CMC')[0]
+              {accessMenuList.filter((menu) => menu.menuCode === 'CMC')[0]
                 ?.isUse ? (
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.CMC?.isEdit ? (
+                  decodingInfo?.permissionList?.CMC?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/managingcontentSetting'}>
                         <IoSettingsOutline
@@ -998,7 +982,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.COM?.isEdit ? (
+                  decodingInfo?.permissionList?.COM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/company'}>
                         <FaRegBuilding
@@ -1034,7 +1018,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.AM?.isEdit ? (
+                  decodingInfo?.permissionList?.AM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/member'}>
                         <svg
@@ -1080,7 +1064,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.PM?.isEdit ? (
+                  decodingInfo?.permissionList?.PM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/authority'}>
                         <svg
@@ -1126,7 +1110,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.PSM?.isEdit ? (
+                  decodingInfo?.permissionList?.PSM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/process'}>
                         <GiProcessor
@@ -1162,7 +1146,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.MIM?.isEdit ? (
+                  decodingInfo?.permissionList?.MIM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/metainfo'}>
                         <MdOutlineMedicalInformation
@@ -1198,7 +1182,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.LOM?.isEdit ? (
+                  decodingInfo?.permissionList?.LOM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/classify'}>
                         <MdManageHistory
@@ -1234,7 +1218,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.STM?.isEdit ? (
+                  decodingInfo?.permissionList?.STM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/classify'}>
                         <VscGraph
@@ -1286,7 +1270,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.CCC?.isEdit ? (
+                  decodingInfo?.permissionList?.CCC?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/creatingcontentSetting'}>
                         <IoSettingsOutline
@@ -1326,7 +1310,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.CMC?.isEdit ? (
+                  decodingInfo?.permissionList?.CMC?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/managingcontentSetting'}>
                         <IoSettingsOutline
