@@ -383,7 +383,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.COM?.isEdit ? (
+                  decodingInfo?.permissionList?.COM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/company'}>
                         <FaRegBuilding
@@ -411,7 +411,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.AM?.isEdit ? (
+                  decodingInfo?.permissionList?.AM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/member'}>
                         <svg
@@ -457,7 +457,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.PM?.isEdit ? (
+                  decodingInfo?.permissionList?.PM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/authority'}>
                         <svg
@@ -503,7 +503,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.PSM?.isEdit ? (
+                  decodingInfo?.permissionList?.PSM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/process'}>
                         <GiProcessor
@@ -531,7 +531,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.MIM?.isEdit ? (
+                  decodingInfo?.permissionList?.MIM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/metainfo'}>
                         <MdOutlineMedicalInformation
@@ -559,7 +559,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.LOM?.isEdit ? (
+                  decodingInfo?.permissionList?.LOM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/classify'}>
                         <MdManageHistory
@@ -587,7 +587,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.STM?.isEdit ? (
+                  decodingInfo?.permissionList?.STM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/classify'}>
                         <VscGraph
@@ -633,7 +633,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.CCC?.isEdit ? (
+                  decodingInfo?.permissionList?.CCC?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/creatingcontentSetting'}>
                         <IoSettingsOutline
@@ -661,7 +661,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.CMC?.isEdit ? (
+                  decodingInfo?.permissionList?.CMC?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/managingcontentSetting'}>
                         <IoSettingsOutline
@@ -982,7 +982,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.COM?.isEdit ? (
+                  decodingInfo?.permissionList?.COM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/company'}>
                         <FaRegBuilding
@@ -1018,7 +1018,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.AM?.isEdit ? (
+                  decodingInfo?.permissionList?.AM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/member'}>
                         <svg
@@ -1064,7 +1064,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.PM?.isEdit ? (
+                  decodingInfo?.permissionList?.PM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/operation-manage/authority'}>
                         <svg
@@ -1110,7 +1110,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.PSM?.isEdit ? (
+                  decodingInfo?.permissionList?.PSM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/process'}>
                         <GiProcessor
@@ -1146,7 +1146,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.MIM?.isEdit ? (
+                  decodingInfo?.permissionList?.MIM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/metainfo'}>
                         <MdOutlineMedicalInformation
@@ -1182,7 +1182,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.LOM?.isEdit ? (
+                  decodingInfo?.permissionList?.LOM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/classify'}>
                         <MdManageHistory
@@ -1218,7 +1218,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.STM?.isEdit ? (
+                  decodingInfo?.permissionList?.STM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/content-manage/classify'}>
                         <VscGraph
@@ -1270,7 +1270,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.CCC?.isEdit ? (
+                  decodingInfo?.permissionList?.CCC?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/creatingcontentSetting'}>
                         <IoSettingsOutline
@@ -1310,7 +1310,7 @@ export function Navigation() {
                 <>
                   {/* 권한 여부 */}
                   {decodingInfo?.permissionList &&
-                  decodingInfo?.permissionList?.CMC?.isEdit ? (
+                  decodingInfo?.permissionList?.CMC?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
                       <Link to={'/managingcontentSetting'}>
                         <IoSettingsOutline
