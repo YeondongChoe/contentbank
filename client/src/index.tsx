@@ -140,7 +140,7 @@ const router = createBrowserRouter([
         path: '/managementeditmain',
         element: <ManagementEditMain />,
       },
-      //접근 권한이 없는는 페이지입니다.
+      //접근 권한이 없는 페이지입니다.
       {
         path: '/no-authrized',
         element: <NoAuthrizedPage />,
