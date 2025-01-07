@@ -61,6 +61,8 @@ export function EditModal({
   const [nameErrorMessage, setNameErrorMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<ItemSelectProps[]>([]);
   const [authorityCode, setAuthorityCode] = useState<string>('');
+  console.log('authorityList', authorityList);
+  console.log('member', member);
   const [selectedCode, setSelectedCode] = useState('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
@@ -328,7 +330,6 @@ export function EditModal({
             </InputWrapper>
             <InputWrapper>
               <Label width="130px" fontSize="15px" value="* 권한" />
-
               <Controller
                 control={control}
                 name="authority"
