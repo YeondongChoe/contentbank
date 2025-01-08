@@ -28,6 +28,13 @@ interface CategoryItem {
   parentClassIdx: number | null;
   isUse: boolean;
 }
+interface UpdateItem {
+  type: 'CREATE' | 'UPDATE' | 'DELETE'; // 가능한 작업 타입
+  idx: number | null; // 아이템의 고유 식별자, 생성 시에는 null
+  classIdx: number | null; // 클래스 식별자
+  parentClassIdx: number | null; // 부모 클래스 식별자
+  isUse: boolean; // 활성화 여부
+}
 
 export function TagMapping() {
   const [tagList, setTagList] = useState<
@@ -46,14 +53,9 @@ export function TagMapping() {
       count: string;
     }[]
   >([]);
-  const [selectedNextItem, setSelectedNextItem] = useState<{
-    type: string;
-    name: string;
-    count: string;
-  } | null>(null);
 
   const [checkList, setCheckList] = useState<string[]>([]);
-  const [activeItem, setActiveItem] = useState<string | null>(null);
+  const [updateItems, setUpdateItems] = useState<UpdateItem[][] | null>(null);
   const [isInit, setIsInit] = useState<boolean>(false);
   // 검색
   const [searchValue, setSearchValue] = useState<string>('');
@@ -83,6 +85,47 @@ export function TagMapping() {
 
     console.log('선택된 카테고리 아이템 click item ----- ', item);
   };
+
+  // 태그 선택
+  useEffect(() => {
+    if (
+      activeMappingItem &&
+      activeMappingItem.parentClassIdx &&
+      activeMappingItem.classIdx
+    ) {
+      console.log(
+        '다음 idx 값으로 클래스 조회',
+        activeMappingItem.parentClassIdx,
+        activeMappingItem.classIdx,
+      );
+      // 아이템 선택시 다음 인덱스 로 리스트 불러오기
+      const getCategory = async () => {
+        try {
+          const res = await classificationInstance.get(
+            `/v1/category/${activeMappingItem.parentClassIdx}/${activeMappingItem.classIdx}`,
+          );
+
+          console.log(
+            '아이템 선택후 태그값 불러오기',
+            res.data.data.categoryClassList,
+          );
+          setTagList(res.data.data.categoryClassList);
+          // return res.data.data.categoryClassList;
+        } catch (error) {
+          console.error('Error fetching category:', error);
+          return null;
+        }
+      };
+
+      getCategory();
+    }
+  }, [activeMappingItem]);
+
+  useEffect(() => {
+    //tagList
+    console.log('tagList', tagList);
+  }, [tagList]);
+
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const queryValue = query.get('state');
@@ -118,13 +161,82 @@ export function TagMapping() {
 
     // 같은 parentClassIdx를 가진 요소끼리만 이동 가능하도록 조건 추가
     if (
-      draggedItem.parentClassIdx == hoverItem.parentClassIdx &&
+      // draggedItem.parentClassIdx == hoverItem.parentClassIdx &&
       draggedItem.depth == hoverItem.depth
     ) {
-      console.log('draggedItem ----', draggedItem);
-      console.log('hoverItem ----', hoverItem);
+      console.log('이동한 아이템 draggedItem ----', draggedItem);
+      console.log('교환된 아이템 hoverItem ----', hoverItem);
       console.log('이동후 업데이트 된 리스트 ----', updatedList);
       setMappingList(updatedList);
+      // 이동 후 이동내역 서버 전송
+      if (draggedItem.idx !== hoverItem.idx) {
+        if (draggedItem.idx == hoverItem.idx) return;
+        const swapClassIdx = (
+          item1: CategoryItem,
+          item2: CategoryItem,
+        ): [CategoryItem, CategoryItem] => {
+          return [
+            {
+              ...item1,
+              classIdx: item2.classIdx, // item1의 classIdx를 item2의 classIdx로 변경
+              parentClassIdx: item2.parentClassIdx,
+            },
+            {
+              ...item2,
+              classIdx: item1.classIdx, // item2의 classIdx를 item1의 classIdx로 변경
+              parentClassIdx: item1.parentClassIdx,
+            },
+          ];
+        };
+
+        const [updatedItem1, updatedItem2] = swapClassIdx(
+          draggedItem,
+          hoverItem,
+        );
+        console.log('Updated Item 1:', updatedItem1);
+        console.log('Updated Item 2:', updatedItem2);
+
+        // 서버 데이터 업데이트
+        if (updatedItem1 && updatedItem2) {
+          updateMapListData([
+            {
+              type: 'UPDATE',
+              idx: updatedItem1.idx,
+              classIdx: updatedItem1.classIdx,
+              parentClassIdx: updatedItem1.parentClassIdx,
+              isUse: updatedItem1.isUse,
+            },
+            {
+              type: 'UPDATE',
+              idx: updatedItem2.idx,
+              classIdx: updatedItem2.classIdx,
+              parentClassIdx: updatedItem2.parentClassIdx,
+              isUse: updatedItem2.isUse,
+            },
+          ]);
+
+          // 변경내역 되돌리기 버튼에 저장
+          setUpdateItems([
+            ...(updateItems || []), // 기존 값이 null일 경우를 방지,
+            [
+              {
+                type: 'UPDATE',
+                idx: updatedItem1.idx,
+                classIdx: updatedItem2.classIdx, // 교환 전 데이터
+                parentClassIdx: updatedItem2.parentClassIdx, // 교환 전 데이터
+                isUse: updatedItem1.isUse,
+              },
+              {
+                type: 'UPDATE',
+                idx: updatedItem2.idx,
+                classIdx: updatedItem1.classIdx, // 교환 전 데이터
+                parentClassIdx: updatedItem1.parentClassIdx, // 교환 전 데이터
+                isUse: updatedItem2.isUse,
+              },
+            ],
+          ]);
+        }
+      }
     }
   };
 
@@ -173,49 +285,29 @@ export function TagMapping() {
     console.log('MappingList ------------- ', mappingList);
   }, [mappingList]);
 
-  // 변경 매핑 데이터 전송 api //TODO
-  const postCategoryMapData = async () => {
-    const groupIdx = 0;
-    const data = {
-      modificationList: [
-        {
-          type: 'CREATE',
-          idx: null,
-          classIdx: 1,
-          parentClassIdx: 2,
-          isUse: true,
-        },
-        {
-          type: 'UPDATE',
-          idx: 3,
-          classIdx: 4,
-          parentClassIdx: 5,
-          isUse: false,
-        },
-        {
-          type: 'DELETE',
-          idx: 6,
-          classIdx: null,
-          parentClassIdx: null,
-          isUse: false,
-        },
-      ],
-    };
+  // 변경 매핑 데이터 전송 api
+  const postMapListData = async (list: UpdateItem[]) => {
+    if (queryValue) {
+      const groupIdx = queryValue.split('/')[1];
+      const data = {
+        modificationList: list,
+      };
 
-    const response = await classificationInstance.post(
-      `/v1/category/class/map/flat/${groupIdx}`,
-      data,
-    );
-    return response.data;
+      const response = await classificationInstance.put(
+        `/v1/category/class/map/flat/${groupIdx}`,
+        data,
+      );
+      return response.data;
+    }
   };
 
-  const { mutate: sendCategoryData, isPending } = useMutation({
-    mutationFn: postCategoryMapData,
+  const { mutate: updateMapListData, isPending } = useMutation({
+    mutationFn: postMapListData,
     onSuccess: () => {
-      openToastifyAlert({
-        type: 'success',
-        text: 'Data successfully updated!',
-      });
+      // openToastifyAlert({
+      //   type: 'success',
+      //   text: 'Data successfully updated!',
+      // });
       // 성공후 업데이트
       mappingDataRefetch();
     },
@@ -227,32 +319,15 @@ export function TagMapping() {
     },
   });
 
+  // 맵리스트 이동 추가 삭제 변경 내역있을시
+  // useEffect(() => {
+  //   // 되돌리기 용으로 변경내역 리스트업
+  // 	console.log('',updateItems)
+  // }, [updateItems]);
+
   const updateData = () => {
-    // 필터링된 데이터로 변환하는 함수
-    const filterActiveItems = (list: CategoryItem[]) => {
-      return list.reduce((acc: any[], item) => {
-        // 활성화된 항목만 포함
-        if (item.isUse) {
-          acc.push({
-            idx: item.idx,
-            name: item.name,
-            code: item.code,
-            depth: item.depth,
-            isUse: item.isUse,
-          });
-        }
-
-        return acc;
-      }, []);
-    };
-
-    const requestData = {
-      itemGroupIdx: 2, // TODO: 확인 필요
-      categoryClass: filterActiveItems(mappingList), // 활성화된 아이템만 필터링
-    };
-
-    console.log('활성화된 데이터만 업데이트 --- ', requestData);
-    // if (!isPending) sendCategoryData(requestData);
+    // 이전 단계로 되돌리기 (10회까지 기억)
+    const lastList = []; // 수정된 내역 리스트 아이템 10회까지 기억
   };
 
   // const handleAddTag = () => {
@@ -283,59 +358,6 @@ export function TagMapping() {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     console.log(event.key);
   };
-
-  useEffect(() => {
-    // console.log(
-    //   '선택된 아이템d idx, 선택된 아이템의 다음 idx----- ',
-    //   activeMappingItem?.code,
-    //   selectedList,
-    // );
-    const foundItem = selectedList.find(
-      (item) => item.name === activeMappingItem?.code,
-    );
-    if (foundItem) {
-      const currentIndex = selectedList.indexOf(foundItem);
-      const nextItem = selectedList[currentIndex + 1];
-
-      if (nextItem) setSelectedNextItem(nextItem);
-    }
-
-    //activeMappingItem 변경시 체크박스 초기화
-    setCheckList([]);
-  }, [selectedItem, activeMappingItem]);
-  // useEffect(() => {
-  // 	//
-  //  console.log('',)
-  //  setTagList()
-  // }, [tagList]);
-
-  // 태그 선택
-  useEffect(() => {
-    console.log('다음 idx 값으로 클래스 조회', selectedNextItem);
-    // 아이템 선택시 다음 인덱스 로 리스트 불러오기
-    const getCategory = async () => {
-      if (!selectedNextItem?.type) {
-        return null;
-      }
-      try {
-        const response = await classificationInstance.get(
-          `/v1/category/class/${selectedNextItem?.type}`,
-        );
-
-        console.log(
-          '아이템 선택후 태그값 불러오기',
-          response.data.data.categoryClassList,
-        );
-        setTagList(response.data.data.categoryClassList);
-        // return response.data.data.categoryClassList;
-      } catch (error) {
-        console.error('Error fetching category:', error);
-        return null;
-      }
-    };
-
-    getCategory();
-  }, [selectedNextItem]);
 
   const handleButtonCheck = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -425,53 +447,52 @@ export function TagMapping() {
   }, [checkList]);
   useEffect(() => {}, [searchValue, isInit]);
   return (
-    <>
-      <Container>
-        {isInit ? (
-          <ListWrapper>
-            <strong className="title">태그 선택</strong>
-            <span className="sub_title">매핑할 태그를 선택해주세요.</span>
-            <span className="border_tag">{`${activeMappingItem && activeMappingItem.code}`}</span>
-            <DropdownWrapper>
-              <Search
-                placeholder="태그를 검색해주세요."
-                value={searchValue}
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-                margin="0 0 5px 0"
-              />
-              {/* 검색 후 드롭다운 리스트 */}
-              {searchValue ? (
-                filteredTags.length > 0 ? (
-                  <Dropdown>
-                    <DropdownTagList>
-                      {/* TODO: 필터링될 전체 리스트값 가져오기 */}
-                      {filteredTags.map((tag, index) => (
-                        <ListItem
-                          key={index}
-                          $padding={'5px'}
-                          $margin={'0'}
-                          isChecked={tagCheckList.includes(tag)}
-                          onClick={(e) => handleTagButtonCheck(e, tag)}
-                        >
-                          <CheckBoxI
-                            id={tag}
-                            value={tag}
-                            $margin={`0 5px 0 0`}
-                            checked={tagCheckList.includes(tag)}
-                            readOnly
-                          />
-                          <span>{tag}</span>
-                        </ListItem>
-                      ))}
-                    </DropdownTagList>
-                  </Dropdown>
-                ) : (
-                  <Dropdown>
-                    <span className="info">없는 태그 입니다.</span>
+    <Container>
+      {isInit ? (
+        <ListWrapper>
+          <strong className="title">태그 선택</strong>
+          <span className="sub_title">매핑할 태그를 선택해주세요.</span>
+          <span className="border_tag">{`${activeMappingItem && activeMappingItem.code}`}</span>
+          <DropdownWrapper>
+            <Search
+              placeholder="태그를 검색해주세요."
+              value={searchValue}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+              margin="0 0 5px 0"
+            />
+            {/* 검색 후 드롭다운 리스트 */}
+            {searchValue ? (
+              filteredTags.length > 0 ? (
+                <Dropdown>
+                  <DropdownTagList>
+                    {/* TODO: 필터링될 전체 리스트값 가져오기 */}
+                    {filteredTags.map((tag, index) => (
+                      <ListItem
+                        key={index}
+                        $padding={'5px'}
+                        $margin={'0'}
+                        isChecked={tagCheckList.includes(tag)}
+                        onClick={(e) => handleTagButtonCheck(e, tag)}
+                      >
+                        <CheckBoxI
+                          id={tag}
+                          value={tag}
+                          $margin={`0 5px 0 0`}
+                          checked={tagCheckList.includes(tag)}
+                          readOnly
+                        />
+                        <span>{tag}</span>
+                      </ListItem>
+                    ))}
+                  </DropdownTagList>
+                </Dropdown>
+              ) : (
+                <Dropdown>
+                  <span className="info">없는 태그 입니다.</span>
 
-                    {/* TODO: api 추가되야함 */}
-                    {/* <Button
+                  {/* TODO: api 추가되야함 */}
+                  {/* <Button
                       $border
                       fontSize="13px"
                       onClick={handleAddTag}
@@ -480,78 +501,78 @@ export function TagMapping() {
                     >
                       <span>{`"${searchValue}"`} 태그를 신규태그로 추가</span>
                     </Button> */}
-                  </Dropdown>
-                )
-              ) : null}
-            </DropdownWrapper>
+                </Dropdown>
+              )
+            ) : null}
+          </DropdownWrapper>
 
-            <TagsWrappper>
-              {tagList.map((el, idx) => (
-                <Tags
-                  key={`${el} ${idx}`}
-                  onClick={(e) => handleButtonCheck(e, el.name)}
-                >
-                  <span className="icon_wwrap">
-                    <CheckBoxI
-                      id={el.name}
-                      value={el.idx}
-                      checked={checkList.includes(el.name)}
-                      readOnly
-                    />
-                  </span>
-                  <span>{`${el.name}`}</span>
-                </Tags>
-              ))}
-            </TagsWrappper>
+          {/* 추가 될 태그 리스트 */}
+          <TagsWrappper>
+            {tagList.map((el, idx) => (
+              <Tags
+                key={`${el} ${idx}`}
+                onClick={(e) => handleButtonCheck(e, el.name)}
+              >
+                <span className="icon_wwrap">
+                  <CheckBoxI
+                    id={el.name}
+                    value={el.idx}
+                    checked={checkList.includes(el.name)}
+                    readOnly
+                  />
+                </span>
+                <span>{`${el.name}`}</span>
+              </Tags>
+            ))}
+          </TagsWrappper>
 
-            <Button
-              $filled
-              onClick={() => addTagsToNextDepth()}
-              $margin="15px 0 0 0"
-            >
-              <span>{`${checkList.length}`}개의 태그 하위로 추가</span>
-            </Button>
-          </ListWrapper>
-        ) : (
-          <ListWrapper>
-            <SetCategoryList
-              setSelectedItem={setSelectedItem}
-              setSelectedList={setSelectedList}
-            />
-          </ListWrapper>
-        )}
-
-        <ListItemWrapper>
-          <strong className="title">매핑</strong>
-          <ButtonWrapper>
-            <Button
-              width="200px"
-              height="35px"
-              onClick={() => addTags()}
-              $margin="0 10px 0 0"
-            >
-              최상위 태그 추가
-            </Button>
-            <Button width="150px" height="35px" onClick={() => goToInit()}>
-              순서변경
-            </Button>
-          </ButtonWrapper>
-
-          {/* 매핑 리스트 */}
-          <MappingList
-            mappingList={mappingList}
-            activeItem={activeMappingItem}
-            handleTagClick={handleTagMappingClick}
-            moveTag={moveMappingTag}
+          <Button
+            $filled
+            onClick={() => addTagsToNextDepth()}
+            $margin="15px 0 0 0"
+          >
+            <span>{`${checkList.length}`}개의 태그 하위로 추가</span>
+          </Button>
+        </ListWrapper>
+      ) : (
+        <ListWrapper>
+          <SetCategoryList
+            setSelectedItem={setSelectedItem}
+            setSelectedList={setSelectedList}
           />
-        </ListItemWrapper>
-      </Container>
-      <BottomButtonWrapper>
-        <Button width="300px" $filled onClick={() => updateData()}>
-          저장
-        </Button>
-      </BottomButtonWrapper>
-    </>
+        </ListWrapper>
+      )}
+
+      <ListItemWrapper>
+        <strong className="title">매핑</strong>
+        <ButtonWrapper>
+          <button className="revert_btn" onClick={() => updateData()}>
+            <span>이전 단계로 되돌리기</span>
+            <Icon width={`15px`} src={`/images/icon/reflash.svg`} />
+          </button>
+
+          <Button
+            width="200px"
+            height="35px"
+            onClick={() => goToInit()}
+            $margin="0 10px 0 0"
+          >
+            최상위 태그 추가
+          </Button>
+          <Button width="150px" height="35px" onClick={() => addTags()}>
+            순서변경
+          </Button>
+        </ButtonWrapper>
+
+        {/* 매핑 리스트 */}
+        <MappingList
+          mappingList={mappingList}
+          activeItem={activeMappingItem}
+          handleTagClick={handleTagMappingClick}
+          moveTag={moveMappingTag}
+        />
+      </ListItemWrapper>
+    </Container>
   );
 }
 interface DraggableItemProps {
@@ -645,8 +666,8 @@ const ListItemWrapper = styled.div`
 const TagsWrappper = styled.div`
   border: 1px solid #eaeaea;
   background-color: #fff;
-  min-width: 300px;
-  height: 400px;
+  width: 300px;
+  height: 500px;
   border-radius: 5px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -654,7 +675,7 @@ const TagsWrappper = styled.div`
   &.height {
     display: flex;
     flex-direction: column;
-    height: 550px;
+    height: 700px;
     padding: 15px;
     gap: 10px;
   }
@@ -722,6 +743,21 @@ const ButtonWrapper = styled.div`
   display: flex;
   padding-bottom: 10px;
   justify-content: end;
+  position: relative;
+
+  .revert_btn {
+    position: absolute;
+    left: 0;
+    display: flex;
+    align-items: center;
+    border: none;
+    font-size: 12px;
+    padding: 10px;
+    background-color: transparent;
+    span {
+      padding: 0 5px;
+    }
+  }
 `;
 
 const InfoButtonWrapper = styled.div`
@@ -731,13 +767,6 @@ const InfoButtonWrapper = styled.div`
   font-size: 14px;
   padding: 20px;
   margin-left: 20px;
-`;
-const BottomButtonWrapper = styled.div`
-  display: flex;
-  justify-content: end;
-  padding: 20px;
-  margin: 20px;
-  background-color: #eee;
 `;
 
 const Dropdown = styled.div`

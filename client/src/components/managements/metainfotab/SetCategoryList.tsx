@@ -262,7 +262,7 @@ const TagsWrapper = styled.div`
   border: 1px solid #eaeaea;
   background-color: #fff;
   min-width: 300px;
-  height: 400px;
+  height: 500px;
   border-radius: 5px;
   overflow-y: auto;
   overflow-x: hidden;

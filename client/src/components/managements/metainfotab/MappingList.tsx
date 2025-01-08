@@ -306,7 +306,6 @@ const TagsWrapper = styled.div`
   border: 1px solid #eaeaea;
   background-color: #fff;
   min-width: 300px;
-  height: 400px;
   border-radius: 5px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -314,7 +313,7 @@ const TagsWrapper = styled.div`
   &.height {
     display: flex;
     flex-direction: column;
-    height: 550px;
+    height: 650px;
     padding: 15px;
     gap: 10px;
   }
