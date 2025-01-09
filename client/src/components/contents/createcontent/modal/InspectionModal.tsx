@@ -47,6 +47,7 @@ export function InspectionModal({
   return (
     <Container>
       <Title>
+        {type == '프로세스' && '프로세스 요청'}
         {type == '보류' && '보류사유 *'}
         {type == '반려' && '반려사유 *'}
         {type == '승인' && '검수의견'}

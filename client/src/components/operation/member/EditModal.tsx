@@ -44,7 +44,8 @@ export function EditModal({
     id: null | string;
     name: null | string;
     key: null | string;
-    authority: null | string;
+    authorityCode: null | string;
+    authorityName: null | string;
     comment: null | string;
     enabled: null | boolean;
     authCode: null | string;
@@ -52,7 +53,8 @@ export function EditModal({
     id: null,
     name: null,
     key: null,
-    authority: null,
+    authorityCode: null,
+    authorityName: null,
     comment: null,
     enabled: null,
     authCode: null,
@@ -61,8 +63,6 @@ export function EditModal({
   const [nameErrorMessage, setNameErrorMessage] = useState('');
   const [authorityList, setAuthorityList] = useState<ItemSelectProps[]>([]);
   const [authorityCode, setAuthorityCode] = useState<string>('');
-  console.log('authorityList', authorityList);
-  console.log('member', member);
   const [selectedCode, setSelectedCode] = useState('');
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
@@ -206,7 +206,8 @@ export function EditModal({
       id: memberDatas?.id,
       name: memberDatas?.name,
       key: memberDatas?.userKey,
-      authority: memberDatas?.authorityCode,
+      authorityCode: memberDatas?.authorityCode,
+      authorityName: memberDatas?.authorityName,
       comment: memberDatas?.note,
       enabled: memberDatas?.isUse,
       authCode: memberDatas?.roleCode,
@@ -221,8 +222,11 @@ export function EditModal({
     if (member.id) {
       setValue('id', member.id);
     }
-    if (member.authority) {
-      setValue('authority', member.authority);
+    if (member.authorityCode) {
+      setValue('authorityCode', member.authorityCode);
+    }
+    if (member.authorityName) {
+      setValue('authorityName', member.authorityName);
     }
     if (member.comment) {
       setValue('comment', member.comment);
@@ -233,7 +237,8 @@ export function EditModal({
   }, [
     member.name,
     member.id,
-    member.authority,
+    member.authorityCode,
+    member.authorityName,
     member.comment,
     member.enabled,
     setValue,
@@ -339,7 +344,7 @@ export function EditModal({
                       width="100%"
                       heightScroll="150px"
                       padding="5px 0px 0px 0px"
-                      defaultValue={member.authority}
+                      defaultValue={member.authorityName}
                       setSelectedValue={setAuthorityCode}
                       setSelectedCode={setSelectedCode}
                       options={authorityList}

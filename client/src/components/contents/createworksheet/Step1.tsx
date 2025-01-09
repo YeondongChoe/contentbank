@@ -1190,6 +1190,7 @@ export function Step1() {
                 setCheckedDepthList={setCheckedDepthList}
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
+                postPending={postStep1Pending}
               ></UnitTypeTab>
               <SelectSection
                 tabView={tabView}

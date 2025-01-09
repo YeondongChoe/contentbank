@@ -51,7 +51,7 @@ export function ProcessListModal({ list, refech }: ProcessModalProps) {
 
   //프로세스 리스트 불러오기 api
   const getProcessNameList = async () => {
-    const res = await userInstance.get(`/v1/process`);
+    const res = await userInstance.get(`/v1/process/build`);
     //console.log(res);
     return res;
   };
