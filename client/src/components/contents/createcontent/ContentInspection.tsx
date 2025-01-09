@@ -152,7 +152,6 @@ export function ContentInspection({
     },
     onSuccess: (response) => {
       setIsSuccessAlertOpen(true);
-
       closeModal();
     },
   });
@@ -288,6 +287,10 @@ export function ContentInspection({
                                             <span className="tag red">
                                               반려
                                             </span>
+                                          ) : worker.state === 'HOLD' ? (
+                                            <span className="tag gray">
+                                              보류
+                                            </span>
                                           ) : (
                                             <span className="tag">
                                               {worker.account.authorityName}
@@ -337,6 +340,10 @@ export function ContentInspection({
                                               ) : worker.state === 'REJECT' ? (
                                                 <span className="tag red">
                                                   반려
+                                                </span>
+                                              ) : worker.state === 'HOLD' ? (
+                                                <span className="tag gray">
+                                                  보류
                                                 </span>
                                               ) : (
                                                 <span className="tag">
@@ -390,6 +397,10 @@ export function ContentInspection({
                                             <span className="tag red">
                                               반려
                                             </span>
+                                          ) : worker.state === 'HOLD' ? (
+                                            <span className="tag gray">
+                                              보류
+                                            </span>
                                           ) : (
                                             <span className="tag">
                                               {worker.authority.code}
@@ -439,6 +450,10 @@ export function ContentInspection({
                                                 <span className="tag red">
                                                   반려
                                                 </span>
+                                              ) : worker.state === 'HOLD' ? (
+                                                <span className="tag gray">
+                                                  보류
+                                                </span>
                                               ) : (
                                                 <span className="tag">
                                                   {worker.authority.code}
@@ -466,110 +481,6 @@ export function ContentInspection({
               <ValueNone />
             </>
           )}
-
-          {/* <ListBoxWrapper>
-            <ListBox>
-              <PerfectScrollbar>
-                <ul className="name_list">
-                  <li>
-                    <button className="active">
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag">{`ghdr`}</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button>
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag">{`ghdr`}</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button>
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag">{`ghdr`}</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button>
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag">{`ghdr`}</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button>
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag">{`ghdr`}</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button>
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag">{`ghdr`}</span>
-                    </button>
-                  </li>
-                  <li>
-                    <button>
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag">{`ghdr`}</span>
-                    </button>
-                  </li>
-                </ul>
-              </PerfectScrollbar>
-            </ListBox>
-            <ListBox>
-              <strong className="title">검수</strong>
-              <PerfectScrollbar>
-                <ul className="name_list">
-                  <li>
-                    <button
-                      onClick={() => {
-                        setInspectionArea(`검수의견`);
-                        setInspectionReason(`편집단계에서 추가 분류 요청`);
-                        setIsAlertOpen(true);
-                      }}
-                    >
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag red">{`ghdr`}</span>
-                    </button>
-                  </li>
-                </ul>
-              </PerfectScrollbar>
-            </ListBox>
-            <ListBox>
-              <strong className="title">편집</strong>
-              <PerfectScrollbar>
-                <ul className="name_list">
-                  <li>
-                    <button>
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag">{`ghdr`}</span>
-                    </button>
-                  </li>
-                </ul>
-              </PerfectScrollbar>
-            </ListBox>
-            <ListBox>
-              <strong className="title">검수</strong>
-              <PerfectScrollbar>
-                <ul className="name_list">
-                  <li>
-                    <button
-                      onClick={() => {
-                        setInspectionArea(`반려사유`);
-                        setInspectionReason(
-                          `두줄 이상일경우 편집단계에서 추가 분류 요청, 두줄 이상일경우 편집단계에서 추가 분류 요청, 두줄 이상일경우 편집단계에서 추가 분류 요청`,
-                        );
-                        setIsAlertOpen(true);
-                      }}
-                    >
-                      <span className="name">{`ghdrlf`}</span>
-                      <span className="tag blue">{`ghdr`}</span>
-                    </button>
-                  </li>
-                </ul>
-              </PerfectScrollbar>
-            </ListBox>
-          </ListBoxWrapper> */}
         </ContentListWrapper>
         <Modal />
 
@@ -799,6 +710,11 @@ const ListBox = styled.div`
     display: flex;
     font-size: 13px;
     color: ${COLOR.ERROR};
+  }
+  .name_list button .tag.gray {
+    display: flex;
+    font-size: 13px;
+    color: ${COLOR.FONT_GRAY};
   }
 `;
 

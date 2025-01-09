@@ -205,7 +205,7 @@ export function MockExamTab({
 
   //수능모의고사 속성 호출 api
   const getCategoryExamGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/group/D'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
+    const response = await classificationInstance.get('/v1/category/class/8'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
     return response.data.data.typeList;
   };
   const { data: examData } = useQuery({
@@ -964,7 +964,7 @@ export function MockExamTab({
         >
           <span>전체</span>
         </Button>
-        {categoryList[2].map((el) => (
+        {categoryList[2]?.map((el) => (
           <Button
             key={el.idx}
             onClick={() => selectExamYear(el.name)}
@@ -1016,7 +1016,7 @@ export function MockExamTab({
           <span>전체</span>
         </Button>
         {categoryList[3]
-          .filter((el) => {
+          ?.filter((el) => {
             return !excludedNames.includes(el.name);
           })
           .map((el) => (

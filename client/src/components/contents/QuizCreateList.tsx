@@ -42,6 +42,8 @@ export function QuizCreateList() {
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   // 페이지네이션 index에 맞는 전체 데이터 불러오기
   const [questionList, setQuestionList] = useState<QuizListType[] | null>([]);
+  //제작프로세스 여부
+  const [isBuildWorker, setIsBuildWorker] = useState<boolean>(false);
 
   const [tabView, setTabView] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
@@ -383,6 +385,7 @@ export function QuizCreateList() {
       setQuestionList(null);
     } else {
       setQuestionList(quizData?.quizList);
+      setIsBuildWorker(quizData?.isBuildWorker);
     }
     // console.log('questionList', questionList);
   }, [quizData]);
@@ -475,7 +478,6 @@ export function QuizCreateList() {
           <SelectWrapper>
             {selectedList.map((list, i) => {
               if (list.type === 'SELECT' && list.search) {
-                console.log(selectedList.filter((selected) => selected.name));
                 return (
                   <Select
                     key={`${list.idx}-${list.selectedName}`}
@@ -641,6 +643,7 @@ export function QuizCreateList() {
               <ContentList
                 key={key}
                 list={questionList as QuizListType[]}
+                isBuildWorker={isBuildWorker}
                 selectedList={selectedList}
                 quizDataRefetch={quizDataRefetch}
                 tabView={tabView}
