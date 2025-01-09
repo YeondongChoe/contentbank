@@ -2,12 +2,11 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { classificationInstance } from '../../../api/axios';
+import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Button, CheckBoxI, Icon, openToastifyAlert, Switch } from '../../atom';
 import { COLOR } from '../../constants';
 import { ListItem, Search } from '../../molecules';
@@ -25,6 +24,7 @@ interface CategoryItem {
   name: string;
   code: string;
   depth: number;
+  sort: number;
   parentClassIdx: number | null;
   isUse: boolean;
 }
@@ -34,13 +34,21 @@ interface UpdateItem {
   classIdx: number | null; // 클래스 식별자
   parentClassIdx: number | null; // 부모 클래스 식별자
   isUse: boolean; // 활성화 여부
+  sort: number;
 }
 
 export function TagMapping() {
+  const location = useLocation();
+  const query = new URLSearchParams(location.search);
+  const queryValue = query.get('state');
+
+  const [showMapHandleBtn, setShowMapHandleBtn] = useState(false);
   const [tagList, setTagList] = useState<
     { idx: number; name: string; code: string }[]
   >([]);
   const [mappingList, setMappingList] = useState<CategoryItem[]>([]);
+  const [selectedCheckBox, setSelectedCheckBox] = useState<number[]>([]);
+
   const [selectedItem, setSelectedItem] = useState<{
     type: string;
     name: string;
@@ -62,6 +70,56 @@ export function TagMapping() {
   const [filteredTags, setFilteredTags] = useState<string[]>(sampleTags);
   const [tagCheckList, setTagCheckList] = useState<string[]>([]);
 
+  // 카테고리
+  const [categoryList, setCategoryList] = useState<
+    { type: string; name: string; count: string }[]
+  >([]);
+  const [groupIdx, setGgroupIdx] = useState<number>();
+  const [groupName, setGgroupName] = useState<string>();
+  //카테고리 그룹 리스트 불러오기 api
+  const getCategoryGroup = async () => {
+    if (queryValue) {
+      const res = await classificationInstance.get(
+        `/v1/category/group/${queryValue.split('/')[0]}`,
+      );
+      console.log(res.data.data);
+      return res.data.data;
+    }
+  };
+
+  const { data: categoryGroupData, isLoading: isCategoryGroupLoading } =
+    useQuery({
+      queryKey: ['get-categoryGroup'],
+      queryFn: getCategoryGroup,
+      meta: {
+        errorMessage: 'get-categoryGroup 에러 메세지',
+      },
+    });
+
+  useEffect(() => {
+    if (categoryGroupData) {
+      console.log('가져온 카테고리 ----', categoryGroupData);
+      const item = categoryGroupData;
+      const { nameList, typeList, idx, name, countList } = item;
+      const names = nameList ? nameList.split(',') : [];
+      const types = typeList ? typeList.split(',') : [];
+      const counts = countList ? countList.split(',') : [];
+
+      const newCategoryList = names.map(
+        (name: any, index: string | number) => ({
+          name,
+          type: types[index] || '',
+          count: counts[index] || '',
+        }),
+      );
+
+      setCategoryList(newCategoryList);
+      setGgroupIdx(idx);
+      setGgroupName(name);
+    }
+  }, [categoryGroupData]);
+  useEffect(() => {}, [categoryList, groupIdx, groupName]);
+
   const [activeMappingItem, setActiveMappingItem] = useState<{
     idx: number;
     classIdx: number;
@@ -70,6 +128,7 @@ export function TagMapping() {
     depth: number;
     parentClassIdx: number | null;
     isUse: boolean;
+    sort: number;
   } | null>(null);
 
   const handleTagMappingClick = (item: {
@@ -80,6 +139,7 @@ export function TagMapping() {
     depth: number;
     parentClassIdx: number | null;
     isUse: boolean;
+    sort: number;
   }) => {
     setActiveMappingItem(activeMappingItem === item ? null : item);
 
@@ -88,21 +148,21 @@ export function TagMapping() {
 
   // 태그 선택
   useEffect(() => {
-    if (
-      activeMappingItem &&
-      activeMappingItem.parentClassIdx &&
-      activeMappingItem.classIdx
-    ) {
+    if (activeMappingItem && categoryList) {
       console.log(
         '다음 idx 값으로 클래스 조회',
-        activeMappingItem.parentClassIdx,
-        activeMappingItem.classIdx,
+        activeMappingItem,
+        categoryList,
       );
+      const idxArr = categoryList.map((item) => item.type);
+      const index = activeMappingItem.depth;
+      const idx = idxArr[index];
+      console.log('idx ------------ ', idx);
       // 아이템 선택시 다음 인덱스 로 리스트 불러오기
       const getCategory = async () => {
         try {
           const res = await classificationInstance.get(
-            `/v1/category/${activeMappingItem.parentClassIdx}/${activeMappingItem.classIdx}`,
+            `/v1/category/class/${idx}`,
           );
 
           console.log(
@@ -126,10 +186,6 @@ export function TagMapping() {
     console.log('tagList', tagList);
   }, [tagList]);
 
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  const queryValue = query.get('state');
-
   const getCategoryMap = async () => {
     if (queryValue) {
       const groupIdx = queryValue.split('/')[1];
@@ -138,7 +194,7 @@ export function TagMapping() {
       );
 
       const list = res.data.data.itemList;
-      console.log('/v1/category/map/flat/ ,list-----', list);
+      console.log('/v1/category/map/flat/ -----', list);
       return list;
     }
   };
@@ -151,6 +207,89 @@ export function TagMapping() {
       errorMessage: 'get-categoryMap 에러 메세지',
     },
   });
+
+  // 최초 진입시 매핑 리스트
+  useEffect(() => {
+    const fetchInitialCategory = async () => {
+      // 매핑데이터 있을시 데이터 솔팅 후 보여주기
+      if (mappingData) {
+        if (mappingData.length > 0) {
+          // 요소의 parentClassIdx 가 요소의classIdx 와 동일한경우 classIdx의 하단으로 솔팅
+          // 1. parentClassIdx 기준으로 객체를 그룹화
+          const mappingMap = new Map<number, any[]>();
+          mappingData.forEach((item: { parentClassIdx: number }) => {
+            if (!mappingMap.has(item.parentClassIdx)) {
+              mappingMap.set(item.parentClassIdx, []);
+            }
+            mappingMap.get(item.parentClassIdx)?.push(item);
+          });
+
+          console.log('mappingMap ------- ', mappingMap);
+
+          // 2. 정렬 로직
+          const sortedData: any[] = [];
+          const visited = new Set(); // 방문한 객체 추적
+
+          const addToSortedList = (item: any) => {
+            if (visited.has(item.idx)) return; // 이미 처리된 항목은 무시
+            visited.add(item.idx);
+            sortedData.push(item);
+
+            // 현재 객체를 부모로 참조하는 객체를 재귀적으로 추가
+            const children = mappingMap.get(item.classIdx);
+            if (children) {
+              children.forEach(addToSortedList);
+            }
+          };
+
+          // 3. parentClassIdx가 없는 루트 객체부터 시작
+          mappingData
+            .filter(
+              (item: { parentClassIdx: null }) => item.parentClassIdx === null,
+            )
+            .forEach(addToSortedList);
+
+          setMappingList(sortedData);
+        } else if (mappingData.length == 0) {
+          // 매핑데이터가 아직 없을시
+          const setFirstCategory = async () => {
+            if (categoryList[0]) {
+              const idx = categoryList[0].type;
+              console.log('첫번째 셋팅 인덱스 ---', idx);
+              try {
+                const res = await classificationInstance.get(
+                  `/v1/category/class/${idx}`,
+                );
+
+                const firstList = res.data.data.categoryClassList;
+                // console.log('firstList -------', firstList);
+                const transformedList = firstList.map(
+                  (item: any, index: number) => ({
+                    type: 'CREATE',
+                    idx: null, // 생성된 항목은 idx가 null
+                    classIdx: item.idx, // 기존 idx를 classIdx로 매핑
+                    parentClassIdx: 0, // 최초 생성시
+                    isUse: true, // 기본값으로 true 설정
+                    sort: index + 1, // 현재 index + 1로 설정
+                  }),
+                );
+                console.log('transformedList -------', transformedList);
+
+                // 맵 리스트 생성
+                updateMapListData(transformedList);
+              } catch (error: any) {
+                if (error.data?.code == 'GE-002') postRefreshToken();
+              }
+            }
+          };
+
+          setFirstCategory();
+        }
+      }
+    };
+
+    fetchInitialCategory();
+  }, [mappingData, selectedList]);
 
   const moveMappingTag = (dragIndex: number, hoverIndex: number) => {
     const updatedList = [...mappingList];
@@ -205,6 +344,7 @@ export function TagMapping() {
               classIdx: updatedItem1.classIdx,
               parentClassIdx: updatedItem1.parentClassIdx,
               isUse: updatedItem1.isUse,
+              sort: updatedItem1.sort,
             },
             {
               type: 'UPDATE',
@@ -212,6 +352,7 @@ export function TagMapping() {
               classIdx: updatedItem2.classIdx,
               parentClassIdx: updatedItem2.parentClassIdx,
               isUse: updatedItem2.isUse,
+              sort: updatedItem2.sort,
             },
           ]);
 
@@ -224,12 +365,14 @@ export function TagMapping() {
                 idx: updatedItem1.idx,
                 classIdx: updatedItem2.classIdx, // 교환 전 데이터
                 parentClassIdx: updatedItem2.parentClassIdx, // 교환 전 데이터
+                sort: updatedItem2.sort, // 교환 전 데이터
                 isUse: updatedItem1.isUse,
               },
               {
                 type: 'UPDATE',
                 idx: updatedItem2.idx,
                 classIdx: updatedItem1.classIdx, // 교환 전 데이터
+                sort: updatedItem1.sort, // 교환 전 데이터
                 parentClassIdx: updatedItem1.parentClassIdx, // 교환 전 데이터
                 isUse: updatedItem2.isUse,
               },
@@ -387,59 +530,35 @@ export function TagMapping() {
     }
   };
 
-  // 매핑에서 선택된 태그 기준으로 태그선택 데이터 넣기
-  useEffect(() => {
-    const fetchInitialCategory = async () => {
-      if (mappingData) {
-        if (mappingData.length > 0) {
-          // 요소의 parentClassIdx 가 요소의classIdx 와 동일한경우 classIdx의 하단으로 솔팅
-          // 1. parentClassIdx 기준으로 객체를 그룹화
-          const mappingMap = new Map<number, any[]>();
-          mappingData.forEach((item: { parentClassIdx: number }) => {
-            if (!mappingMap.has(item.parentClassIdx)) {
-              mappingMap.set(item.parentClassIdx, []);
-            }
-            mappingMap.get(item.parentClassIdx)?.push(item);
-          });
-
-          console.log('mappingMap ------- ', mappingMap);
-
-          // 2. 정렬 로직
-          const sortedData: any[] = [];
-          const visited = new Set(); // 방문한 객체 추적
-
-          const addToSortedList = (item: any) => {
-            if (visited.has(item.idx)) return; // 이미 처리된 항목은 무시
-            visited.add(item.idx);
-            sortedData.push(item);
-
-            // 현재 객체를 부모로 참조하는 객체를 재귀적으로 추가
-            const children = mappingMap.get(item.classIdx);
-            if (children) {
-              children.forEach(addToSortedList);
-            }
-          };
-
-          // 3. parentClassIdx가 없는 루트 객체부터 시작
-          mappingData
-            .filter(
-              (item: { parentClassIdx: null }) => item.parentClassIdx === null,
-            )
-            .forEach(addToSortedList);
-
-          setMappingList(sortedData);
-        }
-      }
-    };
-
-    fetchInitialCategory();
-  }, [mappingData, selectedList]);
-
   const goToInit = () => {
     setIsInit(true);
   };
   const addTags = () => {
     setIsInit(false);
+  };
+  const deleteTag = () => {
+    // 태그 삭제
+    console.log('선택된 체크 박스의 값', selectedCheckBox);
+    console.log('mappingList ---', mappingList);
+    // 리스트의 넘버값이 포함 된 맵 리스트 아이템 축출
+    const filteredItems = mappingList.filter((item) =>
+      selectedCheckBox.includes(item.idx),
+    );
+
+    console.log('필터링된 아이템 ---', filteredItems);
+
+    // 변경내역 되돌리기 버튼에 저장
+    setUpdateItems([
+      ...(updateItems || []), // 기존 값이 null일 경우를 방지
+      filteredItems.map((item) => ({
+        type: 'CREATE', // 삭제 이전 상태를 복구할 데이터
+        idx: null,
+        classIdx: item.classIdx,
+        parentClassIdx: item.parentClassIdx,
+        isUse: true,
+        sort: item.sort,
+      })),
+    ]);
   };
 
   useEffect(() => {
@@ -536,9 +655,15 @@ export function TagMapping() {
         </ListWrapper>
       ) : (
         <ListWrapper>
+          {/* 카테고리 순서 리스트 */}
           <SetCategoryList
             setSelectedItem={setSelectedItem}
             setSelectedList={setSelectedList}
+            mappingDataRefetch={mappingDataRefetch}
+            categoryList={categoryList}
+            setCategoryList={setCategoryList}
+            groupIdx={groupIdx}
+            groupName={groupName}
           />
         </ListWrapper>
       )}
@@ -550,18 +675,35 @@ export function TagMapping() {
             <span>이전 단계로 되돌리기</span>
             <Icon width={`15px`} src={`/images/icon/reflash.svg`} />
           </button>
-
-          <Button
-            width="200px"
-            height="35px"
-            onClick={() => goToInit()}
-            $margin="0 10px 0 0"
-          >
-            최상위 태그 추가
-          </Button>
-          <Button width="150px" height="35px" onClick={() => addTags()}>
-            순서변경
-          </Button>
+          {showMapHandleBtn ? (
+            <>
+              {/* <Button
+                width="200px"
+                height="35px"
+                onClick={() => {}}
+                $margin="0 10px 0 0"
+              >
+                매핑 복제
+              </Button> */}
+              <Button width="150px" height="35px" onClick={() => deleteTag()}>
+                태그 해제
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                width="200px"
+                height="35px"
+                onClick={() => goToInit()}
+                $margin="0 10px 0 0"
+              >
+                최상위 태그 추가
+              </Button>
+              <Button width="150px" height="35px" onClick={() => addTags()}>
+                순서변경
+              </Button>
+            </>
+          )}
         </ButtonWrapper>
 
         {/* 매핑 리스트 */}
@@ -570,6 +712,8 @@ export function TagMapping() {
           activeItem={activeMappingItem}
           handleTagClick={handleTagMappingClick}
           moveTag={moveMappingTag}
+          setShowMapHandleBtn={setShowMapHandleBtn}
+          setSelectedCheckBox={setSelectedCheckBox}
         />
       </ListItemWrapper>
     </Container>

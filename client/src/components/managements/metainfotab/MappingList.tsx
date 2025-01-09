@@ -18,6 +18,7 @@ interface CategoryItem {
   depth: number;
   parentClassIdx: number | null;
   isUse: boolean;
+  sort: number;
 }
 
 interface MappingListProps {
@@ -30,6 +31,7 @@ interface MappingListProps {
     depth: number;
     parentClassIdx: number | null;
     isUse: boolean;
+    sort: number;
   } | null;
   handleTagClick: (item: {
     idx: number;
@@ -39,12 +41,15 @@ interface MappingListProps {
     depth: number;
     parentClassIdx: number | null;
     isUse: boolean;
+    sort: number;
   }) => void;
   moveTag: (
     dragIndex: number,
     hoverIndex: number,
     list: CategoryItem[],
   ) => void;
+  setShowMapHandleBtn: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedCheckBox: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 export function MappingList({
@@ -52,6 +57,8 @@ export function MappingList({
   activeItem,
   handleTagClick,
   moveTag,
+  setShowMapHandleBtn,
+  setSelectedCheckBox,
 }: MappingListProps) {
   if (mappingList.length === 0) {
     return <ValueNone info="리스트가 없습니다" />;
@@ -120,6 +127,24 @@ export function MappingList({
       [itemIdx]: !prevState[itemIdx],
     }));
   };
+  // 체크값 있을시 버튼 활성화
+  useEffect(() => {
+    console.log('체크값--', selectedCheckBoxState);
+
+    // 태그 핸들링 버튼 보이게
+    if (selectedCheckBoxState) {
+      const hasTrueValue = Object.values(selectedCheckBoxState).some(
+        (value) => value === true,
+      );
+      setShowMapHandleBtn(hasTrueValue);
+      // 체크된 값 부모요소로
+      const trueKeys = Object.entries(selectedCheckBoxState)
+        .filter(([key, value]) => value === true) // 값이 true인 항목만 필터링
+        .map(([key]) => Number(key));
+
+      setSelectedCheckBox(trueKeys);
+    }
+  }, [selectedCheckBoxState]);
   const renderMappingList = (list: CategoryItem[], depth: number = 0) => {
     return list.map((el, idx) => (
       <div
@@ -164,6 +189,7 @@ interface DraggableMappingItemProps {
     depth: number;
     parentClassIdx: number | null;
     isUse: boolean;
+    sort: number;
   };
   index: number;
   activeItem: {
@@ -174,6 +200,7 @@ interface DraggableMappingItemProps {
     depth: number;
     parentClassIdx: number | null;
     isUse: boolean;
+    sort: number;
   } | null;
   handleTagClick: (item: {
     idx: number;
@@ -183,6 +210,7 @@ interface DraggableMappingItemProps {
     depth: number;
     parentClassIdx: number | null;
     isUse: boolean;
+    sort: number;
   }) => void;
   moveTag: (dragIndex: number, hoverIndex: number) => void;
   toggleExpanded: (item: any) => void;
@@ -248,7 +276,6 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
             disabled={!isSwitchOn}
           />
         </TagsButtonWrapper>
-        {/* <span className="category_sub_title end">{`${item.children?.length || 0}개의 태그`}</span> */}
       </Tags>
       {/* {activeItem === item && item.children && item.children.length == 0 && (
         <InfoButtonWrapper>

@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  QueryObserverResult,
+  RefetchOptions,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useLocation } from 'react-router-dom';
@@ -16,15 +21,34 @@ import { useDnD } from '../../molecules/dragAndDrop';
 export function SetCategoryList({
   setSelectedItem,
   setSelectedList,
+  mappingDataRefetch,
+  categoryList,
+  setCategoryList,
+  groupIdx,
+  groupName,
 }: {
   setSelectedList: React.Dispatch<React.SetStateAction<any[]>>;
   setSelectedItem?: React.Dispatch<React.SetStateAction<any>>;
+  mappingDataRefetch: (
+    options?: RefetchOptions,
+  ) => Promise<QueryObserverResult<any, Error>>;
+  categoryList: {
+    type: string;
+    name: string;
+    count: string;
+  }[];
+  setCategoryList: React.Dispatch<
+    React.SetStateAction<
+      {
+        type: string;
+        name: string;
+        count: string;
+      }[]
+    >
+  >;
+  groupIdx?: number;
+  groupName?: string;
 }) {
-  const [categoryList, setCategoryList] = useState<
-    { type: string; name: string; count: string }[]
-  >([]);
-  const [groupIdx, setGgroupIdx] = useState<number>();
-  const [groupName, setGgroupName] = useState<string>();
   const [groupData, setGroupData] = useState<{
     groupIdx: number | undefined;
     name: string | undefined;
@@ -36,59 +60,6 @@ export function SetCategoryList({
     type: string;
     count: string;
   } | null>(null);
-
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  const queryValue = query.get('state');
-
-  useEffect(() => {
-    if (query.get('state')) {
-      console.log('query', query.get('state'));
-    }
-  }, []);
-
-  //카테고리 그룹 리스트 불러오기 api
-  const getCategoryGroup = async () => {
-    if (queryValue) {
-      const res = await classificationInstance.get(
-        `/v1/category/group/${queryValue.split('/')[0]}`,
-      );
-      console.log(res.data.data);
-      return res.data.data;
-    }
-  };
-
-  const { data: categoryGroupData, isLoading: isCategoryGroupLoading } =
-    useQuery({
-      queryKey: ['get-categoryGroup'],
-      queryFn: getCategoryGroup,
-      meta: {
-        errorMessage: 'get-categoryGroup 에러 메세지',
-      },
-    });
-
-  useEffect(() => {
-    if (categoryGroupData) {
-      console.log('가져온 카테고리 ----', categoryGroupData);
-      const item = categoryGroupData;
-      const { nameList, typeList, idx, name, countList } = item;
-      const names = nameList ? nameList.split(',') : [];
-      const types = typeList ? typeList.split(',') : [];
-      const counts = countList ? countList.split(',') : [];
-
-      const newCategoryList = names.map(
-        (name: any, index: string | number) => ({
-          name,
-          type: types[index] || '',
-          count: counts[index] || '',
-        }),
-      );
-
-      setCategoryList(newCategoryList);
-      setGgroupIdx(idx);
-      setGgroupName(name);
-    }
-  }, [categoryGroupData]);
 
   // 카테고리 순서 변경 api
   const putCategoryGroup = async (data: {
@@ -119,9 +90,9 @@ export function SetCategoryList({
         type: 'success',
         text: `${response.data.message ? response.data.message : '순서가 변경되었습니다'}`,
       });
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      window.onload();
+
+      // 맵핑 리스트 리프레쉬
+      mappingDataRefetch();
     },
   });
 
