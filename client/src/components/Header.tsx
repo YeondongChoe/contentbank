@@ -232,20 +232,26 @@ export function Header() {
                     idx: number;
                     content: string;
                     createdAt: string;
-                  }) => (
-                    <AlertCard key={noti.idx}>
-                      <CardTitleWrapper>
-                        <CardTitle>{noti.content}</CardTitle>
-                        <CardDeleteButton
-                          onClick={() => updateNotiData(noti.idx.toString())}
-                        >
-                          X
-                        </CardDeleteButton>
-                      </CardTitleWrapper>
-                      <CardContext>{noti.content}</CardContext>
-                      <CardTime>{formatRelativeTime(noti.createdAt)}</CardTime>
-                    </AlertCard>
-                  ),
+                  }) => {
+                    //역슬래시를 기준으로 타이틀과 내용 분리
+                    const [notiTitle, notiContext] = noti.content.split('\n');
+                    return (
+                      <AlertCard key={noti.idx}>
+                        <CardTitleWrapper>
+                          <CardTitle>{notiTitle}</CardTitle>
+                          <CardDeleteButton
+                            onClick={() => updateNotiData(noti.idx.toString())}
+                          >
+                            X
+                          </CardDeleteButton>
+                        </CardTitleWrapper>
+                        <CardContext>{notiContext}</CardContext>
+                        <CardTime>
+                          {formatRelativeTime(noti.createdAt)}
+                        </CardTime>
+                      </AlertCard>
+                    );
+                  },
                 )}
               </>
             ) : (
