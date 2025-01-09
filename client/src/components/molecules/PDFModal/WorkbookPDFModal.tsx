@@ -421,12 +421,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                             : ''
                                           }
                                         >
-                                          {isQuizType && (
-                                            <ContentTitleA>
-                                              |{quizCategory?.유형?.[0].name}|
-                                            </ContentTitleA>
-                                          )}
                                           <EachMathViewerA>
+                                            {isQuizType && (
+                                              <ContentTitleA>
+                                                |{quizCategory?.유형?.[0].name}|
+                                              </ContentTitleA>
+                                            )}
                                             <MathJaxWrapperA>
                                               <WorkbookMathViewer
                                                 data={quizItemList}
@@ -497,12 +497,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                     : ''
                                           }
                                         >
-                                          {isQuizType && (
-                                            <ContentTitleA>
-                                              |{quizCategory?.유형?.[0].name}|
-                                            </ContentTitleA>
-                                          )}
                                           <EachMathViewerA>
+                                            {isQuizType && (
+                                              <ContentTitleA>
+                                                |{quizCategory?.유형?.[0].name}|
+                                              </ContentTitleA>
+                                            )}
                                             <MathJaxWrapperA>
                                               <WorkbookMathViewer
                                                 data={quizItemList}
@@ -899,12 +899,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                             : ''
                                           }
                                         >
-                                          {isQuizType && (
-                                            <ContentTitleB>
-                                              |{quizCategory?.유형?.[0].name}|
-                                            </ContentTitleB>
-                                          )}
                                           <EachMathViewerB>
+                                            {isQuizType && (
+                                              <ContentTitleB>
+                                                |{quizCategory?.유형?.[0].name}|
+                                              </ContentTitleB>
+                                            )}
                                             <MathJaxWrapperB>
                                               <WorkbookMathViewer
                                                 data={quizItemList}
@@ -972,12 +972,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                     : ''
                                           }
                                         >
-                                          {isQuizType && (
-                                            <ContentTitleB>
-                                              |{quizCategory?.유형?.[0].name}|
-                                            </ContentTitleB>
-                                          )}
                                           <EachMathViewerB>
+                                            {isQuizType && (
+                                              <ContentTitleB>
+                                                |{quizCategory?.유형?.[0].name}|
+                                              </ContentTitleB>
+                                            )}
                                             <MathJaxWrapperB>
                                               <WorkbookMathViewer
                                                 data={quizItemList}
@@ -1404,7 +1404,9 @@ const HeaderTriangleA = styled.div`
 `;
 const ContentTitleA = styled.div`
   color: #888888;
-  margin-left: -10px;
+  margin-left: 60px;
+  padding-bottom: 10px;
+  scale: 1.3;
 `;
 //전체
 const WorksheetBodyA = styled.div`
@@ -1438,17 +1440,20 @@ const WorksheetBodyRightA = styled.div`
 //각 아이템
 const MathViewerWrapperA = styled.div<{ padding: string }>`
   width: 400px;
-  //height: 100%;
   padding: ${({ padding }) => `${padding}`};
-  margin-bottom: 40px;
+  margin-bottom: -40px;
+  margin-top: -80px;
   font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 `;
 //비율
 const EachMathViewerA = styled.div`
   max-width: 500px;
-  scale: 0.7;
-  margin-top: -5px;
-  margin-left: -80px;
+  scale: 0.6;
+  margin-left: -100px;
 `;
 const MathJaxWrapperA = styled.div`
   strong {
@@ -1539,7 +1544,9 @@ const WorksheetHeaderB = styled.div`
 `;
 const ContentTitleB = styled.div`
   color: #888888;
-  margin-left: -10px;
+  margin-left: 60px;
+  padding-bottom: 10px;
+  scale: 1.3;
 `;
 const HeaderCircleB = styled.div`
   position: relative;
@@ -1623,16 +1630,21 @@ const WorksheetBodyRightB = styled.div`
   display: flex;
   flex-direction: column;
 `;
+//각 아이템
 const MathViewerWrapperB = styled.div<{ padding: string }>`
   width: 400px;
   padding: ${({ padding }) => `${padding}`};
-  margin-bottom: 40px;
+  margin-bottom: -140px;
+  margin-top: -20px;
   font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 `;
 const EachMathViewerB = styled.div`
   max-width: 500px;
   scale: 0.7;
-  margin-top: -5px;
   margin-left: -80px;
 `;
 const MathJaxWrapperB = styled.div`
