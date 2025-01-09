@@ -40,6 +40,7 @@ export function QuizManagementList() {
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([]);
   const [categoriesE, setCategoriesE] = useState<ItemCategoryType[][]>([]);
   const [questionList, setQuestionList] = useState<QuestionTableType[]>([]);
+  const [isBuildWorker, setIsBuildWorker] = useState<boolean>(false);
   const [checkListOn, setCheckListOn] = useState<number[]>([]);
   const [tabView, setTabView] = useState<string>('문항 리스트');
   const [content, setContent] = useState<string[]>([]);
@@ -429,6 +430,7 @@ export function QuizManagementList() {
   useEffect(() => {
     if (quizData) {
       setQuestionList(quizData.quizList);
+      setIsBuildWorker(quizData?.isBuildWorker);
     }
     // console.log('questionList', questionList);
   }, [quizData]);
@@ -566,6 +568,7 @@ export function QuizManagementList() {
                   key={key}
                   list={questionList}
                   selectedList={selectedList}
+                  isBuildWorker={isBuildWorker}
                   deleteBtn
                   quizDataRefetch={quizDataRefetch}
                   ondeleteClick={() => {

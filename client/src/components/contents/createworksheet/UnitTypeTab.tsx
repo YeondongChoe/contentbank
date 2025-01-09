@@ -62,6 +62,7 @@ type UnitTypeTabProps = {
   setCheckedDepthList: React.Dispatch<React.SetStateAction<number[]>>;
   searchValue: string;
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
+  postPending: boolean;
 };
 
 export function UnitTypeTab({
@@ -74,6 +75,7 @@ export function UnitTypeTab({
   setCheckedDepthList,
   searchValue,
   setSearchValue,
+  postPending,
 }: UnitTypeTabProps) {
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
   const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
@@ -625,29 +627,32 @@ export function UnitTypeTab({
         })}
         <p className="line"></p>
         <>
-          {/* 교과정보 아코디언 리스트  */}
-          {categoryList.length === selectedList.length &&
-          selectedList[selectedList.length - 1].selectedName ? (
-            <AccordionWrapper>
-              <Accordion
-                title={`${selectedList.flatMap((el) => el.selectedName).join('/')}`}
-                id={`${selectedList.flatMap((el) => el.selectedName).join('/')}`}
-              >
-                <RowListWrapper>
-                  <Search
-                    height={'30px'}
-                    value={searchValue}
-                    onClick={(e) => filterSearchValue(e)}
-                    onKeyDown={(e) => filterSearchValueEnter(e)}
-                    onChange={(e) => {
-                      setSearchValue(e.target.value);
-                    }}
-                    placeholder="검색어를 입력해주세요.(두글자 이상)"
-                    maxLength={20}
-                  />
-                  {searchValue.length > 1 && (
-                    <p className="line bottom_text">
-                      {`총 
+          {/* post요청 중이지 않을때  */}
+          {!postPending ? (
+            <>
+              {/* 교과정보 아코디언 리스트  */}
+              {categoryList.length === selectedList.length &&
+              selectedList[selectedList.length - 1].selectedName ? (
+                <AccordionWrapper>
+                  <Accordion
+                    title={`${selectedList.flatMap((el) => el.selectedName).join('/')}`}
+                    id={`${selectedList.flatMap((el) => el.selectedName).join('/')}`}
+                  >
+                    <RowListWrapper>
+                      <Search
+                        height={'30px'}
+                        value={searchValue}
+                        onClick={(e) => filterSearchValue(e)}
+                        onKeyDown={(e) => filterSearchValueEnter(e)}
+                        onChange={(e) => {
+                          setSearchValue(e.target.value);
+                        }}
+                        placeholder="검색어를 입력해주세요.(두글자 이상)"
+                        maxLength={20}
+                      />
+                      {searchValue.length > 1 && (
+                        <p className="line bottom_text">
+                          {`총 
 															${
                                 categoryItemTreeData && itemTree.length
                                   ? itemTree.reduce(
@@ -661,116 +666,129 @@ export function UnitTypeTab({
                                   : 0
                               } 
 															건`}
-                      <ArrowButtonWrapper>
-                        <button onClick={() => prevHighlight()}>
-                          <IoMdArrowDropup />
-                        </button>
-                        <button onClick={() => nextHighlight()}>
-                          <IoMdArrowDropdown />
-                        </button>
-                      </ArrowButtonWrapper>
-                    </p>
-                  )}
-                  {isPending && (
-                    <LoaderWrapper>
-                      <Loader width="50px" />
-                    </LoaderWrapper>
-                  )}
-                  {categoryItemTreeData ? (
-                    <AccordionItemWrapper>
-                      {itemTree.length ? (
-                        <div ref={contentRef} className="content">
-                          {searchValue.length > 0 ? (
-                            <>
-                              {itemTree.map((el) => (
-                                <div key={`${el.itemTreeKey}`}>
-                                  {el.itemTreeList.map((item) => (
-                                    <DepthBlock
-                                      branchValue={`${item.name}`}
-                                      highlightText={highlightText}
-                                      defaultChecked
-                                      key={`depthList${item?.idx} ${item.name}`}
-                                      classNameList={`depth-${item.level}`}
-                                      id={item?.idx}
-                                      name={item.name}
-                                      value={item?.idx}
-                                      level={item?.level}
-                                      onChange={(e) =>
-                                        handleSingleCheck(
-                                          e.target.checked,
-                                          item?.idx,
-                                          item?.level,
-                                        )
-                                      }
-                                      checked={
-                                        checkedDepthList.includes(item?.idx)
-                                          ? true
-                                          : false
-                                      }
-                                      searchValue={searchValue}
-                                    >
-                                      <span>
-                                        {highlightText(item.name, searchValue)}
-                                      </span>
-                                    </DepthBlock>
-                                  ))}
-                                </div>
-                              ))}
-                            </>
-                          ) : (
-                            <>
-                              {itemTree.map((el) => (
-                                <div key={`${el.itemTreeKey}`}>
-                                  {el.itemTreeList.map((item) => (
-                                    <DepthBlock
-                                      branchValue={`${item.name}`}
-                                      defaultChecked
-                                      key={`depthList${item?.idx} ${item.name}`}
-                                      classNameList={`depth-${item.level}`}
-                                      id={item?.idx}
-                                      name={item.name}
-                                      value={item?.idx}
-                                      level={item?.level}
-                                      onChange={(e) =>
-                                        handleSingleCheck(
-                                          e.target.checked,
-                                          item?.idx,
-                                          item?.level,
-                                        )
-                                      }
-                                      checked={
-                                        checkedDepthList.includes(item?.idx)
-                                          ? true
-                                          : false
-                                      }
-                                      searchValue={searchValue}
-                                    >
-                                      <span>{item.name}</span>
-                                    </DepthBlock>
-                                  ))}
-                                </div>
-                              ))}
-                            </>
-                          )}
-                        </div>
-                      ) : (
-                        <ValueNone textOnly info="등록된 데이터가 없습니다" />
+                          <ArrowButtonWrapper>
+                            <button onClick={() => prevHighlight()}>
+                              <IoMdArrowDropup />
+                            </button>
+                            <button onClick={() => nextHighlight()}>
+                              <IoMdArrowDropdown />
+                            </button>
+                          </ArrowButtonWrapper>
+                        </p>
                       )}
-                    </AccordionItemWrapper>
-                  ) : (
-                    <Loader />
-                  )}
-                </RowListWrapper>
-              </Accordion>
-            </AccordionWrapper>
+                      {isPending && (
+                        <LoaderWrapper>
+                          <Loader width="50px" />
+                        </LoaderWrapper>
+                      )}
+                      {categoryItemTreeData ? (
+                        <AccordionItemWrapper>
+                          {itemTree.length ? (
+                            <div ref={contentRef} className="content">
+                              {searchValue.length > 0 ? (
+                                <>
+                                  {itemTree.map((el) => (
+                                    <div key={`${el.itemTreeKey}`}>
+                                      {el.itemTreeList.map((item) => (
+                                        <DepthBlock
+                                          branchValue={`${item.name}`}
+                                          highlightText={highlightText}
+                                          defaultChecked
+                                          key={`depthList${item?.idx} ${item.name}`}
+                                          classNameList={`depth-${item.level}`}
+                                          id={item?.idx}
+                                          name={item.name}
+                                          value={item?.idx}
+                                          level={item?.level}
+                                          onChange={(e) =>
+                                            handleSingleCheck(
+                                              e.target.checked,
+                                              item?.idx,
+                                              item?.level,
+                                            )
+                                          }
+                                          checked={
+                                            checkedDepthList.includes(item?.idx)
+                                              ? true
+                                              : false
+                                          }
+                                          searchValue={searchValue}
+                                        >
+                                          <span>
+                                            {highlightText(
+                                              item.name,
+                                              searchValue,
+                                            )}
+                                          </span>
+                                        </DepthBlock>
+                                      ))}
+                                    </div>
+                                  ))}
+                                </>
+                              ) : (
+                                <>
+                                  {itemTree.map((el) => (
+                                    <div key={`${el.itemTreeKey}`}>
+                                      {el.itemTreeList.map((item) => (
+                                        <DepthBlock
+                                          branchValue={`${item.name}`}
+                                          defaultChecked
+                                          key={`depthList${item?.idx} ${item.name}`}
+                                          classNameList={`depth-${item.level}`}
+                                          id={item?.idx}
+                                          name={item.name}
+                                          value={item?.idx}
+                                          level={item?.level}
+                                          onChange={(e) =>
+                                            handleSingleCheck(
+                                              e.target.checked,
+                                              item?.idx,
+                                              item?.level,
+                                            )
+                                          }
+                                          checked={
+                                            checkedDepthList.includes(item?.idx)
+                                              ? true
+                                              : false
+                                          }
+                                          searchValue={searchValue}
+                                        >
+                                          <span>{item.name}</span>
+                                        </DepthBlock>
+                                      ))}
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            <ValueNone
+                              textOnly
+                              info="등록된 데이터가 없습니다"
+                            />
+                          )}
+                        </AccordionItemWrapper>
+                      ) : (
+                        <Loader />
+                      )}
+                    </RowListWrapper>
+                  </Accordion>
+                </AccordionWrapper>
+              ) : (
+                <ValueNoneWrapper>
+                  <ValueNone
+                    textOnly
+                    info="교육과정, 학교급, 학년, 학기를 선택해주세요"
+                  />
+                </ValueNoneWrapper>
+              )}
+            </>
           ) : (
-            <ValueNoneWrapper>
-              <ValueNone
-                textOnly
-                info="교육과정, 학교급, 학년, 학기를 선택해주세요"
-              />
-            </ValueNoneWrapper>
+            <LoaderWrapper>
+              <Loader width="150px" />
+            </LoaderWrapper>
           )}
+
           <SubmitButtonWrapper>
             <Button
               $filled

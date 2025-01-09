@@ -26,11 +26,11 @@ type processStepListProps = {
       id: string;
       name: string;
       authorityName: string;
-    };
+    } | null;
     authority: {
       idx: number;
       name: string;
-    };
+    } | null;
   }[];
 };
 

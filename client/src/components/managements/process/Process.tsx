@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
+import { info } from 'console';
+
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { BiSolidTrashAlt } from 'react-icons/bi';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
@@ -40,11 +42,11 @@ type processStepListProps = {
       id: string;
       name: string;
       authorityName: string;
-    };
+    } | null;
     authority: {
       idx: number;
       name: string;
-    };
+    } | null;
   }[];
 };
 
@@ -198,7 +200,7 @@ export function Process() {
   };
 
   /*  모달 열기 */
-  const openAddModal = (sort: number) => {
+  const openAddModal = (sort: number, name: string) => {
     openModal({
       title: '',
       content: (
@@ -206,6 +208,7 @@ export function Process() {
           isEdit={processNameIdx !== null ? true : false}
           processIdx={processNameIdx as number}
           stepSort={sort}
+          stepName={name}
           processListData={processList}
           setProcessListData={setProcessList}
           processDetailInfo={processDetailInfo}
@@ -626,7 +629,7 @@ export function Process() {
               {processDetailInfo?.steps
                 ?.slice()
                 .sort((a, b) => a.stepSort - b.stepSort)
-                .map((info, i) => (
+                .map((info) => (
                   <ProcessCardWrapper key={`${info?.idx} - ${info?.stepName}`}>
                     <CardTitleWrapper>
                       <CardTitle>
@@ -648,16 +651,10 @@ export function Process() {
                               : ''}
                       </ProcessType>
                     </CardTitleWrapper>
-                    {info.workers.map((work, i) => (
+                    {info.workers.map((work) => (
                       <>
-                        <ProcessCard key={i}>
+                        <ProcessCard key={work.workerSort}>
                           <CradInfo>
-                            {/* <span className="name">
-                            {work.account?.name}({work.account?.id})
-                          </span>
-                          <span className="authority">
-                            {work.authority?.name}
-                          </span> */}
                             {work.account?.name ? (
                               <span className="name">
                                 {work.account?.name}({work.account?.id})
@@ -692,8 +689,8 @@ export function Process() {
                                     deleteCard(
                                       info.stepSort,
                                       work.account?.id !== ''
-                                        ? work.account?.id
-                                        : work.authority?.name,
+                                        ? (work.account?.id as string)
+                                        : (work.authority?.name as string),
                                       work.account?.id !== '' ? true : false,
                                     );
                                   }}
@@ -714,7 +711,9 @@ export function Process() {
                       )} */}
                       </>
                     ))}
-                    <IncreaseBox onClick={() => openAddModal(info.stepSort)}>
+                    <IncreaseBox
+                      onClick={() => openAddModal(info.stepSort, info.stepName)}
+                    >
                       +
                     </IncreaseBox>
                   </ProcessCardWrapper>
@@ -725,8 +724,10 @@ export function Process() {
               {processList
                 ?.slice()
                 .sort((a, b) => a.stepSort - b.stepSort)
-                ?.map((process, i) => (
-                  <ProcessCardWrapper key={i}>
+                ?.map((process) => (
+                  <ProcessCardWrapper
+                    key={`${process.idx}-${process.stepName}`}
+                  >
                     <>
                       <CardTitleWrapper>
                         <CardTitle>
@@ -752,7 +753,7 @@ export function Process() {
                         <>
                           {process.workers.map((worker) => (
                             <>
-                              <ProcessCard>
+                              <ProcessCard key={worker.idx}>
                                 <CradInfo>
                                   {worker.account?.name ? (
                                     <span className="name">
@@ -789,8 +790,9 @@ export function Process() {
                                           deleteCard(
                                             process.stepSort,
                                             worker.account?.id !== ''
-                                              ? worker.account?.id
-                                              : worker.authority?.name,
+                                              ? (worker.account?.id as string)
+                                              : (worker.authority
+                                                  ?.name as string),
                                             worker.account?.id !== ''
                                               ? true
                                               : false,
@@ -808,7 +810,11 @@ export function Process() {
                         </>
                       )}
                     </>
-                    <IncreaseBox onClick={() => openAddModal(process.stepSort)}>
+                    <IncreaseBox
+                      onClick={() =>
+                        openAddModal(process.stepSort, process.stepName)
+                      }
+                    >
                       +
                     </IncreaseBox>
                   </ProcessCardWrapper>

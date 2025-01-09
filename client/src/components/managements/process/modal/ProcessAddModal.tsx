@@ -61,11 +61,11 @@ type processStepListProps = {
       id: string;
       name: string;
       authorityName: string;
-    };
+    } | null;
     authority: {
       idx: number;
       name: string;
-    };
+    } | null;
   }[];
 };
 
@@ -87,6 +87,7 @@ type AddModalProps = {
   isEdit: boolean;
   processIdx: number;
   stepSort: number;
+  stepName: string;
   processListData?: processStepListProps[];
   setProcessListData: React.Dispatch<
     React.SetStateAction<processStepListProps[]>
@@ -101,6 +102,7 @@ export function ProcessAddModal({
   isEdit,
   processIdx,
   stepSort,
+  stepName,
   processListData,
   setProcessListData,
   processDetailInfo,
@@ -128,7 +130,7 @@ export function ProcessAddModal({
 
   const [processList, setProcessList] = useState<processStepListProps[]>([]);
   const [processDetailList, setProcessDetailList] =
-    useState<processDetailInfoProps>();
+    useState<processDetailInfoProps | null>(null);
 
   useEffect(() => {
     if (processListData) {
@@ -169,8 +171,11 @@ export function ProcessAddModal({
             }
 
             if (
-              (process.stepName === 'EDITING' && process.workers.length > 0) ||
-              selectedworkerAccountList.length > 1
+              stepName === 'EDITING' &&
+              (process.workers.length > 1 ||
+                (process.workers.length === 0 &&
+                  selectedworkerAccountList.length > 1) ||
+                selectedworkerAccountList.length > 1)
             ) {
               openToastifyAlert({
                 type: 'error',
@@ -191,10 +196,7 @@ export function ProcessAddModal({
                   name: worker.name,
                   authorityName: worker.authorityName,
                 },
-                authority: {
-                  idx: 0,
-                  name: '',
-                },
+                authority: null,
               }),
             );
 
@@ -241,16 +243,19 @@ export function ProcessAddModal({
             return process; // 원래 데이터를 그대로 반환
           }
 
-          // if (
-          //   selectedworkerAccountList.length > 1 &&
-          //   process.stepName === 'EDITING'
-          // ) {
-          //   openToastifyAlert({
-          //     type: 'error',
-          //     text: '편집 단계는 1명만 등록 가능합니다.',
-          //   });
-          //   return process;
-          // }
+          if (
+            stepName === 'EDITING' &&
+            (process.workers.length > 1 ||
+              (process.workers.length === 0 &&
+                selectedworkerAccountList.length > 1) ||
+              selectedworkerAccountList.length > 1)
+          ) {
+            openToastifyAlert({
+              type: 'error',
+              text: '편집 단계는 1명만 등록 가능합니다.',
+            });
+            return process;
+          }
 
           const updatedWorkersAccount = selectedworkerAccountList.map(
             (worker) => ({
@@ -264,10 +269,7 @@ export function ProcessAddModal({
                 name: worker.name,
                 authorityName: worker.authorityName,
               },
-              authority: {
-                idx: 0,
-                name: '',
-              },
+              authority: null,
             }),
           );
 
@@ -296,7 +298,7 @@ export function ProcessAddModal({
   };
 
   const clickAuthorityListSave = () => {
-    const checkForDuplicateAuthority = (process: any) => {
+    const checkForDuplicateAccount = (process: any) => {
       return process.workers.some((worker: any) => worker.account !== null);
     };
 
@@ -305,7 +307,7 @@ export function ProcessAddModal({
         processDetailList?.steps?.map((process) => {
           if (process.stepSort === stepSort) {
             // 중복 권한 확인
-            if (checkForDuplicateAuthority(process)) {
+            if (checkForDuplicateAccount(process)) {
               openToastifyAlert({
                 type: 'error',
                 text: '해당 단계에서 이미 사용자로 추가하신 경우, 사용자로만 추가가 가능합니다',
@@ -314,8 +316,11 @@ export function ProcessAddModal({
             }
 
             if (
-              (process.stepName === 'EDITING' && process.workers.length > 0) ||
-              selectedworkerAuthorityList.length > 1
+              stepName === 'EDITING' &&
+              (process.workers.length > 1 ||
+                (process.workers.length === 0 &&
+                  selectedworkerAuthorityList.length > 1) ||
+                selectedworkerAuthorityList.length > 1)
             ) {
               openToastifyAlert({
                 type: 'error',
@@ -330,12 +335,7 @@ export function ProcessAddModal({
                 workerSort: 0, // 새로 추가되는 worker의 정렬 값 설정
                 createdBy: process.createdBy, // 필요하면 생성자 값 설정
                 createdAt: process.createdAt, // 현재 시간 설정
-                account: {
-                  idx: 0,
-                  id: '',
-                  name: '',
-                  authorityName: '',
-                },
+                account: null,
                 authority: {
                   idx: worker.idx, // authority는 비워두거나 기본값 설정
                   name: worker.name,
@@ -380,7 +380,7 @@ export function ProcessAddModal({
       const updatedProcessList = processList.map((process) => {
         if (process.stepSort === stepSort) {
           // 중복 권한 확인
-          if (checkForDuplicateAuthority(process)) {
+          if (checkForDuplicateAccount(process)) {
             openToastifyAlert({
               type: 'error',
               text: '해당 단계에서 이미 사용자로 추가하신 경우, 사용자로만 추가가 가능합니다',
@@ -389,8 +389,11 @@ export function ProcessAddModal({
           }
 
           if (
-            selectedworkerAuthorityList.length > 1 &&
-            process.stepName === 'EDITING'
+            stepName === 'EDITING' &&
+            (process.workers.length > 1 ||
+              (process.workers.length === 0 &&
+                selectedworkerAuthorityList.length > 1) ||
+              selectedworkerAuthorityList.length > 1)
           ) {
             openToastifyAlert({
               type: 'error',
@@ -405,12 +408,7 @@ export function ProcessAddModal({
               workerSort: 0, // 새로 추가되는 worker의 정렬 값 설정
               createdBy: '', // 필요하면 생성자 값 설정
               createdAt: '', // 현재 시간 설정
-              account: {
-                idx: 0,
-                id: '',
-                name: '',
-                authorityName: '',
-              },
+              account: null,
               authority: {
                 idx: worker.idx, // authority는 비워두거나 기본값 설정
                 name: worker.name,

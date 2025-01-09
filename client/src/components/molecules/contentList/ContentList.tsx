@@ -27,7 +27,12 @@ import {
   PDFModal,
   Tooltip,
 } from '../..';
-import { quizService, resourceServiceInstance } from '../../../api/axios';
+import {
+  quizService,
+  resourceServiceInstance,
+  userInstance,
+} from '../../../api/axios';
+import { InspectionModal } from '../../../components/contents/createcontent/modal';
 import { ProcessListModal } from '../../../components/managements/process';
 import { useModal } from '../../../hooks';
 import { quizListAtom } from '../../../store/quizListAtom';
@@ -51,6 +56,7 @@ type ContentListProps = {
   ) => Promise<QueryObserverResult<any, Error>>;
   key?: number;
   selectedList: selectedListType[];
+  isBuildWorker: boolean;
 };
 
 export type selectedListProps = {
@@ -62,6 +68,7 @@ export type selectedListProps = {
 
 export function ContentList({
   list,
+  isBuildWorker,
   tabView,
   deleteBtn,
   ondeleteClick,
@@ -72,6 +79,8 @@ export function ContentList({
   selectedList,
 }: ContentListProps) {
   const { openModal } = useModal();
+  const { closeModal } = useModal();
+
   const [quizList, setQuizList] = useRecoilState(quizListAtom);
   const [page, setPage] = useRecoilState(pageAtom);
   const backgroundRef = useRef<HTMLDivElement>(null);
@@ -81,6 +90,8 @@ export function ContentList({
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [sortedList, setSortedList] = useState<QuizListType[]>([]);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
+  //프로세스 요청시 코멘트
+  const [comment, setComment] = useState<string>('');
   const textRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   //const [selectedList, setSelectedList] = useState<selectedListProps[]>([]);
@@ -104,51 +115,6 @@ export function ContentList({
     },
   ];
   const [usedToggle, setUsedToggle] = useState<string>('비활성화');
-
-  //그룹 화면설정 정보 불러오기 api
-  // const getMenu = async () => {
-  //   const res = await resourceServiceInstance.get(`/v1/menu/4`);
-  //   //console.log(res);
-  //   return res;
-  // };
-  // const {
-  //   data: menuData,
-  //   isLoading: isMenuLoading,
-  //   refetch: menuRefetch,
-  // } = useQuery({
-  //   queryKey: ['get-menu'],
-  //   queryFn: getMenu,
-  //   meta: {
-  //     errorMessage: 'get-menu 에러 메세지',
-  //   },
-  // });
-
-  // useEffect(() => {
-  //   menuRefetch();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (menuData) {
-  //     const filterList = menuData.data.data.detailList.filter(
-  //       (el: any) => el.isCheck === true,
-  //     );
-  //     const nameListArray = filterList[0]?.nameList?.split(',') || [];
-  //     const viewListArray = (filterList[0]?.viewList?.split(',') || []).map(
-  //       (item: string) => item === 'true',
-  //     );
-  //     const searchListArray = (filterList[0]?.searchList?.split(',') || []).map(
-  //       (item: string) => item === 'true',
-  //     );
-  //     const newArray = nameListArray.map((name: string, index: number) => ({
-  //       name,
-  //       idx: index,
-  //       view: viewListArray[index] || false,
-  //       search: searchListArray[index] || false,
-  //     }));
-  //     setSelectedList(newArray);
-  //   }
-  // }, [menuData]);
-  // console.log('selectedList -------------- ', selectedList);
 
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = () => {
@@ -307,8 +273,7 @@ export function ContentList({
   const sortList = () => {
     const codesSet = new Set(checkList);
     const filteredList = questionList.filter((item) => codesSet.has(item.idx));
-    console.log('sortedList------------', filteredList);
-
+    //console.log('sortedList------------', filteredList);
     setSortedList(filteredList);
   };
 
@@ -332,6 +297,102 @@ export function ContentList({
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
   };
+
+  const deleteProcess = async (idxList: string) => {
+    const res = await quizService.delete(`/v1/process/${idxList}`);
+    return res;
+  };
+
+  const {
+    data: deleteProcessData,
+    mutate: mutateDeleteProcess,
+    //isPending: isPendingDelete,
+    //isSuccess: deleteQuizIsSuccess,
+  } = useMutation({
+    mutationFn: deleteProcess,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: context.response.data.message,
+      });
+      if (context.response.data?.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response: { data: { message: string } }) => {
+      openToastifyAlert({
+        type: 'success',
+        text: response.data.message,
+      });
+
+      // 리스트 다시 불러오기
+      quizDataRefetch && quizDataRefetch();
+    },
+  });
+
+  const submitDelete = () => {
+    // 선택된 리스트데이터 string값으로 변경
+    const idxList = checkList.join(',');
+    mutateDeleteProcess(idxList);
+  };
+
+  // 프로세스 생성 요청 api
+  const putProcessRequest = async () => {
+    const data = {
+      comment: comment,
+    };
+    return await userInstance.put(`/v1/process/create/req`, data);
+  };
+
+  const { mutate: putProcessData } = useMutation({
+    mutationFn: putProcessRequest,
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
+      openToastifyAlert({
+        type: 'error',
+        text: '잠시후 다시 시도해주세요',
+      });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
+    },
+    onSuccess: (response) => {
+      openToastifyAlert({
+        type: 'success',
+        text: '프로세스 요청 완료했습니다',
+      });
+      closeModal();
+    },
+  });
+
+  // const putProcessRequest = async (data: { comment: string }) => {
+  //   return await userInstance.patch(`/v1/process/create/req`, data);
+  // };
+  // const { data: processRequestData, mutate: mutateProcessRequest } =
+  //   useMutation({
+  //     mutationFn: putProcessRequest,
+  //     onError: (context: {
+  //       response: { data: { message: string; code: string } };
+  //     }) => {
+  //       openToastifyAlert({
+  //         type: 'error',
+  //         text: context.response.data.message,
+  //       });
+  //       if (context.response.data.code == 'GE-002') {
+  //         postRefreshToken();
+  //       }
+  //     },
+  //     onSuccess: (response: { data: { message: string } }) => {
+  //       // console.log('quizFavorite', response);
+  //       openToastifyAlert({
+  //         type: 'success',
+  //         text: response.data.message,
+  //       });
+  //     },
+  //   });
 
   // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
@@ -453,30 +514,34 @@ export function ContentList({
               <span className="title_top">전체선택</span>
             </CheckBoxWrapper>
             <ActionButtonWrapper>
-              <Button
-                width="100px"
-                height="35px"
-                fontSize="14px"
-                $borderRadius="7px"
-                $filled
-                onClick={() => openProcessListModal()}
-                disabled={isEnabled}
-                cursor
-              >
-                검수 요청
-              </Button>
-              <Button
-                width="130px"
-                height="35px"
-                fontSize="14px"
-                $borderRadius="7px"
-                onClick={() => {}}
-                disabled={isEnabled}
-                cursor
-              >
-                검수 요청 취소
-              </Button>
-              {/* {myAuthority?.QE?.isEdit ? (
+              <>
+                <Button
+                  width="100px"
+                  height="35px"
+                  fontSize="14px"
+                  $borderRadius="7px"
+                  $filled
+                  onClick={() => openProcessListModal()}
+                  disabled={isEnabled}
+                  cursor
+                >
+                  검수 요청
+                </Button>
+                <Button
+                  width="130px"
+                  height="35px"
+                  fontSize="14px"
+                  $borderRadius="7px"
+                  onClick={() => {
+                    submitDelete();
+                  }}
+                  disabled={isEnabled}
+                  cursor
+                >
+                  검수 요청 취소
+                </Button>
+              </>
+              {/* {isBuildWorker ? (
                 <>
                   <Button
                     width="100px"
@@ -495,7 +560,9 @@ export function ContentList({
                     height="35px"
                     fontSize="14px"
                     $borderRadius="7px"
-                    onClick={() => {}}
+                    onClick={() => {
+                      submitDelete();
+                    }}
                     disabled={isEnabled}
                     cursor
                   >
@@ -513,7 +580,18 @@ export function ContentList({
                     height="35px"
                     fontSize="14px"
                     $borderRadius="7px"
-                    onClick={() => {}}
+                    onClick={() => {
+                      openModal({
+                        title: '',
+                        content: (
+                          <InspectionModal
+                            type={'프로세스'}
+                            onClick={putProcessData}
+                            setComment={setComment}
+                          />
+                        ),
+                      });
+                    }}
                     cursor
                   >
                     프로세스 요청
@@ -770,7 +848,11 @@ export function ContentList({
                 <i className="line"></i>
                 <span className="width_10 item_wrapper">
                   <strong className="title">상태</strong>
-                  <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'COMPLETE' ? '검수완료' : item.process?.state === 'REVIEW' ? `검수중(${item.process?.step}/${item.process?.totalStep})` : ''}`}</span>
+                  {item.process?.step === 1 ? (
+                    <span className="tag"></span>
+                  ) : (
+                    <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'COMPLETE' ? '검수완료' : item.process?.state === 'REVIEW' ? `검수중(${item.process?.step}/${item.process?.totalStep})` : ''}`}</span>
+                  )}
                 </span>
                 {/* <span
                   className="width_80px tooltip_wrapper item_wrapper"
