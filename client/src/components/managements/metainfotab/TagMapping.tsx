@@ -182,7 +182,8 @@ export function TagMapping() {
             '아이템 선택후 태그값 불러오기',
             res.data.data.categoryClassList,
           );
-          setTagList(res.data.data.categoryClassList);
+          if (res.data.data.categoryClassList)
+            setTagList(res.data.data.categoryClassList);
           // return res.data.data.categoryClassList;
         } catch (error) {
           console.error('Error fetching category:', error);
@@ -190,7 +191,8 @@ export function TagMapping() {
         }
       };
 
-      getCategory();
+      if (idx) getCategory();
+      if (!idx) setTagList([]);
 
       // 타이틀 값 변경
       // tagIndex
