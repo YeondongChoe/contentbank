@@ -15,9 +15,6 @@ import { useDnD } from '../../molecules/dragAndDrop';
 import { MappingList } from './MappingList';
 import { SetCategoryList } from './SetCategoryList';
 
-// Sample tags to search
-const sampleTags = ['교과', '수학', '과학', '영어', '역사', '물리', '화학'];
-
 interface CategoryItem {
   idx: number;
   classIdx: number;
@@ -46,7 +43,11 @@ export function TagMapping() {
   const [tagList, setTagList] = useState<
     { idx: number; name: string; code: string }[]
   >([]);
+  const [tagTitle, setTagTitle] = useState<string[]>([]);
+  const [tagIndex, setTagIndex] = useState<number>(0);
+
   const [mappingList, setMappingList] = useState<CategoryItem[]>([]);
+  const [tagAddCheckList, setTagAddCheckList] = useState<UpdateItem[]>([]);
   const [selectedCheckBox, setSelectedCheckBox] = useState<number[]>([]);
 
   const [selectedItem, setSelectedItem] = useState<{
@@ -67,7 +68,9 @@ export function TagMapping() {
   const [isInit, setIsInit] = useState<boolean>(false);
   // 검색
   const [searchValue, setSearchValue] = useState<string>('');
-  const [filteredTags, setFilteredTags] = useState<string[]>(sampleTags);
+  const [filteredTags, setFilteredTags] = useState<
+    { idx: number; name: string; code: string }[]
+  >([]);
   const [tagCheckList, setTagCheckList] = useState<string[]>([]);
 
   // 카테고리
@@ -105,6 +108,8 @@ export function TagMapping() {
       const types = typeList ? typeList.split(',') : [];
       const counts = countList ? countList.split(',') : [];
 
+      setTagTitle(names);
+
       const newCategoryList = names.map(
         (name: any, index: string | number) => ({
           name,
@@ -118,7 +123,15 @@ export function TagMapping() {
       setGgroupName(name);
     }
   }, [categoryGroupData]);
-  useEffect(() => {}, [categoryList, groupIdx, groupName]);
+  useEffect(() => {
+    console.log(
+      'categoryList, groupIdx, groupName,tagTitle',
+      categoryList,
+      groupIdx,
+      groupName,
+      tagTitle,
+    );
+  }, [categoryList, groupIdx, groupName, tagTitle]);
 
   const [activeMappingItem, setActiveMappingItem] = useState<{
     idx: number;
@@ -146,7 +159,7 @@ export function TagMapping() {
     console.log('선택된 카테고리 아이템 click item ----- ', item);
   };
 
-  // 태그 선택
+  // 태그 선택시
   useEffect(() => {
     if (activeMappingItem && categoryList) {
       console.log(
@@ -178,13 +191,19 @@ export function TagMapping() {
       };
 
       getCategory();
+
+      // 타이틀 값 변경
+      // tagIndex
+      setTagIndex(index);
+      // tagTitle
     }
   }, [activeMappingItem]);
 
   useEffect(() => {
     //tagList
     console.log('tagList', tagList);
-  }, [tagList]);
+    console.log('tagIndex', tagIndex);
+  }, [tagList, tagIndex]);
 
   const getCategoryMap = async () => {
     if (queryValue) {
@@ -260,23 +279,24 @@ export function TagMapping() {
                 const res = await classificationInstance.get(
                   `/v1/category/class/${idx}`,
                 );
-
                 const firstList = res.data.data.categoryClassList;
-                // console.log('firstList -------', firstList);
-                const transformedList = firstList.map(
-                  (item: any, index: number) => ({
-                    type: 'CREATE',
-                    idx: null, // 생성된 항목은 idx가 null
-                    classIdx: item.idx, // 기존 idx를 classIdx로 매핑
-                    parentClassIdx: 0, // 최초 생성시
-                    isUse: true, // 기본값으로 true 설정
-                    sort: index + 1, // 현재 index + 1로 설정
-                  }),
-                );
-                console.log('transformedList -------', transformedList);
+                console.log('firstList -------', firstList);
+                setTagList(firstList);
+
+                // const transformedList = firstList.map(
+                //   (item: any, index: number) => ({
+                //     type: 'CREATE',
+                //     idx: null, // 생성된 항목은 idx가 null
+                //     classIdx: item.idx, // 기존 idx를 classIdx로 매핑
+                //     parentClassIdx: 0, // 최초 생성시
+                //     isUse: true, // 기본값으로 true 설정
+                //     sort: index + 1, // 현재 index + 1로 설정
+                //   }),
+                // );
+                // console.log('transformedList -------', transformedList);
 
                 // 맵 리스트 생성
-                updateMapListData(transformedList);
+                // updateMapListData(transformedList);
               } catch (error: any) {
                 if (error.data?.code == 'GE-002') postRefreshToken();
               }
@@ -383,45 +403,90 @@ export function TagMapping() {
     }
   };
 
-  const addTagsToNextDepth = () => {
-    if (!activeMappingItem) return;
-    console.log('선택된 요소 activeMappingItem ', activeMappingItem);
+  useEffect(() => {
+    if (tagCheckList.length) {
+      console.log('tagCheckList ----------', tagCheckList);
+      const uniqueMerge = (array1: string[], array2: string[]): string[] => {
+        const uniqueFromArray1 = array1.filter(
+          (item) => !array2.includes(item),
+        );
+        const uniqueFromArray2 = array2.filter(
+          (item) => !array1.includes(item),
+        );
+        return [...uniqueFromArray1, ...uniqueFromArray2];
+      };
 
-    //TODO : 자식요소가아닌 선택된 태그의 다음으로
-    // const addTags = (item: CategoryItem, depth: number) => {
-    //   // const isActiveItem = document.querySelector(`.on_map_item`);
-    //   console.log('순회되는 요소 item ', item);
+      const mergedList = uniqueMerge(tagCheckList, checkList);
+      console.log('최종적으로 선택된 태그들의 idx ----------', mergedList);
+      setCheckList(mergedList);
+    }
+  }, [tagCheckList]);
 
-    //   if (item.idx === activeMappingItem.idx) {
-    //     // children이 undefined일 수 있으므로 빈 배열로 초기화
-
-    //     // 코드네임 찾기 / 카테고리 순서에서 다음 순번 이름
-
-    //     checkList.forEach((tagName) => {
-    //       (item.children as CategoryItem[]).push({
-    //         idx: Math.random(), // 태그에 대한 고유 idx 값을 생성
-    //         name: tagName,
-    //         code: selectedNextItem?.name as string, // 필요한 코드값 설정
-    //         depth: item.depth + 1,
-    //         isUse: false,
-    //       });
-    //     });
-    //   }
-    // };
-
-    const findAndProcessItem = (list: CategoryItem[], targetIdx: number) => {
-      list.forEach((item) => {
-        // item의 idx가 targetIdx와 같으면 처리
-        // if (item.idx === targetIdx) {
-        //   addTags(item, item.depth);
-        // }
-      });
+  useEffect(() => {
+    console.log('checkList----------', checkList);
+    // 체크리스트에 해당하는 idx 값을 가진 태그값을 축출
+    const filterTagListByCheckList = (
+      tagList: { idx: number; name: string; code: string }[],
+      checkList: string[],
+    ) => {
+      return tagList.filter((tag) => checkList.includes(String(tag.idx)));
     };
+    const filteredTags = filterTagListByCheckList(tagList, checkList);
+    // 맵리스트에 등록 형태로 변경 후 등록
+    console.log('Filtered Tags:', filteredTags);
+    // 부모 값 구하기
+    const parentClassIdx = activeMappingItem
+      ? (activeMappingItem.classIdx as number)
+      : 0; // 첫 번째 맵 아이템일 경우
+    console.log('parentClassIdx:', parentClassIdx);
 
-    const updatedMappingList = [...mappingList];
-    findAndProcessItem(updatedMappingList, activeMappingItem.idx);
+    // 솔팅 순서 구하기
+    const currentIndex = mappingList.findIndex(
+      (item) => item === activeMappingItem,
+    );
+    let startingSort;
+    if (currentIndex !== -1 && activeMappingItem) {
+      // 다음으로 오는 배열의 아이템 중 같은 parentClassIdx를 가진 아이템 필터링
+      const filteredItems = mappingList
+        .slice(currentIndex + 1)
+        .filter(
+          (item) => item.parentClassIdx === activeMappingItem.parentClassIdx,
+        );
 
-    setMappingList(updatedMappingList);
+      startingSort = filteredItems.length + 1; // 배열 길이 + 1
+    } else {
+      startingSort = 0; // 기본값
+    }
+    console.log('startingSort:', startingSort);
+
+    const transformToServerFormat = (
+      filteredTags: { idx: number; name: string; code: string }[],
+      parentClassIdx: number | null, // 부모 클래스 ID
+      startingSort: number, // 초기 sort 값
+    ): UpdateItem[] => {
+      return filteredTags.map((tag, index) => ({
+        type: 'CREATE', // 고정값
+        idx: null, // 새로 생성하는 항목이므로 null
+        classIdx: tag.idx, // 기존 idx를 classIdx로 사용
+        parentClassIdx: parentClassIdx, // 부모 클래스 ID
+        isUse: true, // 기본값 true
+        sort: startingSort + index, // 초기 sort 값부터 순서대로 증가
+      }));
+    };
+    const serverData = transformToServerFormat(
+      filteredTags,
+      parentClassIdx,
+      startingSort,
+    );
+    console.log('serverData:', serverData);
+    setTagAddCheckList(serverData);
+  }, [checkList]);
+
+  const addTagsToNextDepth = () => {
+    console.log('선택된 요소 activeMappingItem ', activeMappingItem);
+    console.log('최종적으로 추가될 tagAddCheckListt ', tagAddCheckList);
+
+    updateMapListData(tagAddCheckList);
   };
 
   useEffect(() => {
@@ -453,6 +518,7 @@ export function TagMapping() {
       // });
       // 성공후 업데이트
       mappingDataRefetch();
+      setCheckList([]);
     },
     onError: (error) => {
       openToastifyAlert({
@@ -474,7 +540,7 @@ export function TagMapping() {
   };
 
   // const handleAddTag = () => {
-  //   if (searchValue && !sampleTags.includes(searchValue)) {
+  //   if (searchValue && !tagList.includes(searchValue)) {
   //     // Add the new tag logic here
   //     alert(`"${searchValue}" 태그가 추가되었습니다!`);
   //     setSearchValue('');
@@ -492,9 +558,9 @@ export function TagMapping() {
     setSearchValue(value);
 
     if (value) {
-      setFilteredTags(sampleTags.filter((tag) => tag.includes(value)));
+      setFilteredTags(tagList.filter((tag) => tag.name.includes(value)));
     } else {
-      setFilteredTags(sampleTags);
+      setFilteredTags(tagList);
     }
   };
 
@@ -532,9 +598,15 @@ export function TagMapping() {
 
   const goToInit = () => {
     setIsInit(true);
+    // 초기화
+    setCheckList([]);
+    setActiveMappingItem(null);
   };
   const addTags = () => {
     setIsInit(false);
+    // 초기화
+    setCheckList([]);
+    setActiveMappingItem(null);
   };
   const deleteTag = () => {
     // 태그 삭제
@@ -561,17 +633,16 @@ export function TagMapping() {
     ]);
   };
 
-  useEffect(() => {
-    console.log('checkList----------', checkList);
-  }, [checkList]);
   useEffect(() => {}, [searchValue, isInit]);
+  useEffect(() => {}, [tagAddCheckList]);
+
   return (
     <Container>
       {isInit ? (
         <ListWrapper>
           <strong className="title">태그 선택</strong>
           <span className="sub_title">매핑할 태그를 선택해주세요.</span>
-          <span className="border_tag">{`${activeMappingItem && activeMappingItem.code}`}</span>
+          <span className="border_tag">{`${tagTitle[tagIndex]}`}</span>
           <DropdownWrapper>
             <Search
               placeholder="태그를 검색해주세요."
@@ -585,23 +656,24 @@ export function TagMapping() {
               filteredTags.length > 0 ? (
                 <Dropdown>
                   <DropdownTagList>
-                    {/* TODO: 필터링될 전체 리스트값 가져오기 */}
                     {filteredTags.map((tag, index) => (
                       <ListItem
                         key={index}
                         $padding={'5px'}
                         $margin={'0'}
-                        isChecked={tagCheckList.includes(tag)}
-                        onClick={(e) => handleTagButtonCheck(e, tag)}
+                        isChecked={tagCheckList.includes(tag.name)}
+                        onClick={(e) =>
+                          handleTagButtonCheck(e, tag.idx.toString())
+                        }
                       >
                         <CheckBoxI
-                          id={tag}
+                          id={tag.idx.toString()}
                           value={tag}
                           $margin={`0 5px 0 0`}
-                          checked={tagCheckList.includes(tag)}
+                          checked={tagCheckList.includes(tag.idx.toString())}
                           readOnly
                         />
-                        <span>{tag}</span>
+                        <span>{tag.name}</span>
                       </ListItem>
                     ))}
                   </DropdownTagList>
@@ -630,13 +702,13 @@ export function TagMapping() {
             {tagList.map((el, idx) => (
               <Tags
                 key={`${el} ${idx}`}
-                onClick={(e) => handleButtonCheck(e, el.name)}
+                onClick={(e) => handleButtonCheck(e, el.idx.toString())}
               >
                 <span className="icon_wwrap">
                   <CheckBoxI
-                    id={el.name}
-                    value={el.idx}
-                    checked={checkList.includes(el.name)}
+                    id={el.idx.toString()}
+                    value={el.idx.toString()}
+                    checked={checkList.includes(el.idx.toString())}
                     readOnly
                   />
                 </span>
@@ -788,7 +860,6 @@ const Container = styled.div`
     margin-bottom: 10px;
     font-size: 13px;
     align-self: flex-start;
-    width: auto;
   }
 `;
 

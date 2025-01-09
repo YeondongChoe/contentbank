@@ -97,7 +97,8 @@ export function MappingList({
 
     initializeSwitchState(mappingList);
     setSelectedSwitchState(initialSwitchState);
-  }, []);
+  }, [mappingList]);
+  // console.log('selectedSwitchState', selectedSwitchState);
 
   // 활성화 토글 api
   const patchTagActivationState = (data: {
