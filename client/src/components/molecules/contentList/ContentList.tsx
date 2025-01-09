@@ -514,34 +514,7 @@ export function ContentList({
               <span className="title_top">전체선택</span>
             </CheckBoxWrapper>
             <ActionButtonWrapper>
-              <>
-                <Button
-                  width="100px"
-                  height="35px"
-                  fontSize="14px"
-                  $borderRadius="7px"
-                  $filled
-                  onClick={() => openProcessListModal()}
-                  disabled={isEnabled}
-                  cursor
-                >
-                  검수 요청
-                </Button>
-                <Button
-                  width="130px"
-                  height="35px"
-                  fontSize="14px"
-                  $borderRadius="7px"
-                  onClick={() => {
-                    submitDelete();
-                  }}
-                  disabled={isEnabled}
-                  cursor
-                >
-                  검수 요청 취소
-                </Button>
-              </>
-              {/* {isBuildWorker ? (
+              {isBuildWorker ? (
                 <>
                   <Button
                     width="100px"
@@ -597,7 +570,7 @@ export function ContentList({
                     프로세스 요청
                   </Button>
                 </>
-              )} */}
+              )}
               <Button
                 width="100px"
                 height="35px"
