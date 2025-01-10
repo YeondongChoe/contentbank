@@ -560,19 +560,44 @@ export function TagMapping() {
   });
 
   // 맵리스트 이동 추가 삭제 변경 내역있을시
-  useEffect(() => {}, [updateItems]);
-  const updateRevertData = () => {
-    // 되돌리기 용으로 변경내역 리스트업
-    console.log('맵리스트 이동 추가 삭제 변경 내역 ---', updateItems);
-    const removeEmptyArrays = (nestedArray: UpdateItem[][]): UpdateItem[][] => {
-      return nestedArray.filter((innerArray) => innerArray.length > 0);
-    };
-
-    // 이전 단계로 되돌리기 (10회까지 기억)
+  const removeEmptyArrays = (nestedArray: UpdateItem[][]): UpdateItem[][] => {
+    return nestedArray.filter((innerArray) => innerArray.length > 0);
+  };
+  useEffect(() => {
+    // 빈 배열 일시 제거
     if (updateItems) {
-      const lastList = removeEmptyArrays(updateItems); // 수정된 내역 리스트 아이템 10회까지 기억
-      console.log('lastList 변경 내역 ---', lastList);
+      // 빈 배열 제거 로직
+      const cleanedItems = removeEmptyArrays(updateItems);
+      console.log('빈배열을 없앤 리스트 -----', cleanedItems);
+      // updateItems가 변경된 경우에만 업데이트 실행
+      if (JSON.stringify(cleanedItems) !== JSON.stringify(updateItems)) {
+        setUpdateItems(cleanedItems);
+      }
     }
+  }, [updateItems]);
+  const updateRevertData = () => {
+    // 이전 단계로 되돌리기
+    console.log('맵리스트 이동 추가 삭제 변경 내역 ---', updateItems);
+    if (updateItems && updateItems.length > 0) {
+      const lastArr = updateItems[updateItems.length - 1];
+      if (lastArr) {
+        console.log('마지막 배열 아이템 ---', lastArr);
+        // 서버로 업데이트 실행
+        updateMapListData(lastArr);
+        // 로컬의 변경내역 리스트도 동기화
+        const updateList = updateItems.slice(0, -1);
+        console.log('사용된 되돌리기 아이템 제거후 리스트 ---', updateList);
+        setUpdateItems(updateList);
+      }
+    } else {
+      // 변경 내역이 없는 경우
+      openToastifyAlert({
+        type: 'error',
+        text: '변경 내역이 없습니다',
+      });
+    }
+    //// 수정된 내역 리스트 아이템 10회까지 기억
+    // if(isPending) updateMapListData()
   };
 
   // const handleAddTag = () => {
