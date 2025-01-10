@@ -27,7 +27,6 @@ export function SetCategoryList({
   setCategoryList,
   groupIdx,
   groupName,
-  // isAlertOpen,
 }: {
   setSelectedList: React.Dispatch<React.SetStateAction<any[]>>;
   setSelectedItem?: React.Dispatch<React.SetStateAction<any>>;
@@ -50,7 +49,6 @@ export function SetCategoryList({
   >;
   groupIdx?: number;
   groupName?: string;
-  // isAlertOpen?: boolean;
 }) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [groupData, setGroupData] = useState<{
@@ -73,6 +71,7 @@ export function SetCategoryList({
   }) => {
     const res = await classificationInstance.put(`/v1/category/group`, data);
     console.log('putCategoryGroup', res);
+    mappingDataRefetch();
     return res;
   };
 
@@ -99,7 +98,9 @@ export function SetCategoryList({
 
   useEffect(() => {
     // 맵핑 리스트 리프레쉬
-    if (categoryGroup) mappingDataRefetch();
+    if (categoryGroup) {
+      mappingDataRefetch();
+    }
   }, [categoryGroup]);
 
   useEffect(() => {

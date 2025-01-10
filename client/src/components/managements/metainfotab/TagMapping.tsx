@@ -255,87 +255,87 @@ export function TagMapping() {
     },
   });
 
+  const fetchInitialCategory = async () => {
+    // 매핑데이터 있을시 데이터 솔팅 후 보여주기
+    if (mappingData) {
+      if (mappingData.length > 0) {
+        // 요소의 parentClassIdx 가 요소의classIdx 와 동일한경우 classIdx의 하단으로 솔팅
+        // 1. parentClassIdx 기준으로 객체를 그룹화
+        const mappingMap = new Map<number, any[]>();
+        mappingData.forEach((item: { parentClassIdx: number }) => {
+          if (!mappingMap.has(item.parentClassIdx)) {
+            mappingMap.set(item.parentClassIdx, []);
+          }
+          mappingMap.get(item.parentClassIdx)?.push(item);
+        });
+
+        console.log('mappingMap ------- ', mappingMap);
+
+        // 2. 정렬 로직
+        const sortedData: any[] = [];
+        const visited = new Set(); // 방문한 객체 추적
+
+        const addToSortedList = (item: any) => {
+          if (visited.has(item.idx)) return; // 이미 처리된 항목은 무시
+          visited.add(item.idx);
+          sortedData.push(item);
+
+          // 현재 객체를 부모로 참조하는 객체를 재귀적으로 추가
+          const children = mappingMap.get(item.classIdx);
+          if (children) {
+            children.forEach(addToSortedList);
+          }
+        };
+
+        // 3. parentClassIdx가 없는 루트 객체부터 시작
+        mappingData
+          .filter(
+            (item: { parentClassIdx: null }) => item.parentClassIdx === null,
+          )
+          .forEach(addToSortedList);
+
+        setMappingList(sortedData);
+      } else if (mappingData.length == 0) {
+        // 매핑데이터가 아직 없을시
+        const setFirstCategory = async () => {
+          if (categoryList[0]) {
+            const idx = categoryList[0].type;
+            console.log('첫번째 셋팅 인덱스 ---', idx);
+            try {
+              const res = await classificationInstance.get(
+                `/v1/category/class/${idx}`,
+              );
+              const firstList = res.data.data.categoryClassList;
+              console.log('firstList -------', firstList);
+              setTagList(firstList);
+
+              setMappingList(mappingData);
+              // const transformedList = firstList.map(
+              //   (item: any, index: number) => ({
+              //     type: 'CREATE',
+              //     idx: null, // 생성된 항목은 idx가 null
+              //     classIdx: item.idx, // 기존 idx를 classIdx로 매핑
+              //     parentClassIdx: 0, // 최초 생성시
+              //     isUse: true, // 기본값으로 true 설정
+              //     sort: index + 1, // 현재 index + 1로 설정
+              //   }),
+              // );
+              // console.log('transformedList -------', transformedList);
+
+              // 맵 리스트 생성
+              // updateMapListData(transformedList);
+            } catch (error: any) {
+              if (error.data?.code == 'GE-002') postRefreshToken();
+            }
+          }
+        };
+
+        setFirstCategory();
+      }
+    }
+  };
   // 최초 진입시 매핑 리스트
   useEffect(() => {
-    const fetchInitialCategory = async () => {
-      // 매핑데이터 있을시 데이터 솔팅 후 보여주기
-      if (mappingData) {
-        if (mappingData.length > 0) {
-          // 요소의 parentClassIdx 가 요소의classIdx 와 동일한경우 classIdx의 하단으로 솔팅
-          // 1. parentClassIdx 기준으로 객체를 그룹화
-          const mappingMap = new Map<number, any[]>();
-          mappingData.forEach((item: { parentClassIdx: number }) => {
-            if (!mappingMap.has(item.parentClassIdx)) {
-              mappingMap.set(item.parentClassIdx, []);
-            }
-            mappingMap.get(item.parentClassIdx)?.push(item);
-          });
-
-          console.log('mappingMap ------- ', mappingMap);
-
-          // 2. 정렬 로직
-          const sortedData: any[] = [];
-          const visited = new Set(); // 방문한 객체 추적
-
-          const addToSortedList = (item: any) => {
-            if (visited.has(item.idx)) return; // 이미 처리된 항목은 무시
-            visited.add(item.idx);
-            sortedData.push(item);
-
-            // 현재 객체를 부모로 참조하는 객체를 재귀적으로 추가
-            const children = mappingMap.get(item.classIdx);
-            if (children) {
-              children.forEach(addToSortedList);
-            }
-          };
-
-          // 3. parentClassIdx가 없는 루트 객체부터 시작
-          mappingData
-            .filter(
-              (item: { parentClassIdx: null }) => item.parentClassIdx === null,
-            )
-            .forEach(addToSortedList);
-
-          setMappingList(sortedData);
-        } else if (mappingData.length == 0) {
-          // 매핑데이터가 아직 없을시
-          const setFirstCategory = async () => {
-            if (categoryList[0]) {
-              const idx = categoryList[0].type;
-              console.log('첫번째 셋팅 인덱스 ---', idx);
-              try {
-                const res = await classificationInstance.get(
-                  `/v1/category/class/${idx}`,
-                );
-                const firstList = res.data.data.categoryClassList;
-                console.log('firstList -------', firstList);
-                setTagList(firstList);
-
-                // const transformedList = firstList.map(
-                //   (item: any, index: number) => ({
-                //     type: 'CREATE',
-                //     idx: null, // 생성된 항목은 idx가 null
-                //     classIdx: item.idx, // 기존 idx를 classIdx로 매핑
-                //     parentClassIdx: 0, // 최초 생성시
-                //     isUse: true, // 기본값으로 true 설정
-                //     sort: index + 1, // 현재 index + 1로 설정
-                //   }),
-                // );
-                // console.log('transformedList -------', transformedList);
-
-                // 맵 리스트 생성
-                // updateMapListData(transformedList);
-              } catch (error: any) {
-                if (error.data?.code == 'GE-002') postRefreshToken();
-              }
-            }
-          };
-
-          setFirstCategory();
-        }
-      }
-    };
-
     fetchInitialCategory();
   }, [mappingData, selectedList]);
 
