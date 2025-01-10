@@ -40,6 +40,7 @@ export function TagMapping() {
   const queryValue = query.get('state');
 
   const [showMapHandleBtn, setShowMapHandleBtn] = useState(false);
+
   const [tagList, setTagList] = useState<
     { idx: number; name: string; code: string }[]
   >([]);

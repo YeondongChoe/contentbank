@@ -13,6 +13,7 @@ import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { classificationInstance } from '../../../api/axios';
+import { Alert } from '../../../components/molecules';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Button, CheckBoxI, Icon, openToastifyAlert } from '../../atom';
 import { COLOR } from '../../constants';
@@ -26,6 +27,7 @@ export function SetCategoryList({
   setCategoryList,
   groupIdx,
   groupName,
+  // isAlertOpen,
 }: {
   setSelectedList: React.Dispatch<React.SetStateAction<any[]>>;
   setSelectedItem?: React.Dispatch<React.SetStateAction<any>>;
@@ -48,7 +50,9 @@ export function SetCategoryList({
   >;
   groupIdx?: number;
   groupName?: string;
+  // isAlertOpen?: boolean;
 }) {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [groupData, setGroupData] = useState<{
     groupIdx: number | undefined;
     name: string | undefined;
@@ -90,11 +94,13 @@ export function SetCategoryList({
         type: 'success',
         text: `${response.data.message ? response.data.message : '순서가 변경되었습니다'}`,
       });
-
-      // 맵핑 리스트 리프레쉬
-      mappingDataRefetch();
     },
   });
+
+  useEffect(() => {
+    // 맵핑 리스트 리프레쉬
+    if (categoryGroup) mappingDataRefetch();
+  }, [categoryGroup]);
 
   useEffect(() => {
     //최종 순서 데이터
@@ -112,6 +118,7 @@ export function SetCategoryList({
 
   const submitMapping = () => {
     if (groupData) mutateCategoryGroup(groupData);
+    setIsAlertOpen(false);
   };
 
   const moveCategoryTag = (dragIndex: number, hoverIndex: number) => {
@@ -132,40 +139,56 @@ export function SetCategoryList({
   };
 
   return (
-    <Container>
-      <ListWrapper>
-        <strong className="title">카테고리 순서</strong>
-        <span className="sub_title">매핑할 태그 간의 순서를 지정해주세요.</span>
-        <DndProvider backend={HTML5Backend}>
-          <TagsWrapper>
-            {categoryList.map((el, idx) => (
-              <DraggableInitItem
-                key={`${el.name} ${el.type}`}
-                item={el}
-                index={idx}
-                activeItem={activeItem}
-                handleTagClick={handleTagClick}
-                moveTag={(dragIndex, hoverIndex) =>
-                  moveCategoryTag(dragIndex, hoverIndex)
-                }
-              />
-            ))}
-          </TagsWrapper>
-        </DndProvider>
+    <>
+      <Container>
+        <ListWrapper>
+          <strong className="title">카테고리 순서</strong>
+          <span className="sub_title">
+            매핑할 태그 간의 순서를 지정해주세요.
+          </span>
+          <DndProvider backend={HTML5Backend}>
+            <TagsWrapper>
+              {categoryList.map((el, idx) => (
+                <DraggableInitItem
+                  key={`${el.name} ${el.type}`}
+                  item={el}
+                  index={idx}
+                  activeItem={activeItem}
+                  handleTagClick={handleTagClick}
+                  moveTag={(dragIndex, hoverIndex) =>
+                    moveCategoryTag(dragIndex, hoverIndex)
+                  }
+                />
+              ))}
+            </TagsWrapper>
+          </DndProvider>
 
-        <Button $filled onClick={() => submitMapping()} $margin="15px 0 0 0">
-          <span>지금 순서로 매핑하기</span>
-        </Button>
-        <p className="sub_info">
-          카테고리 순서 변경 시, 기존에 매핑된 정보가 초기화될 수 있습니다.
-        </p>
-        <p className="sub_info_s">
-          *기 등록된 문항 정보는 변경되지 않습니다. 변경된 매핑 정보로 이미
-          등록된 문항 분류를 수정하고 싶으시다면, 문항 일괄 편집 기능을
-          이용해주세요.
-        </p>
-      </ListWrapper>
-    </Container>
+          <Button
+            $filled
+            onClick={() => setIsAlertOpen(true)}
+            $margin="15px 0 0 0"
+          >
+            <span>지금 순서로 매핑하기</span>
+          </Button>
+          <p className="sub_info">
+            카테고리 순서 변경 시, 기존에 매핑된 정보가 초기화될 수 있습니다.
+          </p>
+          <p className="sub_info_s">
+            *기 등록된 문항 정보는 변경되지 않습니다. 변경된 매핑 정보로 이미
+            등록된 문항 분류를 수정하고 싶으시다면, 문항 일괄 편집 기능을
+            이용해주세요.
+          </p>
+        </ListWrapper>
+      </Container>
+      <Alert
+        isAlertOpen={isAlertOpen}
+        description="카테고리 순서 변경 시, 기존 매핑 정보가 초기화 될 수 있습니다. 그래도 순서를 변경하시겠습니까?"
+        action="확인"
+        isWarning={true}
+        onClose={() => setIsAlertOpen(false)}
+        onClick={submitMapping}
+      />
+    </>
   );
 }
 
