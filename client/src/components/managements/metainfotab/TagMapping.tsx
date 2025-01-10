@@ -27,11 +27,11 @@ interface CategoryItem {
 }
 interface UpdateItem {
   type: 'CREATE' | 'UPDATE' | 'DELETE'; // 가능한 작업 타입
-  idx: number | null; // 아이템의 고유 식별자, 생성 시에는 null
-  classIdx: number | null; // 클래스 식별자
-  parentClassIdx: number | null; // 부모 클래스 식별자
-  isUse: boolean; // 활성화 여부
-  sort: number;
+  idx: number | null;
+  classIdx: number | null;
+  parentClassIdx: number | null;
+  isUse: boolean;
+  sort: number | null;
 }
 
 export function TagMapping() {
@@ -64,6 +64,7 @@ export function TagMapping() {
   >([]);
 
   const [checkList, setCheckList] = useState<string[]>([]);
+  // 되돌리기 버튼 리스트
   const [updateItems, setUpdateItems] = useState<UpdateItem[][] | null>(null);
   const [isInit, setIsInit] = useState<boolean>(false);
   // 검색
@@ -195,9 +196,7 @@ export function TagMapping() {
       if (!idx) setTagList([]);
 
       // 타이틀 값 변경
-      // tagIndex
       setTagIndex(index);
-      // tagTitle
     }
   }, [activeMappingItem]);
 
@@ -482,13 +481,23 @@ export function TagMapping() {
     );
     console.log('serverData:', serverData);
     setTagAddCheckList(serverData);
+
+    if (checkList.length == 0) {
+      // 초기화
+      setShowMapHandleBtn(false);
+    }
   }, [checkList]);
 
   const addTagsToNextDepth = () => {
     console.log('선택된 요소 activeMappingItem ', activeMappingItem);
     console.log('최종적으로 추가될 tagAddCheckListt ', tagAddCheckList);
 
-    updateMapListData(tagAddCheckList);
+    if (activeMappingItem) updateMapListData(tagAddCheckList);
+    if (!activeMappingItem)
+      openToastifyAlert({
+        type: 'error',
+        text: '매핑 태그를 선택해 주세요',
+      });
   };
 
   useEffect(() => {
@@ -513,14 +522,34 @@ export function TagMapping() {
 
   const { mutate: updateMapListData, isPending } = useMutation({
     mutationFn: postMapListData,
-    onSuccess: () => {
+    onSuccess: (data) => {
       // openToastifyAlert({
       //   type: 'success',
       //   text: 'Data successfully updated!',
       // });
       // 성공후 업데이트
       mappingDataRefetch();
+
+      // 초기화
       setCheckList([]);
+      setActiveMappingItem(null);
+
+      // 생성일시 되돌리기 버튼 리스트에 생성된 아이템 삭제로 추가
+      console.log('데이터 응답 값', data.data.modifiedItemList);
+      // 'CREATE' 타입만 필터링
+      const filteredItems = data.data.modifiedItemList.filter(
+        (item: { type: string }) => item.type === 'CREATE',
+      );
+      const list: UpdateItem[] = filteredItems.map((item: { idx: number }) => ({
+        type: 'DELETE',
+        idx: item.idx,
+        classIdx: null,
+        parentClassIdx: null,
+        isUse: false,
+        sort: null,
+      }));
+      // 변경 내역 되돌리기 버튼에 저장
+      setUpdateItems([...(updateItems || []), list]);
     },
     onError: (error) => {
       openToastifyAlert({
@@ -531,14 +560,19 @@ export function TagMapping() {
   });
 
   // 맵리스트 이동 추가 삭제 변경 내역있을시
-  // useEffect(() => {
-  //   // 되돌리기 용으로 변경내역 리스트업
-  // 	console.log('',updateItems)
-  // }, [updateItems]);
+  useEffect(() => {}, [updateItems]);
+  const updateRevertData = () => {
+    // 되돌리기 용으로 변경내역 리스트업
+    console.log('맵리스트 이동 추가 삭제 변경 내역 ---', updateItems);
+    const removeEmptyArrays = (nestedArray: UpdateItem[][]): UpdateItem[][] => {
+      return nestedArray.filter((innerArray) => innerArray.length > 0);
+    };
 
-  const updateData = () => {
     // 이전 단계로 되돌리기 (10회까지 기억)
-    const lastList = []; // 수정된 내역 리스트 아이템 10회까지 기억
+    if (updateItems) {
+      const lastList = removeEmptyArrays(updateItems); // 수정된 내역 리스트 아이템 10회까지 기억
+      console.log('lastList 변경 내역 ---', lastList);
+    }
   };
 
   // const handleAddTag = () => {
@@ -608,6 +642,7 @@ export function TagMapping() {
     setIsInit(false);
     // 초기화
     setCheckList([]);
+
     setActiveMappingItem(null);
   };
   const deleteTag = () => {
@@ -619,7 +654,17 @@ export function TagMapping() {
       selectedCheckBox.includes(item.idx),
     );
 
-    console.log('필터링된 아이템 ---', filteredItems);
+    // console.log('필터링된 아이템 ---', filteredItems);
+    const list: UpdateItem[] = filteredItems.map((item) => ({
+      type: 'DELETE',
+      idx: item.idx,
+      classIdx: null,
+      parentClassIdx: null,
+      isUse: false,
+      sort: null,
+    }));
+    // console.log('서버로 전송될 삭제될 리스트 ---', list);
+    if (list) updateMapListData(list);
 
     // 변경내역 되돌리기 버튼에 저장
     setUpdateItems([
@@ -637,6 +682,7 @@ export function TagMapping() {
 
   useEffect(() => {}, [searchValue, isInit]);
   useEffect(() => {}, [tagAddCheckList]);
+  useEffect(() => {}, [showMapHandleBtn]);
 
   return (
     <Container>
@@ -644,7 +690,7 @@ export function TagMapping() {
         <ListWrapper>
           <strong className="title">태그 선택</strong>
           <span className="sub_title">매핑할 태그를 선택해주세요.</span>
-          <span className="border_tag">{`${tagTitle[tagIndex]}`}</span>
+          <span className="border_tag">{`${tagTitle[tagIndex - 1]}`}</span>
           <DropdownWrapper>
             <Search
               placeholder="태그를 검색해주세요."
@@ -745,7 +791,7 @@ export function TagMapping() {
       <ListItemWrapper>
         <strong className="title">매핑</strong>
         <ButtonWrapper>
-          <button className="revert_btn" onClick={() => updateData()}>
+          <button className="revert_btn" onClick={() => updateRevertData()}>
             <span>이전 단계로 되돌리기</span>
             <Icon width={`15px`} src={`/images/icon/reflash.svg`} />
           </button>
@@ -783,6 +829,7 @@ export function TagMapping() {
         {/* 매핑 리스트 */}
         <MappingList
           mappingList={mappingList}
+          tagTitle={tagTitle}
           activeItem={activeMappingItem}
           handleTagClick={handleTagMappingClick}
           moveTag={moveMappingTag}
@@ -793,54 +840,54 @@ export function TagMapping() {
     </Container>
   );
 }
-interface DraggableItemProps {
-  item: string;
-  index: number;
-  activeItem: string | null;
-  handleTagClick: (item: string) => void;
-  moveTag: (dragIndex: number, hoverIndex: number) => void;
-}
+// interface DraggableItemProps {
+//   item: string;
+//   index: number;
+//   activeItem: string | null;
+//   handleTagClick: (item: string) => void;
+//   moveTag: (dragIndex: number, hoverIndex: number) => void;
+// }
 
-const DraggableItem: React.FC<DraggableItemProps> = ({
-  item,
-  index,
-  activeItem,
-  handleTagClick,
-  moveTag,
-}) => {
-  const { ref, isDragging } = useDnD({
-    itemIndex: index,
-    onMove: moveTag,
-    dragSectionName: 'TAG_SECTION',
-  });
+// const DraggableItem: React.FC<DraggableItemProps> = ({
+//   item,
+//   index,
+//   activeItem,
+//   handleTagClick,
+//   moveTag,
+// }) => {
+//   const { ref, isDragging } = useDnD({
+//     itemIndex: index,
+//     onMove: moveTag,
+//     dragSectionName: 'TAG_SECTION',
+//   });
 
-  return (
-    <>
-      <Tags
-        ref={ref}
-        className={`gap ${activeItem === item ? 'on' : ''}`}
-        onClick={() => handleTagClick(item)}
-        style={{ opacity: isDragging ? 0.5 : 1 }}
-      >
-        <span>
-          <Icon width={`18px`} src={`/images/icon/icon-move.svg`} />
-        </span>
-        <span className="category_title">{item}</span>
-        <span className="category_sub_title">{'교육 과정'}</span>
-        <TagsButtonWrapper>
-          <span className="switch_title">활성화</span>
-          <Switch marginTop={5} $ison={true} onClick={() => {}}></Switch>
-          <CheckBoxI className={'side_bar'} id={''} value={undefined} />
-        </TagsButtonWrapper>
-      </Tags>
-      {activeItem === item && (
-        <InfoButtonWrapper>
-          + ‘태그 선택’에서 매핑할 태그를 선택해주세요.
-        </InfoButtonWrapper>
-      )}
-    </>
-  );
-};
+//   return (
+//     <>
+//       <Tags
+//         ref={ref}
+//         className={`gap ${activeItem === item ? 'on' : ''}`}
+//         onClick={() => handleTagClick(item)}
+//         style={{ opacity: isDragging ? 0.5 : 1 }}
+//       >
+//         <span>
+//           <Icon width={`18px`} src={`/images/icon/icon-move.svg`} />
+//         </span>
+//         <span className="category_title">{item}</span>
+//         <span className="category_sub_title">{'교육 과정'}</span>
+//         <TagsButtonWrapper>
+//           <span className="switch_title">활성화</span>
+//           <Switch marginTop={5} $ison={true} onClick={() => {}}></Switch>
+//           <CheckBoxI className={'side_bar'} id={''} value={undefined} />
+//         </TagsButtonWrapper>
+//       </Tags>
+//       {activeItem === item && (
+//         <InfoButtonWrapper>
+//           + ‘태그 선택’에서 매핑할 태그를 선택해주세요.
+//         </InfoButtonWrapper>
+//       )}
+//     </>
+//   );
+// };
 
 const Container = styled.div`
   width: 100%;

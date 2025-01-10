@@ -50,6 +50,7 @@ interface MappingListProps {
   ) => void;
   setShowMapHandleBtn: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedCheckBox: React.Dispatch<React.SetStateAction<number[]>>;
+  tagTitle: string[];
 }
 
 export function MappingList({
@@ -59,6 +60,7 @@ export function MappingList({
   moveTag,
   setShowMapHandleBtn,
   setSelectedCheckBox,
+  tagTitle,
 }: MappingListProps) {
   if (mappingList.length === 0) {
     return <ValueNone info="리스트가 없습니다" />;
@@ -167,6 +169,7 @@ export function MappingList({
           toggleSwitch={toggleSwitchState}
           isCheckBoxChecked={selectedCheckBoxState[el.idx] || false}
           toggleCheckBox={toggleCheckBoxState}
+          tagTitle={tagTitle}
         />
       </div>
     ));
@@ -221,6 +224,7 @@ interface DraggableMappingItemProps {
   toggleSwitch: (itemIdx: number, isUse: boolean) => void;
   isCheckBoxChecked: boolean;
   toggleCheckBox: (itemIdx: number) => void;
+  tagTitle: string[];
 }
 
 const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
@@ -236,6 +240,7 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
   toggleSwitch,
   isCheckBoxChecked,
   toggleCheckBox,
+  tagTitle,
 }) => {
   const { ref, isDragging } = useDnD({
     itemIndex: index,
@@ -259,7 +264,7 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
         </span>
         <span className="category_title">
           {item.name}
-          <span className="category_sub_title">{`${item.code}`}</span>
+          <span className="category_sub_title">{`${tagTitle[item.depth - 1]}`}</span>
         </span>
         <TagsButtonWrapper>
           <span className="switch_title">활성화</span>
