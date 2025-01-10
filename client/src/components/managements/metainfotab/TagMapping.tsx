@@ -183,8 +183,21 @@ export function TagMapping() {
             '아이템 선택후 태그값 불러오기',
             res.data.data.categoryClassList,
           );
-          if (res.data.data.categoryClassList)
-            setTagList(res.data.data.categoryClassList);
+
+          // 선택된 activeMappingItem 다음으로 오는 mappingList아이템 리스트
+          const sortList = findChildItems(activeMappingItem.classIdx);
+          const sortItems = sortList.map((item) => item.code);
+          console.log('sortItems Items:', sortItems);
+
+          const filteredList = res.data.data.categoryClassList.filter(
+            // code 값이 sortItems에 없는 항목만 유지
+            (item: { code: string }) => !sortItems.includes(item.code),
+          );
+
+          console.log('Filtered List:', filteredList);
+
+          // 필터링된 리스트를 상태에 저장
+          setTagList(filteredList);
           // return res.data.data.categoryClassList;
         } catch (error) {
           console.error('Error fetching category:', error);
@@ -199,6 +212,12 @@ export function TagMapping() {
       setTagIndex(index);
     }
   }, [activeMappingItem]);
+
+  const findChildItems = (selectedClassIdx: number) => {
+    return mappingList.filter(
+      (item) => item.parentClassIdx === selectedClassIdx,
+    );
+  };
 
   useEffect(() => {
     //tagList
@@ -596,8 +615,6 @@ export function TagMapping() {
         text: '변경 내역이 없습니다',
       });
     }
-    //// 수정된 내역 리스트 아이템 10회까지 기억
-    // if(isPending) updateMapListData()
   };
 
   // const handleAddTag = () => {
