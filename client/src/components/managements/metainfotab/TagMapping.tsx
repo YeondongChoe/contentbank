@@ -7,7 +7,14 @@ import styled from 'styled-components';
 
 import { classificationInstance } from '../../../api/axios';
 import { postRefreshToken } from '../../../utils/tokenHandler';
-import { Button, CheckBoxI, Icon, openToastifyAlert, Switch } from '../../atom';
+import {
+  Button,
+  CheckBoxI,
+  Icon,
+  openToastifyAlert,
+  Switch,
+  ValueNone,
+} from '../../atom';
 import { COLOR } from '../../constants';
 import { ListItem, Search } from '../../molecules';
 import { useDnD } from '../../molecules/dragAndDrop';
@@ -809,7 +816,9 @@ export function TagMapping() {
                 <span>{`${el.name}`}</span>
               </Tags>
             ))}
-            {tagList.length == 0 && <p>설정 된 태그가 없습니다</p>}
+            {tagList.length == 0 && (
+              <ValueNone textOnly info="설정 된 태그가 없습니다" />
+            )}
           </TagsWrappper>
 
           <Button
