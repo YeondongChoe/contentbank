@@ -511,13 +511,16 @@ export function TagMapping() {
   const addTagsToNextDepth = () => {
     console.log('선택된 요소 activeMappingItem ', activeMappingItem);
     console.log('최종적으로 추가될 tagAddCheckListt ', tagAddCheckList);
-
-    if (activeMappingItem) updateMapListData(tagAddCheckList);
-    if (!activeMappingItem)
-      openToastifyAlert({
-        type: 'error',
-        text: '매핑 태그를 선택해 주세요',
-      });
+    // if (mappingData) {
+    //   if (activeMappingItem) updateMapListData(tagAddCheckList);
+    //   if (!activeMappingItem)
+    //     openToastifyAlert({
+    //       type: 'error',
+    //       text: '매핑 태그를 선택해 주세요',
+    //     });
+    // } else {
+    updateMapListData(tagAddCheckList);
+    // }
   };
 
   useEffect(() => {
@@ -733,7 +736,7 @@ export function TagMapping() {
         <ListWrapper>
           <strong className="title">태그 선택</strong>
           <span className="sub_title">매핑할 태그를 선택해주세요.</span>
-          <span className="border_tag">{`${tagTitle[tagIndex - 1]}`}</span>
+          <span className="border_tag">{`${tagTitle[tagIndex - 1] ? tagTitle[tagIndex - 1] : tagTitle[tagIndex]}`}</span>
           <DropdownWrapper>
             <Search
               placeholder="태그를 검색해주세요."
@@ -806,6 +809,7 @@ export function TagMapping() {
                 <span>{`${el.name}`}</span>
               </Tags>
             ))}
+            {tagList.length == 0 && <p>설정 된 태그가 없습니다</p>}
           </TagsWrappper>
 
           <Button
