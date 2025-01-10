@@ -47,6 +47,7 @@ export function TagMapping() {
   const queryValue = query.get('state');
 
   const [showMapHandleBtn, setShowMapHandleBtn] = useState(false);
+  const [isCategoryGroup, setIsCategoryGroup] = useState(false);
 
   const [tagList, setTagList] = useState<
     { idx: number; name: string; code: string }[]
@@ -108,6 +109,7 @@ export function TagMapping() {
       },
     });
 
+  // 최초 진입시
   useEffect(() => {
     if (categoryGroupData) {
       console.log('가져온 카테고리 ----', categoryGroupData);
@@ -117,8 +119,6 @@ export function TagMapping() {
       const types = typeList ? typeList.split(',') : [];
       const counts = countList ? countList.split(',') : [];
 
-      setTagTitle(names);
-
       const newCategoryList = names.map(
         (name: any, index: string | number) => ({
           name,
@@ -126,12 +126,13 @@ export function TagMapping() {
           count: counts[index] || '',
         }),
       );
-
+      setTagTitle(names);
       setCategoryList(newCategoryList);
       setGgroupIdx(idx);
       setGgroupName(name);
     }
   }, [categoryGroupData]);
+
   useEffect(() => {
     console.log(
       'categoryList, groupIdx, groupName,tagTitle',
@@ -229,9 +230,8 @@ export function TagMapping() {
 
   useEffect(() => {
     //tagList
-    console.log('tagList', tagList);
-    console.log('tagIndex', tagIndex);
-  }, [tagList, tagIndex]);
+    console.log('태그리스트 변경시 ----------', tagList);
+  }, [tagList]);
 
   const getCategoryMap = async () => {
     if (queryValue) {
@@ -287,54 +287,43 @@ export function TagMapping() {
           }
         };
 
-        // 3. parentClassIdx가 없는 루트 객체부터 시작
+        // 3. 첫번째 parentClassIdx
+        const firstEntry = Array.from(mappingMap.values())[0]; // Map의 첫 번째 값 추출
+        const parentClassIdx = firstEntry[0]?.parentClassIdx;
         mappingData
           .filter(
-            (item: { parentClassIdx: null }) => item.parentClassIdx === null,
+            (item: { parentClassIdx: number | null }) =>
+              item.parentClassIdx === parentClassIdx,
           )
           .forEach(addToSortedList);
 
         setMappingList(sortedData);
       } else if (mappingData.length == 0) {
         // 매핑데이터가 아직 없을시
-        const setFirstCategory = async () => {
-          if (categoryList[0]) {
-            const idx = categoryList[0].type;
-            console.log('첫번째 셋팅 인덱스 ---', idx);
-            try {
-              const res = await classificationInstance.get(
-                `/v1/category/class/${idx}`,
-              );
-              const firstList = res.data.data.categoryClassList;
-              console.log('firstList -------', firstList);
-              setTagList(firstList);
-
-              setMappingList(mappingData);
-              // const transformedList = firstList.map(
-              //   (item: any, index: number) => ({
-              //     type: 'CREATE',
-              //     idx: null, // 생성된 항목은 idx가 null
-              //     classIdx: item.idx, // 기존 idx를 classIdx로 매핑
-              //     parentClassIdx: 0, // 최초 생성시
-              //     isUse: true, // 기본값으로 true 설정
-              //     sort: index + 1, // 현재 index + 1로 설정
-              //   }),
-              // );
-              // console.log('transformedList -------', transformedList);
-
-              // 맵 리스트 생성
-              // updateMapListData(transformedList);
-            } catch (error: any) {
-              if (error.data?.code == 'GE-002') postRefreshToken();
-            }
-          }
-        };
-
         setFirstCategory();
       }
     }
   };
-  // 최초 진입시 매핑 리스트
+
+  const setFirstCategory = async () => {
+    if (categoryList[0]) {
+      const idx = categoryList[0].type;
+      console.log('첫번째 셋팅 인덱스 ---', idx);
+      try {
+        const res = await classificationInstance.get(
+          `/v1/category/class/${idx}`,
+        );
+        const firstList = res.data.data.categoryClassList;
+        console.log('firstList -------', firstList);
+        setTagList(firstList);
+
+        setMappingList(mappingData);
+        setIsCategoryGroup(false);
+      } catch (error: any) {
+        if (error.data?.code == 'GE-002') postRefreshToken();
+      }
+    }
+  };
   useEffect(() => {
     fetchInitialCategory();
   }, [mappingData, selectedList]);
@@ -736,6 +725,11 @@ export function TagMapping() {
   useEffect(() => {}, [searchValue, isInit]);
   useEffect(() => {}, [tagAddCheckList]);
   useEffect(() => {}, [showMapHandleBtn]);
+  useEffect(() => {
+    console.log('isCategoryGroup -------- ', isCategoryGroup);
+    // 순서변경 api호출 버튼 눌렀을시 태그 리스트 변경
+    // if (isCategoryGroup) setFirstCategory();
+  }, [isCategoryGroup]);
 
   return (
     <Container>
@@ -743,7 +737,7 @@ export function TagMapping() {
         <ListWrapper>
           <strong className="title">태그 선택</strong>
           <span className="sub_title">매핑할 태그를 선택해주세요.</span>
-          <span className="border_tag">{`${tagTitle[tagIndex - 1] ? categoryList[0].name : tagTitle[tagIndex]}`}</span>
+          <span className="border_tag">{`${tagTitle[tagIndex - 1] ? tagTitle[tagIndex - 1] : tagTitle[tagIndex]}`}</span>
           <DropdownWrapper>
             <Search
               placeholder="태그를 검색해주세요."
@@ -840,6 +834,9 @@ export function TagMapping() {
             setCategoryList={setCategoryList}
             groupIdx={groupIdx}
             groupName={groupName}
+            isCategoryGroup={isCategoryGroup}
+            setIsCategoryGroup={setIsCategoryGroup}
+            setTagTitle={setTagTitle}
           />
         </ListWrapper>
       )}
@@ -896,54 +893,6 @@ export function TagMapping() {
     </Container>
   );
 }
-// interface DraggableItemProps {
-//   item: string;
-//   index: number;
-//   activeItem: string | null;
-//   handleTagClick: (item: string) => void;
-//   moveTag: (dragIndex: number, hoverIndex: number) => void;
-// }
-
-// const DraggableItem: React.FC<DraggableItemProps> = ({
-//   item,
-//   index,
-//   activeItem,
-//   handleTagClick,
-//   moveTag,
-// }) => {
-//   const { ref, isDragging } = useDnD({
-//     itemIndex: index,
-//     onMove: moveTag,
-//     dragSectionName: 'TAG_SECTION',
-//   });
-
-//   return (
-//     <>
-//       <Tags
-//         ref={ref}
-//         className={`gap ${activeItem === item ? 'on' : ''}`}
-//         onClick={() => handleTagClick(item)}
-//         style={{ opacity: isDragging ? 0.5 : 1 }}
-//       >
-//         <span>
-//           <Icon width={`18px`} src={`/images/icon/icon-move.svg`} />
-//         </span>
-//         <span className="category_title">{item}</span>
-//         <span className="category_sub_title">{'교육 과정'}</span>
-//         <TagsButtonWrapper>
-//           <span className="switch_title">활성화</span>
-//           <Switch marginTop={5} $ison={true} onClick={() => {}}></Switch>
-//           <CheckBoxI className={'side_bar'} id={''} value={undefined} />
-//         </TagsButtonWrapper>
-//       </Tags>
-//       {activeItem === item && (
-//         <InfoButtonWrapper>
-//           + ‘태그 선택’에서 매핑할 태그를 선택해주세요.
-//         </InfoButtonWrapper>
-//       )}
-//     </>
-//   );
-// };
 
 const Container = styled.div`
   width: 100%;

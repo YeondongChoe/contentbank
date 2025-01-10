@@ -27,6 +27,9 @@ export function SetCategoryList({
   setCategoryList,
   groupIdx,
   groupName,
+  setIsCategoryGroup,
+  isCategoryGroup,
+  setTagTitle,
 }: {
   setSelectedList: React.Dispatch<React.SetStateAction<any[]>>;
   setSelectedItem?: React.Dispatch<React.SetStateAction<any>>;
@@ -49,6 +52,9 @@ export function SetCategoryList({
   >;
   groupIdx?: number;
   groupName?: string;
+  setIsCategoryGroup: React.Dispatch<React.SetStateAction<boolean>>;
+  isCategoryGroup: boolean;
+  setTagTitle: React.Dispatch<React.SetStateAction<string[]>>;
 }) {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [groupData, setGroupData] = useState<{
@@ -72,7 +78,7 @@ export function SetCategoryList({
     const res = await classificationInstance.put(`/v1/category/group`, data);
     console.log('putCategoryGroup', res);
     mappingDataRefetch();
-    return res;
+    return res.data.data;
   };
 
   const { data: categoryGroup, mutate: mutateCategoryGroup } = useMutation({
@@ -88,18 +94,26 @@ export function SetCategoryList({
         postRefreshToken();
       }
     },
-    onSuccess: (response: { data: { message: string } }) => {
+    onSuccess: () => {
       openToastifyAlert({
         type: 'success',
-        text: `${response.data.message ? response.data.message : '순서가 변경되었습니다'}`,
+        text: `${'순서가 변경되었습니다'}`,
       });
     },
   });
 
   useEffect(() => {
-    // 맵핑 리스트 리프레쉬
+    // 순서변경 변경값이 있을때만 태그선택 최초셋팅
     if (categoryGroup) {
-      mappingDataRefetch();
+      setIsCategoryGroup(true);
+      // 태그 리스트가 바뀔 때 타이틀값 설정
+      console.log('가져온 카테고리 ----', categoryGroup);
+      const item = categoryGroup;
+      const { nameList } = item;
+      const names = nameList ? nameList.split(',') : [];
+
+      console.log('가져온 names ----', names);
+      setTagTitle(names);
     }
   }, [categoryGroup]);
 
