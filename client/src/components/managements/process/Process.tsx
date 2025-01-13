@@ -347,7 +347,7 @@ export function Process() {
       idx: processNameIdx,
       name: nameValue,
       steps: stepData,
-      changStepSort: stepSortList,
+      changeStepSort: stepSortList,
     };
     return await userInstance.put(`/v1/process`, data);
   };

@@ -289,11 +289,21 @@ export function ContentList({
   };
 
   const openProcessListModal = () => {
-    console.log('sortedList ---', sortedList);
-    openModal({
-      title: '',
-      content: <ProcessListModal list={sortedList} refech={quizDataRefetch} />,
-    });
+    const hasProcess = sortedList.filter((el) => el.process !== null);
+    if (hasProcess.length > 0) {
+      openToastifyAlert({
+        type: 'error',
+        text: '검수 진행중인 문항이 포함되어 있습니다.',
+      });
+    } else {
+      openModal({
+        title: '',
+        content: (
+          <ProcessListModal list={sortedList} refech={quizDataRefetch} />
+        ),
+      });
+    }
+
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
   };
@@ -822,7 +832,7 @@ export function ContentList({
                 <span className="width_10 item_wrapper">
                   <strong className="title">상태</strong>
                   {item.process?.step === 1 ? (
-                    <span className="tag"></span>
+                    <span className="tag">{`${item.process?.state === 'REJECT' && '반려'}(${item.process?.name})`}</span>
                   ) : (
                     <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'COMPLETE' ? '검수완료' : item.process?.state === 'REVIEW' ? `검수중(${item.process?.step}/${item.process?.totalStep})` : ''}`}</span>
                   )}
