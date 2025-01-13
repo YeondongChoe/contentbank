@@ -216,7 +216,7 @@ export function ReportProcessModal({
     data: FormData,
   ): Promise<AxiosResponse<UploadReportResponse>> => {
     return await axios.post(
-      'https://web-dev.olympiad.ac/file/upload_report',
+      'https://j-dev01.dreamonesys.co.kr/file/upload_report',
       data,
       {
         withCredentials: true, // 자격 증명 포함
