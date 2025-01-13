@@ -99,6 +99,8 @@ export type QuizListType = {
               createdBy: string;
               lastModifiedAt: string;
               lastModifiedBy: string;
+              userName?: string;
+              userId?: string;
             };
           };
           state: string;
