@@ -20,6 +20,7 @@ import {
   Icon,
   openToastifyAlert,
   PaginationBox,
+  ValueNone,
 } from '../../../components';
 import { useModal } from '../../../hooks';
 import { WorksheetListType } from '../../../types';
@@ -242,6 +243,37 @@ export function WorkbookList({
   return (
     <>
       <Total> Total : {totalCount ? totalCount : 0}</Total>
+      {/* <ListButtonWrapper>
+        <InputWrapper>
+          <ButtonWrapper>
+            <CheckBoxWrapper>
+              <CheckBoxI
+                $margin={'0 5px 0 0'}
+                onChange={(e) => handleAllCheck(e)}
+                checked={checkList.length === list.length ? true : false}
+                id={'all check'}
+                value={'all check'}
+              />
+              <span className="title_top">전체선택</span>
+            </CheckBoxWrapper>
+            <ActionButtonWrapper>
+              <Button
+                width="100px"
+                height="35px"
+                fontSize="14px"
+                $borderRadius="7px"
+                $filled
+                $normal
+                onClick={() => {}}
+                disabled={isEnabled}
+                cursor
+              >
+                문항 출력
+              </Button>
+            </ActionButtonWrapper>
+          </ButtonWrapper>
+        </InputWrapper>
+      </ListButtonWrapper> */}
       <List margin={`10px 0 5px 0`} height="none">
         <ListItem isChecked={false} columnTitle marginBottom="0px">
           <CheckBoxI
@@ -297,188 +329,164 @@ export function WorkbookList({
           </ItemLayout>
         </ListItem>
       </List>
-      <ListButtonWrapper>
-        {/* <InputWrapper>
-              <ButtonWrapper>
-                <CheckBoxWrapper>
-                  <CheckBoxI
-                    $margin={'0 5px 0 0'}
-                    onChange={(e) => handleAllCheck(e)}
-                    checked={checkList.length === list.length ? true : false}
-                    id={'all check'}
-                    value={'all check'}
-                  />
-                  <span className="title_top">전체선택</span>
-                </CheckBoxWrapper>
-                <ActionButtonWrapper>
-                  <Button
-                    width="100px"
-                    height="35px"
-                    fontSize="14px"
-                    $borderRadius="7px"
-                    $filled
-                    $normal
-                    onClick={() => {}}
-                    disabled={isEnabled}
+      {list?.length > 0 ? (
+        <ListWrapper ref={backgroundRef}>
+          <List margin={`10px 0`}>
+            {list.map((item: WorksheetListType) => (
+              <ListItem
+                height="90px"
+                key={item.code as string}
+                isChecked={checkList.includes(item.code)}
+                onClick={(e) => handleButtonCheck(e, item.code)}
+              >
+                <CheckBoxI
+                  id={item.code}
+                  value={item.code}
+                  $margin={`0 5px 0 0`}
+                  checked={checkList.includes(item.code)}
+                  readOnly
+                />
+                {item.isFavorite ? (
+                  <Icon
+                    width={`18px`}
+                    $margin={'0 0 0 10px'}
+                    src={`/images/icon/favorites_on.svg`}
+                    onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
                     cursor
-                  >
-                    문항 출력
-                  </Button>
-                </ActionButtonWrapper>
-              </ButtonWrapper>
-            </InputWrapper> */}
-      </ListButtonWrapper>
-      <ListWrapper ref={backgroundRef}>
-        <List margin={`10px 0`}>
-          {list.map((item: WorksheetListType) => (
-            <ListItem
-              height="90px"
-              key={item.code as string}
-              isChecked={checkList.includes(item.code)}
-              onClick={(e) => handleButtonCheck(e, item.code)}
-            >
-              <CheckBoxI
-                id={item.code}
-                value={item.code}
-                $margin={`0 5px 0 0`}
-                checked={checkList.includes(item.code)}
-                readOnly
-              />
-              {item.isFavorite ? (
-                <Icon
-                  width={`18px`}
-                  $margin={'0 0 0 10px'}
-                  src={`/images/icon/favorites_on.svg`}
-                  onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
-                  cursor
-                />
-              ) : (
-                <Icon
-                  width={`18px`}
-                  $margin={'0 0 0 10px'}
-                  src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
-                  onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
-                  cursor
-                />
-              )}
-              <ItemLayout>
-                {selectedList.map((list) => {
-                  if (list.name === '태그' && list.view === true) {
-                    return (
-                      <>
-                        <span className="width_80px item_wrapper">
-                          <span className="ellipsis">
-                            {(item.tag === 'DAILY_TEST' && '일일테스트') ||
-                              (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
-                              (item.tag === 'EXERCISES' && '연습문제') ||
-                              (item.tag === 'PRACTICE_TEST' && '모의고사') ||
-                              (item.tag === 'TEST_PREP' && '내신대비')}
-                          </span>
-                        </span>
-                        <i className="line"></i>
-                      </>
-                    );
-                  } else if (list.name === '대상학년' && list.view === true) {
-                    return (
-                      <>
-                        <span className="width_80px item_wrapper">
-                          <span className="ellipsis">{item.grade}</span>
-                        </span>
-                        <i className="line"></i>
-                      </>
-                    );
-                  } else if (list.name === '작성자' && list.view === true) {
-                    return (
-                      <>
-                        <span className="width_80px item_wrapper">
-                          <span className="ellipsis">{item.examiner}</span>
-                        </span>
-                        <i className="line"></i>
-                      </>
-                    );
-                  } else if (list.name === '학습지명' && list.view === true) {
-                    return (
-                      <>
-                        <span className="width_150px item_wrapper">
-                          <span className="ellipsis">{item.name}</span>
-                        </span>
-                        <i className="line"></i>
-                      </>
-                    );
-                  } else if (list.name === '등록일' && list.view === true) {
-                    return (
-                      <>
-                        <span className="width_150px item_wrapper">
-                          <span className="ellipsis">{item.createdAt}</span>
-                        </span>
-                        <i className="line"></i>
-                      </>
-                    );
-                  }
-                })}
-                <span className="width_20px item_wrapper">
-                  <LuFileSearch2
-                    style={{ fontSize: '22px', cursor: 'pointer' }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openCreatePDFModal(item.idx);
-                    }}
                   />
-                </span>
-                <i className="line"></i>
-                <span className="width_20px item_wrapper">
-                  <SettingButton
-                    type="button"
-                    onClick={(e) => openSettingList(e)}
-                    onMouseLeave={(e) => closeSettingList(e)}
-                  >
-                    <SlOptionsVertical
-                      style={{ fontSize: '16px', cursor: 'pointer' }}
+                ) : (
+                  <Icon
+                    width={`18px`}
+                    $margin={'0 0 0 10px'}
+                    src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
+                    onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
+                    cursor
+                  />
+                )}
+                <ItemLayout>
+                  {selectedList.map((list) => {
+                    if (list.name === '태그' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_80px item_wrapper">
+                            <span className="ellipsis">
+                              {(item.tag === 'DAILY_TEST' && '일일테스트') ||
+                                (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
+                                (item.tag === 'EXERCISES' && '연습문제') ||
+                                (item.tag === 'PRACTICE_TEST' && '모의고사') ||
+                                (item.tag === 'TEST_PREP' && '내신대비')}
+                            </span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    } else if (list.name === '대상학년' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_80px item_wrapper">
+                            <span className="ellipsis">{item.grade}</span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    } else if (list.name === '작성자' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_80px item_wrapper">
+                            <span className="ellipsis">{item.examiner}</span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    } else if (list.name === '학습지명' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_150px item_wrapper">
+                            <span className="ellipsis">{item.name}</span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    } else if (list.name === '등록일' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_150px item_wrapper">
+                            <span className="ellipsis">{item.createdAt}</span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    }
+                  })}
+                  <span className="width_20px item_wrapper">
+                    <LuFileSearch2
+                      style={{ fontSize: '22px', cursor: 'pointer' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openCreatePDFModal(item.idx);
+                      }}
                     />
-                    <SettingList>
-                      <li>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openCreateEditWindow(item.idx);
-                            setIsEditWorkbook(true);
-                          }}
-                        >
-                          수정
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openCreateEditWindow(item.idx);
-                            setIsEditWorkbook(false);
-                          }}
-                        >
-                          복제 후 수정
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            clickDeleteWorkbook(item.idx);
-                          }}
-                        >
-                          삭제
-                        </button>
-                      </li>
-                    </SettingList>
-                  </SettingButton>
-                </span>
-              </ItemLayout>
-            </ListItem>
-          ))}
-        </List>
-      </ListWrapper>
+                  </span>
+                  <i className="line"></i>
+                  <span className="width_20px item_wrapper">
+                    <SettingButton
+                      type="button"
+                      onClick={(e) => openSettingList(e)}
+                      onMouseLeave={(e) => closeSettingList(e)}
+                    >
+                      <SlOptionsVertical
+                        style={{ fontSize: '16px', cursor: 'pointer' }}
+                      />
+                      <SettingList>
+                        <li>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openCreateEditWindow(item.idx);
+                              setIsEditWorkbook(true);
+                            }}
+                          >
+                            수정
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openCreateEditWindow(item.idx);
+                              setIsEditWorkbook(false);
+                            }}
+                          >
+                            복제 후 수정
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              clickDeleteWorkbook(item.idx);
+                            }}
+                          >
+                            삭제
+                          </button>
+                        </li>
+                      </SettingList>
+                    </SettingButton>
+                  </span>
+                </ItemLayout>
+              </ListItem>
+            ))}
+          </List>
+        </ListWrapper>
+      ) : (
+        <ValueNoneWrapper>
+          <ValueNone />
+        </ValueNoneWrapper>
+      )}
+
       {isDeleteWorkbook && (
         <Alert
           description={'학습지를 삭제하시겠습니까?'}
@@ -662,11 +670,6 @@ const SettingList = styled.ul`
     }
   }
 `;
-
-// > span {
-//   display: flex;
-//   /* flex: 1 0 0; */
-//   justify-content: space-around;
-//   flex-wrap: wrap;
-//   word-break: break-all;
-// }
+const ValueNoneWrapper = styled.div`
+  padding: 100px 0;
+`;

@@ -13,11 +13,14 @@ import { styled } from 'styled-components';
 import { Alert } from '..';
 import { quizService } from '../../../api/axios';
 import { useModal } from '../../../hooks';
+import { QuizList } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Button, Label, Select, openToastifyAlert } from '../../atom';
 import { COLOR } from '../../constants';
 
 type ReportProcessType = {
+  initialItems?: QuizList[];
+  setInitialItems?: React.Dispatch<React.SetStateAction<QuizList[]>>;
   registorReport?: boolean;
   reportIdx?: number;
   refetch?: (
@@ -37,6 +40,8 @@ type UploadReportResponse = {
 };
 
 export function ReportProcessModal({
+  initialItems,
+  setInitialItems,
   registorReport,
   reportIdx,
   refetch,
@@ -103,6 +108,9 @@ export function ReportProcessModal({
         type: 'success',
         text: response.data.message,
       });
+      const filterList =
+        initialItems?.filter((item) => item.idx !== reportIdx) || [];
+      setInitialItems && setInitialItems(filterList);
       closeModal();
       refetch && refetch();
     },

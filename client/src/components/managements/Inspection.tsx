@@ -5,14 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
-import {
-  InspectionList,
-  Loader,
-  Modal,
-  PaginationBox,
-  Select,
-  ValueNone,
-} from '..';
+import { InspectionList, Loader, Modal, PaginationBox, Select } from '..';
 import {
   classificationInstance,
   quizService,
@@ -268,7 +261,12 @@ export function Inspection() {
             })}
           </SelectWrapper>
 
-          {quizData && questionList?.length > 0 ? (
+          {isPending && (
+            <LoaderWrapper>
+              <Loader width="50px" />
+            </LoaderWrapper>
+          )}
+          {!isPending && quizData && (
             <>
               <InspectionList
                 list={questionList}
@@ -281,10 +279,6 @@ export function Inspection() {
                 totalItemsCount={quizData?.pagination?.totalCount || 0}
               />
             </>
-          ) : (
-            <ValueNoneWrapper>
-              <ValueNone />
-            </ValueNoneWrapper>
           )}
         </>
       )}
@@ -318,10 +312,6 @@ const SelectWrapper = styled.div`
   .btn_title {
     padding-right: 5px;
   }
-`;
-
-const ValueNoneWrapper = styled.div`
-  padding: 100px 0;
 `;
 const LoaderWrapper = styled.div`
   display: flex;

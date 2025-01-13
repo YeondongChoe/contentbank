@@ -170,7 +170,7 @@ export function Worksheet() {
     }
   };
   const {
-    isLoading,
+    isPending,
     data: workbookListData,
     refetch: workbookListRefetch,
   } = useQuery({
@@ -442,12 +442,12 @@ export function Worksheet() {
           })}
         </SelectWrapper>
 
-        {isLoading && (
+        {isPending && (
           <LoaderWrapper>
             <Loader width="50px" />
           </LoaderWrapper>
         )}
-        {!isLoading && workbookListData && (
+        {!isPending && workbookListData && (
           <WorkbookList
             list={workbookList.workbookList}
             selectedList={selectedList}
