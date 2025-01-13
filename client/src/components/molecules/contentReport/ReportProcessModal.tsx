@@ -211,12 +211,12 @@ export function ReportProcessModal({
     }
   };
 
-  // 문항 신고
+  // 문항 신고 //TODO: 개발서버에 따라 이미지 저장경로 변경(dev, stage)
   const postReportImg = async (
     data: FormData,
   ): Promise<AxiosResponse<UploadReportResponse>> => {
     return await axios.post(
-      'https://web-stage.olympiad.ac/file/upload_report',
+      'https://web-dev.olympiad.ac/file/upload_report',
       data,
       {
         withCredentials: true, // 자격 증명 포함
