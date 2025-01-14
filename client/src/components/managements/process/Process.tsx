@@ -156,6 +156,10 @@ export function Process() {
   };
 
   const deleteCard = (sort: number, id: string, isAccount: boolean) => {
+    console.log('sort', sort);
+    console.log('processNameIdx', processNameIdx);
+    console.log('id', id);
+    console.log('isAccount', isAccount);
     if (processNameIdx === null) {
       setProcessList((prev) =>
         prev.map((list) => {
@@ -343,7 +347,7 @@ export function Process() {
       idx: processNameIdx,
       name: nameValue,
       steps: stepData,
-      changStepSort: stepSortList,
+      changeStepSort: stepSortList,
     };
     return await userInstance.put(`/v1/process`, data);
   };
@@ -688,10 +692,10 @@ export function Process() {
                                   onClick={() => {
                                     deleteCard(
                                       info.stepSort,
-                                      work.account?.id !== ''
+                                      work.account !== null
                                         ? (work.account?.id as string)
                                         : (work.authority?.name as string),
-                                      work.account?.id !== '' ? true : false,
+                                      work.account !== null ? true : false,
                                     );
                                   }}
                                 >
@@ -789,11 +793,11 @@ export function Process() {
                                         onClick={() => {
                                           deleteCard(
                                             process.stepSort,
-                                            worker.account?.id !== ''
+                                            worker.account !== null
                                               ? (worker.account?.id as string)
                                               : (worker.authority
                                                   ?.name as string),
-                                            worker.account?.id !== ''
+                                            worker.account !== null
                                               ? true
                                               : false,
                                           );

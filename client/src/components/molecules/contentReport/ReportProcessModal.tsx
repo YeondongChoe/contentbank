@@ -13,11 +13,14 @@ import { styled } from 'styled-components';
 import { Alert } from '..';
 import { quizService } from '../../../api/axios';
 import { useModal } from '../../../hooks';
+import { QuizList } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { Button, Label, Select, openToastifyAlert } from '../../atom';
 import { COLOR } from '../../constants';
 
 type ReportProcessType = {
+  initialItems?: QuizList[];
+  setInitialItems?: React.Dispatch<React.SetStateAction<QuizList[]>>;
   registorReport?: boolean;
   reportIdx?: number;
   refetch?: (
@@ -37,6 +40,8 @@ type UploadReportResponse = {
 };
 
 export function ReportProcessModal({
+  initialItems,
+  setInitialItems,
   registorReport,
   reportIdx,
   refetch,
@@ -103,6 +108,9 @@ export function ReportProcessModal({
         type: 'success',
         text: response.data.message,
       });
+      const filterList =
+        initialItems?.filter((item) => item.idx !== reportIdx) || [];
+      setInitialItems && setInitialItems(filterList);
       closeModal();
       refetch && refetch();
     },
@@ -203,12 +211,12 @@ export function ReportProcessModal({
     }
   };
 
-  // 문항 신고
+  // 문항 신고 //TODO: 개발서버에 따라 이미지 저장경로 변경(dev, stage)
   const postReportImg = async (
     data: FormData,
   ): Promise<AxiosResponse<UploadReportResponse>> => {
     return await axios.post(
-      'https://web-stage.olympiad.ac/file/upload_report',
+      'https://j-dev01.dreamonesys.co.kr/file/upload_report',
       data,
       {
         withCredentials: true, // 자격 증명 포함

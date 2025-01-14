@@ -39,15 +39,11 @@ export function ProcessListModal({ list, refech }: ProcessModalProps) {
   const [processCode, setProcessCode] = useState<string | null>(null);
   const [processIdxList, setProcessIdxList] = useState<number[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);
-  console.log('processIdxList', processIdxList);
-  console.log('checkList', checkList);
 
   useEffect(() => {
     const idxList = list.map((quiz) => quiz.idx);
     if (idxList) setProcessIdxList(idxList);
   }, [list]);
-
-  console.log('processList', processList);
 
   //프로세스 리스트 불러오기 api
   const getProcessNameList = async () => {

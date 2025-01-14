@@ -48,8 +48,6 @@ export function Header() {
     },
   });
 
-  console.log(notificationData?.data.data.notiSimpleRecordList);
-
   useEffect(() => {
     if (isAlert) notificationRefetch();
   }, [isAlert]);

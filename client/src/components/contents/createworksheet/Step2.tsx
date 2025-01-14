@@ -1149,7 +1149,14 @@ export function Step2() {
   const openReportProcess = (idx: number) => {
     openModal({
       title: '',
-      content: <ReportProcessModal registorReport={true} reportIdx={idx} />,
+      content: (
+        <ReportProcessModal
+          registorReport={true}
+          reportIdx={idx}
+          initialItems={initialItems}
+          setInitialItems={setInitialItems}
+        />
+      ),
       callback: () => {},
     });
   };

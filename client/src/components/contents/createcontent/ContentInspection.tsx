@@ -70,11 +70,10 @@ export function ContentInspection({
   // 수정시 체크리스트 값 가져오기
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
-
-    console.log(
-      '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
-      storedQuizList,
-    );
+    // console.log(
+    //   '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
+    //   storedQuizList,
+    // );
 
     if (storedQuizList) {
       setParsedStoredQuizList(JSON.parse(storedQuizList));
@@ -387,7 +386,15 @@ export function ContentInspection({
                                           }}
                                         >
                                           <span className="name">
-                                            {worker.authority.name}
+                                            {/* 권한이였다가 사용자로 바뀐 경우 */}
+                                            {worker.authority.comment ===
+                                            null ? (
+                                              <>{worker.authority.name}</>
+                                            ) : (
+                                              <>
+                                                {`${worker.authority.comment.userName}(${worker.authority.comment.userId})`}
+                                              </>
+                                            )}
                                           </span>
                                           {worker.state === 'APPROVAL' ? (
                                             <span className="tag blue">
@@ -403,7 +410,7 @@ export function ContentInspection({
                                             </span>
                                           ) : (
                                             <span className="tag">
-                                              {worker.authority.code}
+                                              {/* {worker.authority.code} */}
                                             </span>
                                           )}
                                         </button>
@@ -434,7 +441,15 @@ export function ContentInspection({
                                           }}
                                         >
                                           <span className="name">
-                                            {worker.authority.name}
+                                            {/* 권한이였다가 사용자로 바뀐 경우 */}
+                                            {worker.authority.comment ===
+                                            null ? (
+                                              <>{worker.authority.name}</>
+                                            ) : (
+                                              <>
+                                                {`${worker.authority.comment.userName}(${worker.authority.comment.userId})`}
+                                              </>
+                                            )}
                                           </span>
                                           {step.stepName === 'BUILD' ? (
                                             <span className="tag blue">
@@ -456,7 +471,7 @@ export function ContentInspection({
                                                 </span>
                                               ) : (
                                                 <span className="tag">
-                                                  {worker.authority.code}
+                                                  {/* {worker.authority.code} */}
                                                 </span>
                                               )}
                                             </>
