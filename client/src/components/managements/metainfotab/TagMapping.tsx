@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocation } from 'react-router-dom';
@@ -328,25 +328,44 @@ export function TagMapping() {
     fetchInitialCategory();
   }, [mappingData, selectedList]);
 
-  const moveMappingTag = (dragIndex: number, hoverIndex: number) => {
+  // 태그 이동시
+  const [previousDraggedItem, setPreviousDraggedItem] =
+    useState<CategoryItem | null>(null);
+  const [previousHoverItem, setPreviousHoverItem] =
+    useState<CategoryItem | null>(null);
+  const moveMappingTag = (
+    dragIndex: number,
+    hoverIndex: number,
+    isFinished: boolean,
+  ) => {
     const updatedList = [...mappingList];
     const list = [...mappingList];
-    const draggedItem = updatedList.splice(dragIndex, 1)[0];
-    const hoverItem = list.splice(hoverIndex, 1)[0];
+    const draggedItem = { ...updatedList.splice(dragIndex, 1)[0] };
+    const hoverItem = { ...list.splice(hoverIndex, 1)[0] };
     updatedList.splice(hoverIndex, 0, draggedItem);
 
     // 같은 parentClassIdx를 가진 요소끼리만 이동 가능하도록 조건 추가
-    if (
-      // draggedItem.parentClassIdx == hoverItem.parentClassIdx &&
-      draggedItem.depth == hoverItem.depth
-    ) {
+    if (draggedItem.depth === hoverItem.depth) {
       console.log('이동한 아이템 draggedItem ----', draggedItem);
       console.log('교환된 아이템 hoverItem ----', hoverItem);
+      console.log('isFinished ----', isFinished);
       console.log('이동후 업데이트 된 리스트 ----', updatedList);
+
       setMappingList(updatedList);
+
+      // 이전 상태를 저장
+      setPreviousDraggedItem(draggedItem);
+      setPreviousHoverItem(hoverItem);
+
       // 이동 후 이동내역 서버 전송
-      if (draggedItem.idx !== hoverItem.idx) {
-        if (draggedItem.idx == hoverItem.idx) return;
+      if (isFinished) {
+        console.log(
+          'draggedItem hoverItem 상태:',
+          previousDraggedItem,
+          previousHoverItem,
+        );
+        console.log('isFinished 상태:', isFinished);
+
         const swapClassIdx = (
           item1: CategoryItem,
           item2: CategoryItem,
@@ -354,26 +373,26 @@ export function TagMapping() {
           return [
             {
               ...item1,
-              classIdx: item2.classIdx, // item1의 classIdx를 item2의 classIdx로 변경
+              classIdx: item2.classIdx,
               parentClassIdx: item2.parentClassIdx,
             },
             {
               ...item2,
-              classIdx: item1.classIdx, // item2의 classIdx를 item1의 classIdx로 변경
+              classIdx: item1.classIdx,
               parentClassIdx: item1.parentClassIdx,
             },
           ];
         };
 
         const [updatedItem1, updatedItem2] = swapClassIdx(
-          draggedItem,
-          hoverItem,
+          previousDraggedItem!,
+          previousHoverItem!,
         );
-        console.log('Updated Item 1:', updatedItem1);
-        console.log('Updated Item 2:', updatedItem2);
+        console.log('Swap 결과:', updatedItem1, updatedItem2);
 
         // 서버 데이터 업데이트
-        if (updatedItem1 && updatedItem2) {
+        if (updatedItem1.idx !== updatedItem2.idx) {
+          console.log('Update 수행 중...');
           updateMapListData([
             {
               type: 'UPDATE',
@@ -395,22 +414,22 @@ export function TagMapping() {
 
           // 변경내역 되돌리기 버튼에 저장
           setUpdateItems([
-            ...(updateItems || []), // 기존 값이 null일 경우를 방지,
+            ...(updateItems || []),
             [
               {
                 type: 'UPDATE',
                 idx: updatedItem1.idx,
-                classIdx: updatedItem2.classIdx, // 교환 전 데이터
-                parentClassIdx: updatedItem2.parentClassIdx, // 교환 전 데이터
-                sort: updatedItem2.sort, // 교환 전 데이터
+                classIdx: updatedItem2.classIdx,
+                parentClassIdx: updatedItem2.parentClassIdx,
+                sort: updatedItem2.sort,
                 isUse: updatedItem1.isUse,
               },
               {
                 type: 'UPDATE',
                 idx: updatedItem2.idx,
-                classIdx: updatedItem1.classIdx, // 교환 전 데이터
-                sort: updatedItem1.sort, // 교환 전 데이터
-                parentClassIdx: updatedItem1.parentClassIdx, // 교환 전 데이터
+                classIdx: updatedItem1.classIdx,
+                sort: updatedItem1.sort,
+                parentClassIdx: updatedItem1.parentClassIdx,
                 isUse: updatedItem2.isUse,
               },
             ],

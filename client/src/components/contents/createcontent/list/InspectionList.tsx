@@ -240,7 +240,7 @@ export function InspectionList({
                 {(dragItem, ref, isDragging) => (
                   <ListDnDItem
                     key={`${dragItem.code}`}
-                    ref={ref}
+                    ref={ref as React.RefObject<HTMLLIElement>}
                     className={`${isDataColor && dragItem.classificationData?.length && `ondnd`} ${isDragging ? 'opacity' : ''} ${dragItem.quizCategoryList[0] ? 'isHasMeta' : ''}`}
                     isChecked={checkList.includes(dragItem.code)}
                   >

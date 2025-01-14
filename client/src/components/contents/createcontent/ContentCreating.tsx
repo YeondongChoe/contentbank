@@ -62,7 +62,7 @@ export function ContentCreating({
   const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]); // 내신
   const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]); // 기출
   const [content, setContent] = useState<string[]>([]);
-  const [imagesSrc, setImagesSrc] = useState<string>('');
+  // const [imagesSrc, setImagesSrc] = useState<string>('');
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
   const [isEditor, setIsEditor] = useState<boolean>(false);
@@ -131,8 +131,8 @@ export function ContentCreating({
       console.log('itemDataList 각 데이터를 배열에 담음', itemDataList);
       setQuizItemList(itemDataList);
 
-      const imagesSrc = extractImgSrc(`${editorData?.tag_group}`);
-      setImagesSrc(imagesSrc);
+      // const imagesSrc = extractImgSrc(`${editorData?.tag_group}`);
+      // setImagesSrc(imagesSrc);
     }
   }, [editorData]);
 

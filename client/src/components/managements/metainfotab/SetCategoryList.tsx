@@ -230,7 +230,7 @@ const DraggableInitItem: React.FC<DraggableInitItemProps> = ({
 
   return (
     <Tags
-      ref={ref}
+      ref={ref as React.RefObject<HTMLButtonElement>}
       className={`gap ${activeItem === item ? 'on' : ''}`}
       onClick={() => handleTagClick(item)}
       style={{ opacity: isDragging ? 0.5 : 1 }}

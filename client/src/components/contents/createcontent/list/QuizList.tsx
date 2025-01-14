@@ -63,6 +63,7 @@ export function QuizList({
   const [isChecked, setIsChecked] = useState(false);
   const [groupId, setGroupId] = useState<string | null>(null);
   const [isAllowed, setIsAllowed] = useState(false);
+  const [isDelete, setIsDelete] = useState(false);
 
   const [radioCheck, setRadioCheck] = useState<
     { title: string; checkValue: string }[]
@@ -239,12 +240,13 @@ export function QuizList({
       }));
 
       console.log('quizList ----- ', quizList);
+
       const data = {
         groupCode: groupId,
         quizList: quizList,
       };
       const groupCode = await quizService.put(`/v1/quiz/group`, data);
-
+      setGroupId(groupCode.data.data.groupCode);
       return groupCode.data.data.groupCode;
     }
   };
@@ -263,17 +265,16 @@ export function QuizList({
       }
     },
     onSuccess: (response) => {
-      console.log('response ----- ', response);
-      setGroupId(response);
+      // console.log('response ----- ', response);
 
       //저장 알람
       openToastifyAlert({
         type: 'success',
         text: '저장되었습니다.',
       });
-
       // 초기화
       setIsAllowed(false);
+      setIsDelete(false);
       queryClient.invalidateQueries({
         queryKey: ['get-quizList'],
         exact: true,
@@ -283,8 +284,18 @@ export function QuizList({
 
   // 그룹으로 묶기
   useEffect(() => {
-    setIsAllowed(false);
+    // if (isDelete) {
+    //   putGroupData([]);
+    //   alert('그룹이 해제되었습니다.');
+    // }
   }, [groupId]);
+  useEffect(() => {}, [isAllowed]);
+  useEffect(() => {
+    if (isDelete) {
+      putGroupData([]);
+      alert('그룹이 해제되었습니다.');
+    }
+  }, [isDelete]);
 
   const AddGroup = () => {
     setIsAllowed(true);
@@ -324,7 +335,7 @@ export function QuizList({
     }
     // 그룹화 DOM 생성
     // 서버에 그룹 상태 전송
-    if (!isPending && isAllowed) putGroupData(items);
+    if (!isPending) putGroupData(items);
     const parentDiv = document.createElement('div') as HTMLElement;
     parentDiv.id = groupId as string; // props로 전달받은 groupId를 id로 설정
     parentDiv.className = 'groupedItemsContainer';
@@ -349,12 +360,18 @@ export function QuizList({
       if (confirm('그룹을 해제하시겠습니까?')) {
         const button = e.currentTarget as HTMLButtonElement;
         const parentDiv = button.parentElement as HTMLElement;
-
+        console.log('해제할 그룹 parentDiv', parentDiv);
         if (parentDiv) {
           // 원래 위치로 복원
           const childNodes = Array.from(parentDiv.childNodes);
           const elementsToMove = childNodes.slice(3); // 체크박스와 삭제버튼 제외
-          console.log('Elements to move:', elementsToMove);
+          // console.log('Elements to move:', elementsToMove);
+
+          console.log('해제할 그룹 아이디', parentDiv.id);
+          setIsDelete(true); // 서버에 그룹 상태 전송
+          setGroupId(parentDiv.id);
+          // 그룹 컨테이너 제거
+          parentDiv.remove();
 
           // 이동 대상 컨테이너
           const scrollbarContainer = document.querySelector('.list_wrapper');
@@ -366,12 +383,6 @@ export function QuizList({
             });
           }
         }
-        // 그룹 컨테이너 제거
-        setGroupId(null);
-        parentDiv.remove();
-        // 서버에 그룹 상태 전송
-        if (!isPending && isAllowed) putGroupData(items);
-        alert('그룹이 해제되었습니다.');
       }
     };
 
