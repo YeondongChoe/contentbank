@@ -303,61 +303,6 @@ export function Classification({
     console.log('categoriesA ----- ', categoriesA);
   }, [categoriesA, categoriesDD1, categoriesDD2]);
 
-  //  카테고리 불러오기 api
-  const getCategory = async () => {
-    const res = await classificationInstance.get(`/v1/category`);
-    // console.log(`getCategory 결과값`, res);
-    return res;
-  };
-  const {
-    data: categoryData,
-    isLoading: isCategoryLoading,
-    error: categoryDataError,
-    refetch: categoryDataRefetch,
-    isSuccess,
-  } = useQuery({
-    queryKey: ['get-category'],
-    queryFn: getCategory,
-    meta: {
-      errorMessage: 'get-category 에러 메세지',
-    },
-  });
-  // 카테고리 데이터가 변경될 때 카테고리 항목 상태 업데이트
-  useEffect(() => {
-    if (categoryDataError) {
-      categoryDataRefetch();
-    }
-    if (categoryData) {
-      setCategoryItems(categoryData.data.data.categoryItemList);
-    }
-  }, [categoryData, categoryDataError, categoryDataRefetch]);
-
-  // 카테고리의 그룹 유형 조회
-  const getCategoryGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/group/A');
-    return response.data.data;
-  };
-  const { data: groupsData, refetch: groupsDataRefetch } = useQuery({
-    queryKey: ['get-category-groups-A'],
-    queryFn: getCategoryGroups,
-    enabled: !!categoryData,
-    meta: {
-      errorMessage: 'get-category-groups 에러 메세지',
-    },
-  });
-  useEffect(() => {
-    if (categoryTypeList) {
-      // fetchCategoryItems(categoryTypeList, setCategoryList);
-    }
-  }, [categoryTypeList]);
-
-  //groupsData값 들어왔을때 typeList 관리
-  useEffect(() => {
-    if (groupsData) {
-      setCategoryTypeList(groupsData.typeList);
-    }
-  }, [groupsData]);
-
   // 라디오 버튼 설정
   const handleRadioCheck = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const depth =
