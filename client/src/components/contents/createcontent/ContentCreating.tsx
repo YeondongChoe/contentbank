@@ -65,7 +65,6 @@ export function ContentCreating({
   // const [imagesSrc, setImagesSrc] = useState<string>('');
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
-  const [isEditor, setIsEditor] = useState<boolean>(false);
   // 에디터에서 나온 문항 요소
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
 
@@ -135,96 +134,6 @@ export function ContentCreating({
       // setImagesSrc(imagesSrc);
     }
   }, [editorData]);
-
-  // 이미지 태그 src 축출
-  const extractImgSrc = (htmlString: string) => {
-    // <img> 태그와 src 속성 값을 캡처하는 정규 표현식
-    const imgSrcRegex = /<img[^>]+src="([^">]+)"/g;
-    const srcArray = [];
-    let match;
-
-    while ((match = imgSrcRegex.exec(htmlString)) !== null) {
-      // match[1]에는 src 속성 값이 포함됩니다.
-      srcArray.push(match[1]);
-    }
-
-    // 배열 요소를 쉼표로 구분된 하나의 문자열로 결합하여 반환
-    return srcArray.join(',');
-  };
-
-  // 이미지 업로딩
-  // const uploadImages = async () => {
-  //   const blobUrls = imagesSrc.split(',');
-  //   const uploadedUrls = await Promise.all(blobUrls.map(uploadImage));
-
-  //   // blob URL을 업로드된 URL로 교체
-  //   let updatedContent = editorData && editorData.tag_group;
-
-  //   if (typeof updatedContent === 'string') {
-  //     // blobUrls.forEach((blobUrl, index) => {
-  //     //   updatedContent =
-  //     //     updatedContent &&
-  //     //     updatedContent.replace(blobUrl, uploadedUrls[index]);
-  //     // });
-
-  //     // 상태 업데이트 또는 업데이트된 콘텐츠 처리
-  //     console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
-  //   } else if (Array.isArray(updatedContent)) {
-  //     updatedContent = updatedContent.map((content) => {
-  //       if (typeof content === 'string') {
-  //         blobUrls.forEach((blobUrl, index) => {
-  //           content = content.replace(blobUrl, uploadedUrls[index]);
-  //         });
-  //       }
-  //       return content;
-  //     });
-
-  //     // 상태 업데이트 또는 업데이트된 콘텐츠 처리
-  //     console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
-  //   } else {
-  //     console.error('updatedContent는 문자열 또는 문자열 배열이어야 합니다.');
-  //   }
-  // };
-
-  // const uploadImage = async (blobUrl: RequestInfo | URL) => {
-  //   const response = await fetch(blobUrl);
-  //   const blob = await response.blob();
-  //   const file = new File([blob], `${uuidv4()}.png`, { type: blob.type });
-
-  //   const formData = new FormData();
-  //   formData.append('file', file);
-  //   formData.append('img_save_type', '3'); // 1을 문자열로 변환
-
-  //   try {
-  //     const response = await axios.post(
-  //       'https://web-stage.olympiad.ac/file',
-  //       formData,
-  //       {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data',
-  //         },
-  //       },
-  //     );
-
-  //     const { imgUUID } = response.data;
-  //     const [year, month, day] = new Date()
-  //       .toISOString()
-  //       .split('T')[0]
-  //       .split('-');
-  //     const newUrl = `https://web-stage.olympiad.ac/file/${year}/${month}/${day}/${imgUUID}.png`;
-
-  //     return newUrl;
-  //   } catch (error) {
-  //     console.error('파일 업로드 오류:', error);
-  //     throw error;
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (imagesSrc) {
-  //     uploadImages();
-  //   }
-  // }, [imagesSrc]);
 
   // 메뉴 목록 조회 api (셋팅값)
   const getMenuSetting = async () => {
@@ -408,7 +317,6 @@ export function ContentCreating({
   }, [selectedQuestionType]);
 
   const submitSave = () => {
-    setIsEditor(true);
     // 버튼 누를 시 에디터 값 축출
     saveHandler();
   };
@@ -416,12 +324,12 @@ export function ContentCreating({
   useEffect(() => {
     console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
     // 등록 호출
-    if (isEditor && !isPending) postQuizDataMutate();
+    if (quizItemList.length && !isPending) postQuizDataMutate();
   }, [quizItemList]);
 
   // 문항 등록 후 메타데이터 수정 되게
   const postQuiz = async () => {
-    if (selectedSource.length > 0) {
+    if (quizItemList.length > 0) {
       const data = {
         commandCode: 0,
         quizIdx: null,
@@ -484,7 +392,6 @@ export function ContentCreating({
     if (postQuizData) {
       // 등록 이후 축출 값 초기화
       setQuizItemList([]);
-      setIsEditor(false);
     }
   }, [postQuizData]);
 

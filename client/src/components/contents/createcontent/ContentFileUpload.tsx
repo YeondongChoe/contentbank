@@ -55,7 +55,6 @@ export function ContentFileUpload({
   const [imagesSrc, setImagesSrc] = useState<string>('');
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
-  const [isEditor, setIsEditor] = useState<boolean>(false);
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
 
   //셀렉트 값
@@ -398,7 +397,6 @@ export function ContentFileUpload({
   }, [selectedQuestionType]);
 
   const submitSave = () => {
-    setIsEditor(true);
     // 버튼 누를 시 에디터 값 축출
     saveHandler();
   };
@@ -406,12 +404,12 @@ export function ContentFileUpload({
   useEffect(() => {
     console.log('quizItemList 에디터에서 나온 문항 요소 --', quizItemList);
     // 등록 호출
-    if (isEditor && !isPending) postQuizDataMutate();
+    if (quizItemList.length && !isPending) postQuizDataMutate();
   }, [quizItemList]);
 
   // 문항 등록 후 메타데이터 수정 되게
   const postQuiz = async () => {
-    if (selectedSource.length > 0) {
+    if (quizItemList.length > 0) {
       const data = {
         commandCode: 0,
         quizIdx: null,
