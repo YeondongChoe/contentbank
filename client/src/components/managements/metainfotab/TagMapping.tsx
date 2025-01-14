@@ -756,7 +756,7 @@ export function TagMapping() {
         <ListWrapper>
           <strong className="title">태그 선택</strong>
           <span className="sub_title">매핑할 태그를 선택해주세요.</span>
-          <span className="border_tag">{`${tagTitle[tagIndex - 1] ? tagTitle[tagIndex - 1] : tagTitle[tagIndex]}`}</span>
+          <span className="border_tag">{`${tagTitle[tagIndex]}`}</span>
           <DropdownWrapper>
             <Search
               placeholder="태그를 검색해주세요."
