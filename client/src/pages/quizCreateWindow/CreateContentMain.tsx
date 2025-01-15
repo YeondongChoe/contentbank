@@ -66,6 +66,13 @@ export function CreateContentMain() {
     }
   }, [tabView]);
 
+  useEffect(() => {
+    //최초 진입시 정적파일 안불러질 경우의 수 대비 리로딩
+    if (!sessionStorage.getItem('hasReloaded')) {
+      sessionStorage.setItem('hasReloaded', 'true');
+      window.location.reload(); // 최초 진입 시 1회만 리로딩
+    }
+  }, []);
   return (
     <Container>
       <ButtonWrapper>
