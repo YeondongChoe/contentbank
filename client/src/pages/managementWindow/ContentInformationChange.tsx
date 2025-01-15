@@ -1014,31 +1014,29 @@ export function ContentInformationChange() {
                                         'QUESTION',
                                         'SMALL',
                                         'EXAMPLE',
-                                        // 'CHOICES',
-                                        // 'ANSWER',
+                                        'CHOICES',
+                                        'ANSWER',
                                         'COMMENTARY',
                                         'HINT',
                                         'CONCEPT',
                                         'TITLE',
                                         'TIP',
                                       ].includes(el?.type) &&
+                                        !Array.isArray(el?.content) &&
                                         el?.content && (
                                           <MathViewer
                                             data={el.content}
                                           ></MathViewer>
                                         )}
-                                      {['CHOICES', 'ANSWER'].includes(
-                                        el?.type,
-                                      ) &&
-                                        Array.isArray(el?.content) && (
-                                          <>
-                                            {el.content.map((item, index) => (
-                                              <MathViewer key={index}>
-                                                {item}
-                                              </MathViewer>
-                                            ))}
-                                          </>
-                                        )}
+                                      {Array.isArray(el?.content) && (
+                                        <>
+                                          {el.content.map((item, index) => (
+                                            <MathViewer key={index}>
+                                              {item}
+                                            </MathViewer>
+                                          ))}
+                                        </>
+                                      )}
                                     </div>
                                   ),
                                 )}
@@ -1178,11 +1176,21 @@ export function ContentInformationChange() {
                                         'TITLE',
                                         'TIP',
                                       ].includes(el?.type) &&
+                                        !Array.isArray(el?.content) &&
                                         el?.content && (
                                           <MathViewer
                                             data={el.content}
                                           ></MathViewer>
                                         )}
+                                      {Array.isArray(el?.content) && (
+                                        <>
+                                          {el.content.map((item, index) => (
+                                            <MathViewer key={index}>
+                                              {item}
+                                            </MathViewer>
+                                          ))}
+                                        </>
+                                      )}
                                     </div>
                                   ),
                                 )}

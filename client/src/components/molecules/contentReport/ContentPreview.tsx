@@ -319,14 +319,15 @@ export function ContentPreview() {
                                     'QUESTION',
                                     'SMALL',
                                     'EXAMPLE',
-                                    // 'CHOICES',
-                                    // 'ANSWER',
+                                    'CHOICES',
+                                    'ANSWER',
                                     'COMMENTARY',
                                     'HINT',
                                     'CONCEPT',
                                     'TITLE',
                                     'TIP',
                                   ].includes(el?.type) &&
+                                    !Array.isArray(el?.content) &&
                                     el?.content && (
                                       <MathViewer
                                         data={el.content}
