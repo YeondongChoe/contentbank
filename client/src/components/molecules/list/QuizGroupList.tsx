@@ -15,6 +15,7 @@ interface QuizGroupListProps {
   checkList: string[]; // 체크된 항목의 코드 리스트
   handleButtonCheck: (
     event: React.ChangeEvent<HTMLInputElement>,
+    // | React.MouseEvent<HTMLButtonElement, MouseEvent>,
     code: string,
   ) => void;
   setCheckList: React.Dispatch<React.SetStateAction<string[]>>;

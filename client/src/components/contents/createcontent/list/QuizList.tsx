@@ -12,6 +12,7 @@ import {
   DnDWrapper,
   Icon,
   openToastifyAlert,
+  QuizGroupList,
   Tooltip,
   ValueNone,
 } from '../../..';
@@ -143,17 +144,17 @@ export function QuizList({
   }, [isChecked]);
 
   const handleButtonCheck = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    id: string,
+    event: React.ChangeEvent<HTMLInputElement>,
+    code: string,
   ) => {
-    e.preventDefault();
-    const target = e.currentTarget.childNodes[0].childNodes[0]
+    event.preventDefault();
+    const target = event.currentTarget.childNodes[0].childNodes[0]
       .childNodes[0] as HTMLInputElement;
 
     if (!target.checked) {
-      setCheckList((prev) => [...prev, id]);
+      setCheckList((prev) => [...prev, code]);
     } else {
-      setCheckList(checkList.filter((el) => el !== id));
+      setCheckList(checkList.filter((el) => el !== code));
     }
   };
 
@@ -781,13 +782,6 @@ export function QuizList({
               </Title>
             )}
             <ListWrapper className="list_wrapper">
-              {/* <DnDWrapper
-                dragList={questionList}
-                onDragging={() => {}}
-                onDragEnd={whenDragEnd}
-                dragSectionName={'abc'}
-              >
-                {(dragItem, ref, isDragging) => ( */}
               {questionList.map((dragItem) => (
                 <ListDnDItem
                   key={`${dragItem.code}`}
@@ -799,9 +793,9 @@ export function QuizList({
                     <button
                       type="button"
                       className="title"
-                      onClick={(e) => {
-                        handleButtonCheck(e, dragItem.code);
-                      }}
+                      // onClick={(e) => {
+                      //   handleButtonCheck(e, dragItem.code);
+                      // }}
                     >
                       <CheckBoxI
                         $margin={'0 5px 0 0'}
@@ -1481,9 +1475,15 @@ export function QuizList({
                   )}
                 </ListDnDItem>
               ))}
-              {/* //   )}
-              // </DnDWrapper> */}
             </ListWrapper>
+
+            {/* // 다른 디자인으로 TODO */}
+            {/* <QuizGroupList
+              questionList={questionList}
+              checkList={checkList}
+              setCheckList={setCheckList}
+              handleButtonCheck={handleButtonCheck}
+            /> */}
           </PerfectScrollbar>
         </ScrollWrapper>
       )}

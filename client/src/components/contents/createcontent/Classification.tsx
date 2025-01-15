@@ -226,9 +226,6 @@ export function Classification({
             }));
             filteredCategoriesDD.push(categories);
           } else {
-            // 단원 분류 타이틀
-            setTitleA(nameList);
-
             const categories = idxList.map((idx, idxIndex) => ({
               idx,
               name: nameList[idxIndex],
@@ -258,7 +255,7 @@ export function Classification({
     }
   }, [menuSettingData]);
   useEffect(() => {
-    // console.log('---------titleA ----- ', titleA);
+    console.log('---------titleA ----- ', titleA);
   }, [titleA]);
 
   useEffect(() => {
@@ -270,6 +267,10 @@ export function Classification({
       console.log('idxNamePairsA ----- ', idxNamePairsA);
       console.log('idxNamePairsA[0].idx ----- ', idxNamePairsA[0][0].idx);
       fetchCategoryItems(idxNamePairsA[0][0].idx, setCategoriesA);
+
+      // 단원 분류 타이틀
+      const titles = idxNamePairsA[0].map((el) => el.name);
+      setTitleA(titles);
     }
     if (
       idxNamePairsDD[0] &&
@@ -277,9 +278,9 @@ export function Classification({
       Array.isArray(idxNamePairsDD[0])
     ) {
       console.log('idxNamePairsDD ----- ', idxNamePairsDD);
-      console.log('idxNamePairsDD[0].idx ----- ', idxNamePairsDD[0][0].idx);
-      fetchCategoryItems(idxNamePairsDD[0][0].idx, setCategoriesDD1);
-      fetchCategoryItems(idxNamePairsDD[0][1].idx, setCategoriesDD2);
+      console.log('idxNamePairsDD[0].idx ----- ', idxNamePairsDD[0][0]?.idx);
+      fetchCategoryItems(idxNamePairsDD[0][0]?.idx, setCategoriesDD1);
+      fetchCategoryItems(idxNamePairsDD[0]?.[1]?.idx, setCategoriesDD2);
     }
   }, [idxNamePairsA, idxNamePairsDD]);
 
@@ -287,16 +288,17 @@ export function Classification({
     typeList: string | number,
     setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[]>>,
   ) => {
-    try {
-      const response = await classificationInstance.get(
-        `/v1/category/class/${typeList}`,
-      );
+    if (typeList)
+      try {
+        const response = await classificationInstance.get(
+          `/v1/category/class/${typeList}`,
+        );
 
-      setCategory(response.data.data.categoryClassList);
-      return response.data.data.categoryClassList;
-    } catch (error: any) {
-      if (error.data?.code == 'GE-002') postRefreshToken();
-    }
+        setCategory(response.data.data.categoryClassList);
+        return response.data.data.categoryClassList;
+      } catch (error: any) {
+        if (error.data?.code == 'GE-002') postRefreshToken();
+      }
   };
 
   useEffect(() => {
