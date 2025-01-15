@@ -1014,8 +1014,8 @@ export function ContentInformationChange() {
                                         'QUESTION',
                                         'SMALL',
                                         'EXAMPLE',
-                                        'CHOICES',
-                                        'ANSWER',
+                                        // 'CHOICES',
+                                        // 'ANSWER',
                                         'COMMENTARY',
                                         'HINT',
                                         'CONCEPT',
@@ -1026,6 +1026,18 @@ export function ContentInformationChange() {
                                           <MathViewer
                                             data={el.content}
                                           ></MathViewer>
+                                        )}
+                                      {['CHOICES', 'ANSWER'].includes(
+                                        el?.type,
+                                      ) &&
+                                        Array.isArray(el?.content) && (
+                                          <>
+                                            {el.content.map((item, index) => (
+                                              <MathViewer key={index}>
+                                                {item}
+                                              </MathViewer>
+                                            ))}
+                                          </>
                                         )}
                                     </div>
                                   ),

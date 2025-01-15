@@ -319,8 +319,8 @@ export function ContentPreview() {
                                     'QUESTION',
                                     'SMALL',
                                     'EXAMPLE',
-                                    'CHOICES',
-                                    'ANSWER',
+                                    // 'CHOICES',
+                                    // 'ANSWER',
                                     'COMMENTARY',
                                     'HINT',
                                     'CONCEPT',
@@ -332,6 +332,15 @@ export function ContentPreview() {
                                         data={el.content}
                                       ></MathViewer>
                                     )}
+                                  {Array.isArray(el?.content) && (
+                                    <>
+                                      {el.content.map((item, index) => (
+                                        <MathViewer key={index}>
+                                          {item}
+                                        </MathViewer>
+                                      ))}
+                                    </>
+                                  )}
                                 </MathViewerWrapper>
                               ))}
                             </ColumList>

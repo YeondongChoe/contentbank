@@ -446,8 +446,8 @@ export function PDFModal({ list }: PDFModalProps) {
                                     'QUESTION',
                                     'SMALL',
                                     'EXAMPLE',
-                                    'CHOICES',
-                                    'ANSWER',
+                                    // 'CHOICES',
+                                    // 'ANSWER',
                                     'COMMENTARY',
                                     'HINT',
                                     'CONCEPT',
@@ -459,6 +459,15 @@ export function PDFModal({ list }: PDFModalProps) {
                                         data={el.content}
                                       ></MathViewer>
                                     )}
+                                  {Array.isArray(el?.content) && (
+                                    <>
+                                      {el.content.map((item, index) => (
+                                        <MathViewer key={index}>
+                                          {item}
+                                        </MathViewer>
+                                      ))}
+                                    </>
+                                  )}
                                 </MathViewerWrapper>
                               ))}
                             </ColumList>

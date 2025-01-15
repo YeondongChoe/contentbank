@@ -62,8 +62,8 @@ export function QuizPreview() {
                 'QUESTION',
                 'SMALL',
                 'EXAMPLE',
-                'CHOICES',
-                'ANSWER',
+                // 'CHOICES',
+                // 'ANSWER',
                 'COMMENTARY',
                 'HINT',
                 'CONCEPT',
@@ -71,6 +71,13 @@ export function QuizPreview() {
                 'TIP',
               ].includes(el?.type) &&
                 el?.content && <MathViewer data={el.content}></MathViewer>}
+              {Array.isArray(el?.content) && (
+                <>
+                  {el.content.map((item, index) => (
+                    <MathViewer key={index}>{item}</MathViewer>
+                  ))}
+                </>
+              )}
             </div>
           ))
         ) : (

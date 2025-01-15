@@ -1771,8 +1771,8 @@ export function ClassificationEdit({
                                 'QUESTION',
                                 'SMALL',
                                 'EXAMPLE',
-                                'CHOICES',
-                                'ANSWER',
+                                // 'CHOICES',
+                                // 'ANSWER',
                                 'COMMENTARY',
                                 'HINT',
                                 'CONCEPT',
@@ -1782,6 +1782,13 @@ export function ClassificationEdit({
                                 el?.content && (
                                   <MathViewer data={el.content}></MathViewer>
                                 )}
+                              {Array.isArray(el?.content) && (
+                                <>
+                                  {el.content.map((item, index) => (
+                                    <MathViewer key={index}>{item}</MathViewer>
+                                  ))}
+                                </>
+                              )}
                             </div>
                           ))}
                         </div>
