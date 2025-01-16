@@ -273,7 +273,7 @@ export function ContentList({
   /* 문항 pdf 모달 열기 */
   const sortList = () => {
     const codesSet = new Set(checkList);
-    const filteredList = questionList.filter((item) => codesSet.has(item.idx));
+    const filteredList = questionList?.filter((item) => codesSet.has(item.idx));
     //console.log('sortedList------------', filteredList);
     setSortedList(filteredList);
   };
@@ -519,7 +519,7 @@ export function ContentList({
                 $margin={'0 5px 0 0'}
                 onChange={(e) => handleAllCheck(e)}
                 checked={
-                  checkList.length === questionList.length ? true : false
+                  checkList.length === questionList?.length ? true : false
                 }
                 id={'all check'}
                 value={'all check'}

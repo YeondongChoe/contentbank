@@ -562,33 +562,25 @@ export function QuizManagementList() {
           </SelectWrapper>
           {/* {tabView === '문항 리스트' && ( */}
           <>
-            {quizData && questionList.length > 0 ? (
-              <>
-                <ContentList
-                  key={key}
-                  list={questionList}
-                  selectedList={selectedList}
-                  isBuildWorker={isBuildWorker}
-                  deleteBtn
-                  quizDataRefetch={quizDataRefetch}
-                  ondeleteClick={() => {
-                    setIsAlertOpen(true);
-                  }}
-                  setCheckListOn={setCheckListOn}
-                  tabView={tabView}
-                  totalCount={quizData.pagination.totalCount}
-                  deleteQuizIsSuccess={deleteQuizIsSuccess}
-                />
-                <PaginationBox
-                  itemsCountPerPage={quizData.pagination.pageUnit}
-                  totalItemsCount={quizData.pagination.totalCount}
-                />
-              </>
-            ) : (
-              <ValueNoneWrapper>
-                <ValueNone />
-              </ValueNoneWrapper>
-            )}
+            <ContentList
+              key={key}
+              list={questionList}
+              selectedList={selectedList}
+              isBuildWorker={isBuildWorker}
+              deleteBtn
+              quizDataRefetch={quizDataRefetch}
+              ondeleteClick={() => {
+                setIsAlertOpen(true);
+              }}
+              setCheckListOn={setCheckListOn}
+              tabView={tabView}
+              totalCount={quizData.pagination.totalCount}
+              deleteQuizIsSuccess={deleteQuizIsSuccess}
+            />
+            <PaginationBox
+              itemsCountPerPage={quizData.pagination.pageUnit}
+              totalItemsCount={quizData.pagination.totalCount}
+            />
           </>
           {/* // )} */}
         </>
