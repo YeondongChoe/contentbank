@@ -638,27 +638,19 @@ export function QuizCreateList() {
             /> */}
           </SelectWrapper>
 
-          {quizData && questionList && questionList.length > 0 ? (
-            <>
-              <ContentList
-                key={key}
-                list={questionList as QuizListType[]}
-                isBuildWorker={isBuildWorker}
-                selectedList={selectedList}
-                quizDataRefetch={quizDataRefetch}
-                tabView={tabView}
-                totalCount={quizData?.pagination?.totalCount}
-              />
-              <PaginationBox
-                itemsCountPerPage={quizData?.pagination?.pageUnit}
-                totalItemsCount={quizData?.pagination?.totalCount}
-              />
-            </>
-          ) : (
-            <ValueNoneWrapper>
-              <ValueNone />
-            </ValueNoneWrapper>
-          )}
+          <ContentList
+            key={key}
+            list={questionList as QuizListType[]}
+            isBuildWorker={isBuildWorker}
+            selectedList={selectedList}
+            quizDataRefetch={quizDataRefetch}
+            tabView={tabView}
+            totalCount={quizData?.pagination?.totalCount}
+          />
+          <PaginationBox
+            itemsCountPerPage={quizData?.pagination?.pageUnit}
+            totalItemsCount={quizData?.pagination?.totalCount}
+          />
         </>
       )}
 
