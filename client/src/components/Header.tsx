@@ -23,7 +23,7 @@ export function Header() {
   const [isLogin, setIsLogin] = useState(true);
   const [isAlert, setIsAlert] = useState(false);
 
-  const pageIndexValue = useRecoilValue(pageIndexAtom);
+  const [pageIndexValue, setPageIndexValue] = useRecoilState(pageIndexAtom);
 
   const navigate = useNavigate();
 
@@ -195,9 +195,24 @@ export function Header() {
         {/* 사이드메뉴 */}
         <SideMenuWrapper>
           <button onClick={openAlert}>알림</button>
-          <Link to="/preparing">가이드</Link>
-          <Link to="/preparing">고객센터</Link>
-          <Link to="/mypage">마이페이지</Link>
+          <Link
+            to="/preparing"
+            onClick={() => setPageIndexValue(['가이드', ''])}
+          >
+            가이드
+          </Link>
+          <Link
+            to="/preparing"
+            onClick={() => setPageIndexValue(['고객센터', ''])}
+          >
+            고객센터
+          </Link>
+          <Link
+            to="/mypage"
+            onClick={() => setPageIndexValue(['마이페이지', ''])}
+          >
+            마이페이지
+          </Link>
           <button onClick={() => onLogout()}>로그아웃</button>
         </SideMenuWrapper>
       </Container>
