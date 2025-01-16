@@ -93,6 +93,7 @@ export function Navigation() {
 
   const moveMainpage = () => {
     navigate('/content-create/quiz');
+    setpageIndexValue(['콘텐츠 제작', '문항 제작']);
   };
 
   const clickLink = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
