@@ -105,6 +105,10 @@ export function MockExamTab({
   const [categoryList, setCategoryList] = useState<ItemCategoryType[][]>([
     [{ code: '', idx: 0, name: '' }],
   ]);
+  //기출년도 buttonList
+  const [attributeYearList, setAttributeYearList] = useState<
+    { value: number; label: string }[]
+  >([]);
   //학년
   const [examGrade, setExamGrade] = useState<string[]>([]);
   //년도
@@ -203,9 +207,47 @@ export function MockExamTab({
     };
   }, []);
 
+  //출제년도 리스트 불러오는 api
+  const getPreviousAttributeYearList = async () => {
+    const res = await quizService.get(
+      `/v1/previous/class/search?searchCondition=기출&searchKeyword=기출일시`,
+    );
+    return res.data.data.dataList;
+  };
+  const {
+    data: perviousAttributeYearListData,
+    refetch: perviousAttributeYearListDataRefetch,
+    isFetching: perviousAttributeYearListFetching,
+  } = useQuery({
+    queryKey: ['get-perviousAttributeYearList'],
+    queryFn: getPreviousAttributeYearList,
+    meta: {
+      errorMessage: 'get-perviousAttributeYearList 에러 메세지',
+    },
+  });
+
+  useEffect(() => {
+    if (perviousAttributeYearListData) {
+      const uniqueYears = Array.from(
+        new Set(
+          perviousAttributeYearListData.map((item: string) => item.slice(0, 4)),
+        ),
+      );
+
+      const processedData = uniqueYears.map((year, index) => ({
+        value: index,
+        label: year as string,
+      }));
+
+      setAttributeYearList(processedData);
+    }
+  }, [perviousAttributeYearListData]);
+  console.log('attributeYearList', attributeYearList);
+
   //수능모의고사 속성 호출 api
   const getCategoryExamGroups = async () => {
-    const response = await classificationInstance.get('/v1/category/class/8'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
+    const response = await classificationInstance.get('/v1/category/group/15'); //TODO: /group/${``} 하드코딩된 유형 나중에 해당 변수로 변경
+    //console.log('response', response);
     return response.data.data.typeList;
   };
   const { data: examData } = useQuery({
@@ -983,6 +1025,16 @@ export function MockExamTab({
     );
   };
   const renderMockExamMonthButtons = () => {
+    const buttonOption = [
+      { value: 0, label: '3' },
+      { value: 1, label: '4' },
+      { value: 2, label: '5' },
+      { value: 3, label: '6' },
+      { value: 4, label: '7' },
+      { value: 5, label: '9' },
+      { value: 6, label: '10' },
+      { value: 7, label: '11' },
+    ];
     const isAllSelectedExamMonthly =
       examMonthly.includes('3') &&
       examMonthly.includes('4') &&
@@ -992,7 +1044,7 @@ export function MockExamTab({
       examMonthly.includes('9') &&
       examMonthly.includes('10') &&
       examMonthly.includes('11');
-    const excludedNames = ['1', '2', '8', '12'];
+    //const excludedNames = ['1', '2', '8', '12'];
 
     return (
       <>
@@ -1015,26 +1067,28 @@ export function MockExamTab({
         >
           <span>전체</span>
         </Button>
-        {categoryList[3]
-          ?.filter((el) => {
-            return !excludedNames.includes(el.name);
-          })
-          .map((el) => (
+        {
+          // categoryList[3]
+          //   ?.filter((el) => {
+          //     return !excludedNames.includes(el.name);
+          //   })
+          buttonOption.map((el) => (
             <Button
-              key={el.idx}
+              key={el.value}
               buttonType="button"
-              onClick={() => selectExamMonthly(el.name)}
+              onClick={() => selectExamMonthly(el.label)}
               $padding="10px"
               height={'35px'}
               width={'80px'}
               fontSize="13px"
-              $normal={!examMonthly.includes(el.name)}
-              $filled={examMonthly.includes(el.name)}
+              $normal={!examMonthly.includes(el.label)}
+              $filled={examMonthly.includes(el.label)}
               cursor
             >
-              <span>{el.name}월</span>
+              <span>{el.label}월</span>
             </Button>
-          ))}
+          ))
+        }
       </>
     );
   };

@@ -61,6 +61,29 @@ type UnitClassificationType =
   | ItemTreeIdxListType
   | RadioStateType[];
 
+export type CategoryType = {
+  category: {
+    대분류: string[];
+    중분류: string[];
+    소분류: string[];
+    유형: string[];
+    세분류: string[];
+    미분류: string[];
+  };
+};
+
+type NewClassificationType = {
+  itemTreeList: {
+    categoty: CategoryType[];
+    교육과정: string;
+    학기: string;
+    학교급: string;
+    과목: string;
+    교과: string;
+    학년: string;
+  }[];
+};
+
 export function Step1() {
   const menuList = [
     {
@@ -87,6 +110,19 @@ export function Step1() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
   >([]);
+  const [newClassificationList, setNewClassificationList] = useState<
+    NewClassificationType[]
+  >([]);
+  const [unitCategory, setUnitCategory] = useState<CategoryType>({
+    category: {
+      대분류: [],
+      중분류: [],
+      소분류: [],
+      유형: [],
+      세분류: [],
+      미분류: [],
+    },
+  });
   //세분류 리스트
   const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
   //단원.유형별 세분류 검색색
@@ -746,13 +782,16 @@ export function Step1() {
     return (item as RadioStateType).title !== undefined;
   };
 
+  // v1버전
   //useMemo를 사용하여 makingdata값을 기억하며 unitClassificationList가 변경될때 업데이트
   const makingdata = useMemo(() => {
     return unitClassificationList.map((item) => {
+      console.log('unitClassificationList', unitClassificationList);
       // itemTreeKey를 동적으로 생성
       const itemTreeKey = item.reduce(
         (acc, cur, index) => {
           if (isRadioStateType(cur)) {
+            console.log('cur', cur);
             // RadioStateType인 경우에만 code를 사용
             const code = cur.code || `key_${index}`; // `code`가 없을 경우 기본 키 사용
             acc[code] = cur.title;
@@ -761,6 +800,7 @@ export function Step1() {
         },
         {} as Record<string, string>,
       );
+      console.log('itemTreeKey', itemTreeKey);
 
       // ItemTreeIdxListType인지 확인 후 itemTreeIdxList에 접근
       const lastItem = item[item.length - 1];
@@ -780,6 +820,8 @@ export function Step1() {
     );
     setSelectedItemTreeCount(allItemTreeIdxList);
   }, [makingdata]);
+
+  //v2버전
 
   const clickNextButton = () => {
     const data = {
@@ -1191,6 +1233,8 @@ export function Step1() {
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
                 postPending={postStep1Pending}
+                unitCategory={unitCategory}
+                setUnitCategory={setUnitCategory}
               ></UnitTypeTab>
               <SelectSection
                 tabView={tabView}

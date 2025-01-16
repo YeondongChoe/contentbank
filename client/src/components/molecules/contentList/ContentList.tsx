@@ -26,6 +26,7 @@ import {
   openToastifyAlert,
   PDFModal,
   Tooltip,
+  ValueNone,
 } from '../..';
 import {
   quizService,
@@ -289,7 +290,9 @@ export function ContentList({
   };
 
   const openProcessListModal = () => {
-    const hasProcess = sortedList.filter((el) => el.process !== null);
+    const hasProcess = sortedList.filter(
+      (el) => el.process?.step !== 1 && el.process !== null,
+    );
     if (hasProcess.length > 0) {
       openToastifyAlert({
         type: 'error',
@@ -692,152 +695,321 @@ export function ContentList({
           </ItemLayout>
         </ListItem>
       </List>
-      <ListWrapper ref={backgroundRef}>
-        <List margin={`10px 0`}>
-          {questionList.map((item: QuizListType) => (
-            <ListItem
-              key={item.code}
-              isChecked={checkList.includes(item.idx)}
-              onClick={(e) => handleButtonCheck(e, item.idx)}
-            >
-              <CheckBoxI
-                id={item.code}
-                value={item.idx}
-                $margin={`0 5px 0 0`}
-                checked={checkList.includes(item.idx)}
-                readOnly
-              />
-              {item.isFavorite ? (
-                <Icon
-                  width={`18px`}
-                  $margin={'0 0 0 12px'}
-                  src={`/images/icon/favorites_on.svg`}
-                  onClick={(e) =>
-                    handleFavorite(e, {
-                      idx: item.idx,
-                      isFavorite: true,
-                    })
-                  }
-                  cursor
+      {questionList?.length > 0 ? (
+        <ListWrapper ref={backgroundRef}>
+          <List margin={`10px 0`}>
+            {questionList.map((item: QuizListType) => (
+              <ListItem
+                key={item.code}
+                isChecked={checkList.includes(item.idx)}
+                onClick={(e) => handleButtonCheck(e, item.idx)}
+              >
+                <CheckBoxI
+                  id={item.code}
+                  value={item.idx}
+                  $margin={`0 5px 0 0`}
+                  checked={checkList.includes(item.idx)}
+                  readOnly
                 />
-              ) : (
-                <Icon
-                  width={`18px`}
-                  $margin={'0 0 0 12px'}
-                  src={`/images/icon/favorites${checkList.includes(item.idx) ? `_off_W` : `_off_B`}.svg`}
-                  onClick={(e) =>
-                    handleFavorite(e, {
-                      idx: item.idx,
-                      isFavorite: false,
-                    })
-                  }
-                  cursor
-                />
-              )}
-              <ItemLayout>
-                {selectedList.map((list) => {
-                  const matchedCategory = item.quizCategoryList.find(
-                    (category) =>
-                      Object.keys(category.quizCategory).some(
-                        (key) => key === list.name,
-                      ),
-                  );
-                  if (matchedCategory && list.view === true) {
-                    const matchedKey = Object.keys(
-                      matchedCategory.quizCategory,
-                    ).find((key) => key === list.name);
+                {item.isFavorite ? (
+                  <Icon
+                    width={`18px`}
+                    $margin={'0 0 0 12px'}
+                    src={`/images/icon/favorites_on.svg`}
+                    onClick={(e) =>
+                      handleFavorite(e, {
+                        idx: item.idx,
+                        isFavorite: true,
+                      })
+                    }
+                    cursor
+                  />
+                ) : (
+                  <Icon
+                    width={`18px`}
+                    $margin={'0 0 0 12px'}
+                    src={`/images/icon/favorites${checkList.includes(item.idx) ? `_off_W` : `_off_B`}.svg`}
+                    onClick={(e) =>
+                      handleFavorite(e, {
+                        idx: item.idx,
+                        isFavorite: false,
+                      })
+                    }
+                    cursor
+                  />
+                )}
+                <ItemLayout>
+                  {selectedList.map((list) => {
+                    const matchedCategory = item.quizCategoryList.find(
+                      (category) =>
+                        Object.keys(category.quizCategory).some(
+                          (key) => key === list.name,
+                        ),
+                    );
+                    if (matchedCategory && list.view === true) {
+                      const matchedKey = Object.keys(
+                        matchedCategory.quizCategory,
+                      ).find((key) => key === list.name);
 
-                    const codeValue =
-                      matchedKey &&
-                      Array.isArray(
+                      const codeValue =
+                        matchedKey &&
+                        Array.isArray(
+                          (
+                            matchedCategory.quizCategory as Record<
+                              string,
+                              Array<{ name: string }>
+                            >
+                          )[matchedKey],
+                        ) &&
                         (
                           matchedCategory.quizCategory as Record<
                             string,
                             Array<{ name: string }>
                           >
-                        )[matchedKey],
-                      ) &&
-                      (
-                        matchedCategory.quizCategory as Record<
-                          string,
-                          Array<{ name: string }>
-                        >
-                      )[matchedKey][0]?.name;
+                        )[matchedKey][0]?.name;
 
-                    return (
-                      <>
-                        <span className="width_10 item_wrapper">
-                          <span className="ellipsis">{codeValue}</span>
-                        </span>
-                        <i className="line"></i>
-                      </>
-                    );
-                  } else {
-                    if (list.view === true) {
                       return (
                         <>
                           <span className="width_10 item_wrapper">
-                            <span className="ellipsis"></span>
+                            <span className="ellipsis">{codeValue}</span>
                           </span>
                           <i className="line"></i>
                         </>
                       );
+                    } else {
+                      if (list.view === true) {
+                        return (
+                          <>
+                            <span className="width_10 item_wrapper">
+                              <span className="ellipsis"></span>
+                            </span>
+                            <i className="line"></i>
+                          </>
+                        );
+                      }
                     }
-                  }
-                })}
-                <span className="width_10 item_wrapper">
-                  <strong className="title">당담자</strong>
-                  <span className="tag ellipsis">{item.createdBy}</span>
-                </span>
-                <i className="line"></i>
-                <span className="width_10 item_wrapper">
-                  <strong className="title">등록일자</strong>
-                  <span className="tag">{item.createdAt}</span>
-                </span>
-                <i className="line"></i>
-                <span className="width_10 item_wrapper">
-                  <strong className="title">오픈여부</strong>
-                  <span className="width_5 item_wrapper tag_icon">
-                    {item.isUse ? (
-                      <Icon
-                        width={`18px`}
-                        $margin={'0 0 0 12px'}
-                        src={`/images/icon/lock_open_${
-                          checkList.length
-                            ? checkList.includes(item.idx)
-                              ? 'on'
+                  })}
+                  <span className="width_10 item_wrapper">
+                    <strong className="title">당담자</strong>
+                    <span className="tag ellipsis">{item.createdBy}</span>
+                  </span>
+                  <i className="line"></i>
+                  <span className="width_10 item_wrapper">
+                    <strong className="title">등록일자</strong>
+                    <span className="tag">{item.createdAt}</span>
+                  </span>
+                  <i className="line"></i>
+                  <span className="width_10 item_wrapper">
+                    <strong className="title">오픈여부</strong>
+                    <span className="width_5 item_wrapper tag_icon">
+                      {item.isUse ? (
+                        <Icon
+                          width={`18px`}
+                          $margin={'0 0 0 12px'}
+                          src={`/images/icon/lock_open_${
+                            checkList.length
+                              ? checkList.includes(item.idx)
+                                ? 'on'
+                                : 'off'
                               : 'off'
-                            : 'off'
-                        }.svg`}
-                        disabled={true}
-                      />
+                          }.svg`}
+                          disabled={true}
+                        />
+                      ) : (
+                        <Icon
+                          width={`18px`}
+                          $margin={'0 0 0 12px'}
+                          src={`/images/icon/lock_${
+                            checkList.length
+                              ? checkList.includes(item.idx)
+                                ? 'on'
+                                : 'off'
+                              : 'off'
+                          }.svg`}
+                          disabled={true}
+                        />
+                      )}
+                    </span>
+                  </span>
+
+                  <i className="line"></i>
+                  <span className="width_10 item_wrapper">
+                    <strong className="title">상태</strong>
+                    {item.process?.step === 1 ? (
+                      <span className="tag">{`반려(${item.process?.name})`}</span>
                     ) : (
-                      <Icon
-                        width={`18px`}
-                        $margin={'0 0 0 12px'}
-                        src={`/images/icon/lock_${
-                          checkList.length
-                            ? checkList.includes(item.idx)
-                              ? 'on'
-                              : 'off'
-                            : 'off'
-                        }.svg`}
-                        disabled={true}
-                      />
+                      <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'COMPLETE' ? '검수완료' : item.process?.state === 'REVIEW' ? `검수중(${item.process?.step}/${item.process?.totalStep})` : ''}`}</span>
                     )}
                   </span>
-                </span>
+                </ItemLayout>
+              </ListItem>
+            ))}
+          </List>
+        </ListWrapper>
+      ) : (
+        <ValueNoneWrapper>
+          <ValueNone />
+        </ValueNoneWrapper>
+      )}
 
-                <i className="line"></i>
-                <span className="width_10 item_wrapper">
-                  <strong className="title">상태</strong>
-                  {item.process?.step === 1 ? (
-                    <span className="tag">{`${item.process?.state === 'REJECT' && '반려'}(${item.process?.name})`}</span>
-                  ) : (
-                    <span className="tag">{`${item.process?.state === 'REJECT' ? '반려' : item.process?.state === 'HOLD' ? '보류' : item.process?.state === 'COMPLETE' ? '검수완료' : item.process?.state === 'REVIEW' ? `검수중(${item.process?.step}/${item.process?.totalStep})` : ''}`}</span>
-                  )}
-                </span>
-                {/* <span
+      {usedToggle == '비활성화' && (
+        <Alert
+          isAlertOpen={isAlertOpen}
+          description="비활성화 처리시 문항 사용이 불가합니다. 비활성화 처리 하시겠습니까?"
+          action="확인"
+          isWarning={true}
+          onClose={closeSubmitAlert}
+          onClick={handleDisabled}
+        />
+      )}
+      {usedToggle == '활성화' && (
+        <Alert
+          isAlertOpen={isAlertOpen}
+          description={`${checkList.length}개의 문항을 활성화 처리 하시겠습니까?`}
+          action="확인"
+          isWarning={true}
+          onClose={closeSubmitAlert}
+          onClick={handleDisabled}
+        />
+      )}
+      <Modal />
+    </>
+  );
+}
+
+const ListButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const Total = styled.span`
+  display: inline-block;
+  text-align: right;
+  font-size: 15px;
+  font-weight: bold;
+  color: ${COLOR.FONT_BLACK};
+  margin-top: 10px;
+`;
+const ButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+const ActionButtonWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  .info {
+    color: ${COLOR.PRIMARY};
+    font-size: 13px;
+  }
+`;
+const CheckBoxWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const ListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const ItemLayout = styled.span`
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  justify-content: space-around;
+  align-content: center;
+  flex-wrap: wrap;
+
+  .tooltip_wrapper item_wrapper {
+    position: relative;
+  }
+  .item_wrapper {
+    display: flex;
+    /* flex: 1 0 0; */
+    justify-content: space-around;
+    flex-wrap: wrap;
+    word-break: break-all;
+    min-width: 30px;
+    max-width: 150px;
+    font-weight: normal;
+    align-content: center;
+  }
+
+  /* 두줄 이상 ellipsis 처리  */
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .title {
+    width: 100%;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .tag {
+    /* display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px; */
+    margin: 0 5px;
+    padding: 3px 5px;
+    border-radius: 5px;
+    background-color: ${COLOR.BORDER_GRAY};
+    margin-top: 5px;
+  }
+  .tag_icon {
+    display: flex;
+    align-self: center;
+  }
+  .line {
+    width: 1px;
+    height: 15px;
+    background-color: ${COLOR.BORDER_GRAY};
+    display: flex;
+    align-self: center;
+  }
+  .width_5 {
+    width: 5%;
+  }
+  .width_10 {
+    width: 10%;
+  }
+  .width_20px {
+    width: 20px;
+  }
+  .width_50px {
+    width: 50px;
+  }
+  .width_60px {
+    width: 60px;
+  }
+  .width_80px {
+    width: 80px;
+  }
+  .width_150px {
+    width: 150px;
+  }
+`;
+const ValueNoneWrapper = styled.div`
+  padding: 100px 0;
+`;
+
+{
+  /* <span
                   className="width_80px tooltip_wrapper item_wrapper"
                   onMouseOver={(e) => showTooltip(e)}
                   onMouseLeave={(e) => hideTooltip(e)}
@@ -1446,162 +1618,5 @@ export function ContentList({
                       disabled={true}
                     />
                   )}
-                </span> */}
-              </ItemLayout>
-            </ListItem>
-          ))}
-        </List>
-      </ListWrapper>
-
-      {usedToggle == '비활성화' && (
-        <Alert
-          isAlertOpen={isAlertOpen}
-          description="비활성화 처리시 문항 사용이 불가합니다. 비활성화 처리 하시겠습니까?"
-          action="확인"
-          isWarning={true}
-          onClose={closeSubmitAlert}
-          onClick={handleDisabled}
-        />
-      )}
-      {usedToggle == '활성화' && (
-        <Alert
-          isAlertOpen={isAlertOpen}
-          description={`${checkList.length}개의 문항을 활성화 처리 하시겠습니까?`}
-          action="확인"
-          isWarning={true}
-          onClose={closeSubmitAlert}
-          onClick={handleDisabled}
-        />
-      )}
-      <Modal />
-    </>
-  );
+                </span> */
 }
-
-const ListButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;
-const InputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-const Total = styled.span`
-  display: inline-block;
-  text-align: right;
-  font-size: 15px;
-  font-weight: bold;
-  color: ${COLOR.FONT_BLACK};
-  margin-top: 10px;
-`;
-const ButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-`;
-const ActionButtonWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  .info {
-    color: ${COLOR.PRIMARY};
-    font-size: 13px;
-  }
-`;
-const CheckBoxWrapper = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const ListWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-
-const ItemLayout = styled.span`
-  display: flex;
-  width: 100%;
-  min-height: 40px;
-  justify-content: space-around;
-  align-content: center;
-  flex-wrap: wrap;
-
-  .tooltip_wrapper item_wrapper {
-    position: relative;
-  }
-  .item_wrapper {
-    display: flex;
-    /* flex: 1 0 0; */
-    justify-content: space-around;
-    flex-wrap: wrap;
-    word-break: break-all;
-    min-width: 30px;
-    max-width: 150px;
-    font-weight: normal;
-    align-content: center;
-  }
-
-  /* 두줄 이상 ellipsis 처리  */
-  .ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-
-  .title {
-    width: 100%;
-    font-weight: 600;
-    margin-bottom: 2px;
-  }
-  .tag {
-    /* display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 5px; */
-    margin: 0 5px;
-    padding: 3px 5px;
-    border-radius: 5px;
-    background-color: ${COLOR.BORDER_GRAY};
-    margin-top: 5px;
-  }
-  .tag_icon {
-    display: flex;
-    align-self: center;
-  }
-  .line {
-    width: 1px;
-    height: 15px;
-    background-color: ${COLOR.BORDER_GRAY};
-    display: flex;
-    align-self: center;
-  }
-  .width_5 {
-    width: 5%;
-  }
-  .width_10 {
-    width: 10%;
-  }
-  .width_20px {
-    width: 20px;
-  }
-  .width_50px {
-    width: 50px;
-  }
-  .width_60px {
-    width: 60px;
-  }
-  .width_80px {
-    width: 80px;
-  }
-  .width_150px {
-    width: 150px;
-  }
-`;
