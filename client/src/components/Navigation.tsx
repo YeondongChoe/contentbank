@@ -561,7 +561,7 @@ export function Navigation() {
                   {decodingInfo?.permissionList &&
                   decodingInfo?.permissionList?.LOM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/content-manage/classify'}>
+                      <Link to={'/preparing'}>
                         <MdManageHistory
                           style={{ width: '20px', height: '20px' }}
                         ></MdManageHistory>
@@ -570,7 +570,7 @@ export function Navigation() {
                     </button>
                   ) : (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/no-authrized'}>
+                      <Link to={'/preparing'}>
                         <MdManageHistory
                           style={{ width: '20px', height: '20px' }}
                         ></MdManageHistory>
@@ -589,7 +589,7 @@ export function Navigation() {
                   {decodingInfo?.permissionList &&
                   decodingInfo?.permissionList?.STM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/content-manage/classify'}>
+                      <Link to={'/preparing'}>
                         <VscGraph
                           style={{ width: '18px', height: '18px' }}
                         ></VscGraph>
@@ -598,7 +598,7 @@ export function Navigation() {
                     </button>
                   ) : (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/no-authrized'}>
+                      <Link to={'/preparing'}>
                         <VscGraph
                           style={{ width: '18px', height: '18px' }}
                         ></VscGraph>
@@ -613,7 +613,7 @@ export function Navigation() {
               {/* {accessMenuList.filter((menu) => menu.menuCode === '??')[0]
                 ?.isUse ? (
                   <button type="button" onClick={(e) => clickLink(e)}>
-                  <Link to={'/content-manage/classify'}>
+                  <Link to={'/preparing'}>
                     <TbReportMoney
                       style={{ width: '20px', height: '20px' }}
                     ></TbReportMoney>
@@ -1184,7 +1184,7 @@ export function Navigation() {
                   {decodingInfo?.permissionList &&
                   decodingInfo?.permissionList?.LOM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/content-manage/classify'}>
+                      <Link to={'/preparing'}>
                         <MdManageHistory
                           style={{
                             width: '20px',
@@ -1220,7 +1220,7 @@ export function Navigation() {
                   {decodingInfo?.permissionList &&
                   decodingInfo?.permissionList?.STM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/content-manage/classify'}>
+                      <Link to={'/preparing'}>
                         <VscGraph
                           style={{
                             width: '18px',
@@ -1250,7 +1250,7 @@ export function Navigation() {
 
               {/* 정산 관리 */}
               {/* <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/preparing'}>
                   <TbReportMoney
                     style={{ width: '20px', height: '20px', stroke: 'white' }}
                   ></TbReportMoney>
