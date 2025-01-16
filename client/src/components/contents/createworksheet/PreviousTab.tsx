@@ -283,14 +283,14 @@ export function PreviousTab({
     meta: {
       errorMessage: 'get-perviousSchoolGradeList 에러 메세지',
     },
-    enabled: previousExamMenu === 0 || previousSchoolList.length > 0,
+    enabled: previousExamMenu === 0 && previousSchoolList.length > 0,
   });
 
-  useEffect(() => {
-    if (previousExamMenu === 0) {
-      perviousSchoolGradeListDataRefetch();
-    }
-  }, [previousSchoolList]);
+  // useEffect(() => {
+  //   if (previousExamMenu === 0) {
+  //     perviousSchoolGradeListDataRefetch();
+  //   }
+  // }, [previousSchoolList]);
 
   useEffect(() => {
     if (perviousSchoolGradeListData) {
@@ -326,14 +326,14 @@ export function PreviousTab({
     meta: {
       errorMessage: 'get-perviousSchoolSemesterList 에러 메세지',
     },
-    enabled: previousExamMenu === 0 || previousSchoolList.length > 0,
+    enabled: previousExamMenu === 0 && previousSchoolList.length > 0,
   });
 
-  useEffect(() => {
-    if (previousExamMenu === 0) {
-      perviousSchoolSemesterListDataRefetch();
-    }
-  }, [previousSchoolList]);
+  // useEffect(() => {
+  //   if (previousExamMenu === 0 && previousSchoolList.length > 0) {
+  //     perviousSchoolSemesterListDataRefetch();
+  //   }
+  // }, [previousExamMenu, previousSchoolList]);
 
   useEffect(() => {
     if (perviousSchoolSemesterListData) {
@@ -369,14 +369,14 @@ export function PreviousTab({
     meta: {
       errorMessage: 'get-perviousSchoolAcademicList 에러 메세지',
     },
-    enabled: previousExamMenu === 0 || previousSchoolList.length > 0,
+    enabled: previousExamMenu === 0 && previousSchoolList.length > 0,
   });
 
-  useEffect(() => {
-    if (previousExamMenu === 0) {
-      perviousSchoolAcademicListDataRefetch();
-    }
-  }, [previousSchoolList]);
+  // useEffect(() => {
+  //   if (previousExamMenu === 0) {
+  //     perviousSchoolAcademicListDataRefetch();
+  //   }
+  // }, [previousSchoolList]);
 
   useEffect(() => {
     if (perviousSchoolAcademicListData) {
@@ -505,11 +505,12 @@ export function PreviousTab({
       meta: {
         errorMessage: 'get-previousSchoolMenu 에러 메세지',
       },
+      enabled: previousExamMenu === 0,
     });
 
-  useEffect(() => {
-    if (previousExamMenu === 0) previousSchoolMenuRefetch();
-  }, [previousExamMenu]);
+  // useEffect(() => {
+  //   if (previousExamMenu === 0) previousSchoolMenuRefetch();
+  // }, [previousExamMenu]);
 
   useEffect(() => {
     if (previousSchoolMenuData) {
@@ -671,7 +672,7 @@ export function PreviousTab({
     const res = await resourceServiceInstance.get(
       `/v1/menu/path?url=workbookCSATSetting`,
     );
-    console.log(res);
+    //console.log(res);
     return res;
   };
   const {
@@ -683,11 +684,12 @@ export function PreviousTab({
     meta: {
       errorMessage: 'get-previousNationalmenu 에러 메세지',
     },
+    enabled: previousExamMenu === 1,
   });
 
-  useEffect(() => {
-    if (previousExamMenu === 1) previousNationalMenuRefetch();
-  }, [previousExamMenu]);
+  // useEffect(() => {
+  //   if (previousExamMenu === 1) previousNationalMenuRefetch();
+  // }, [previousExamMenu]);
 
   useEffect(() => {
     if (previousNationalMenuData) {
@@ -725,14 +727,14 @@ export function PreviousTab({
     meta: {
       errorMessage: 'get-perviousNationalLevelList 에러 메세지',
     },
-    enabled: previousExamMenu === 1 || previousNationalList.length > 0,
+    enabled: previousExamMenu === 1 && previousNationalList.length > 0,
   });
 
-  useEffect(() => {
-    if (previousExamMenu === 1) {
-      perviousNationalLevelListDataRefetch();
-    }
-  }, [previousNationalList]);
+  // useEffect(() => {
+  //   if (previousExamMenu === 1) {
+  //     perviousNationalLevelListDataRefetch();
+  //   }
+  // }, [previousNationalList]);
 
   useEffect(() => {
     if (perviousNationalLevelListData) {
@@ -768,14 +770,14 @@ export function PreviousTab({
     meta: {
       errorMessage: 'get-perviousNationalGradeList 에러 메세지',
     },
-    enabled: previousExamMenu === 1 || previousNationalList.length > 0,
+    enabled: previousExamMenu === 1 && previousNationalList.length > 0,
   });
 
-  useEffect(() => {
-    if (previousExamMenu === 1) {
-      perviousNationalGradeListDataRefetch();
-    }
-  }, [previousNationalList]);
+  // useEffect(() => {
+  //   if (previousExamMenu === 1) {
+  //     perviousNationalGradeListDataRefetch();
+  //   }
+  // }, [previousNationalList]);
 
   useEffect(() => {
     if (perviousNationalGradeListData) {
@@ -811,14 +813,14 @@ export function PreviousTab({
     meta: {
       errorMessage: 'get-perviousNationalHostList 에러 메세지',
     },
-    enabled: previousExamMenu === 1 || previousNationalList.length > 0,
+    enabled: previousExamMenu === 1 && previousNationalList.length > 0,
   });
 
-  useEffect(() => {
-    if (previousExamMenu === 1) {
-      perviousNationalHostListDataRefetch();
-    }
-  }, [previousNationalList]);
+  // useEffect(() => {
+  //   if (previousExamMenu === 1) {
+  //     perviousNationalHostListDataRefetch();
+  //   }
+  // }, [previousNationalList]);
 
   useEffect(() => {
     if (perviousNationalHostListData) {
@@ -855,14 +857,14 @@ export function PreviousTab({
     meta: {
       errorMessage: 'get-perviousNationalTypeList 에러 메세지',
     },
-    enabled: previousExamMenu === 1 || previousNationalList.length > 0,
+    enabled: previousExamMenu === 1 && previousNationalList.length > 0,
   });
 
-  useEffect(() => {
-    if (previousExamMenu === 1) {
-      perviousNationalTypeListDataRefetch();
-    }
-  }, [previousNationalList]);
+  // useEffect(() => {
+  //   if (previousExamMenu === 1) {
+  //     perviousNationalTypeListDataRefetch();
+  //   }
+  // }, [previousNationalList]);
 
   useEffect(() => {
     if (perviousNationalTypeListData) {
