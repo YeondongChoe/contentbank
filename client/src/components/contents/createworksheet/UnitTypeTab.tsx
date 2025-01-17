@@ -47,7 +47,8 @@ interface ItemTreeIdxListType {
 type UnitClassificationType =
   | RadioStateType
   | ItemTreeIdxListType
-  | RadioStateType[];
+  | RadioStateType[]
+  | CategoryType;
 
 type UnitTypeTabProps = {
   menuList: {
@@ -332,7 +333,7 @@ export function UnitTypeTab({
     );
 
     if (checkedDepthList.length > 0) {
-      newClassification.splice(6, 0, { itemTreeIdxList: checkedDepthList });
+      newClassification.splice(6, 0, { ...unitCategory });
     }
 
     if (unitClassificationList.length < 6) {
@@ -478,14 +479,19 @@ export function UnitTypeTab({
   };
 
   // 깊이가 있는 리스트 DepthBlock 체크박스
-  const handleSingleCheck = (checked: boolean, idx: number, level: number) => {
+  const handleSingleCheck = (
+    checked: boolean,
+    name: string,
+    idx: number,
+    level: number,
+  ) => {
     setCheckedDepthList((prev) => {
       let updatedList = checked
         ? [...prev, idx]
-        : prev.filter((item) => item !== idx);
+        : prev.filter((itemIdx) => itemIdx !== idx);
 
+      // 상위 요소 체크
       if (checked) {
-        // 상위 요소를 체크
         let currentItem = findItemByIdx(idx);
         while (currentItem && currentItem.parentIdx !== 0) {
           const parentItem = findItemByIdx(currentItem.parentIdx as number);
@@ -499,7 +505,7 @@ export function UnitTypeTab({
           }
         }
       } else {
-        // 하위 요소를 모두 체크 해제
+        // 하위 요소 체크 해제
         const removeDescendants = (currentIdx: number) => {
           const childItems = findChildItems(currentIdx);
           childItems.forEach((child) => {
@@ -514,36 +520,10 @@ export function UnitTypeTab({
 
       return updatedList;
     });
-  };
-  const findItemByIdx = (idx: number): ItemTreeType | undefined => {
-    for (const tree of itemTree) {
-      for (const item of tree.itemTreeList) {
-        if (item.idx === idx) {
-          return item;
-        }
-      }
-    }
-    return undefined;
-  };
-  const findChildItems = (parentIdx: number): ItemTreeType[] => {
-    const children: ItemTreeType[] = [];
-    for (const tree of itemTree) {
-      children.push(
-        ...tree.itemTreeList.filter((item) => item.parentIdx === parentIdx),
-      );
-    }
-    return children;
-  };
 
-  console.log('unitCategory', unitCategory);
-  const handleSingleCheck1 = (
-    checked: boolean,
-    name: string,
-    idx: number,
-    level: number,
-  ) => {
+    //추가적으로 UnitCategory 업데이트
     setUnitCategory((prev) => {
-      const updatedCategory = { ...prev.category }; // 기존 카테고리를 복사
+      const updatedCategory = { ...prev.category }; // 기존 카테고리 복사
 
       // 대상 카테고리를 결정
       const categoryKey =
@@ -565,12 +545,10 @@ export function UnitTypeTab({
           updatedCategory[categoryKey].push(name);
         }
 
-        // 상위 요소 체크
-        let currentItem = findItemByIdx1(idx);
-        console.log('currentItem', currentItem);
+        // 상위 요소 추가
+        let currentItem = findItemByIdx(idx);
         while (currentItem && currentItem.parentIdx !== 0) {
-          const parentItem = findItemByIdx1(currentItem.parentIdx as number);
-          console.log('parentItem', parentItem);
+          const parentItem = findItemByIdx(currentItem.parentIdx as number);
           if (parentItem) {
             const parentKey =
               parentItem.level === 2
@@ -584,6 +562,7 @@ export function UnitTypeTab({
                       : parentItem.level === 6
                         ? '세분류'
                         : '미분류';
+
             if (!updatedCategory[parentKey].includes(parentItem.name)) {
               updatedCategory[parentKey].push(parentItem.name);
             }
@@ -598,10 +577,9 @@ export function UnitTypeTab({
           (item) => item !== name,
         );
 
-        // 하위 요소 체크 해제
+        // 하위 요소 제거
         const removeDescendants = (currentIdx: number) => {
-          const childItems = findChildItems1(currentIdx);
-          console.log('childItems', childItems);
+          const childItems = findChildItems(currentIdx);
           childItems.forEach((child) => {
             const childKey =
               child.level === 2
@@ -615,6 +593,7 @@ export function UnitTypeTab({
                       : child.level === 6
                         ? '세분류'
                         : '미분류';
+
             updatedCategory[childKey] = updatedCategory[childKey].filter(
               (item) => item !== child.name,
             );
@@ -623,30 +602,30 @@ export function UnitTypeTab({
         };
         removeDescendants(idx);
       }
-      console.log('updatedCategory', updatedCategory);
+
       return {
         category: updatedCategory, // 업데이트된 카테고리 반환
       };
     });
   };
-  const findItemByIdx1 = (idx: number): ItemTreeType | undefined => {
+  const findItemByIdx = (idx: number): ItemTreeType | undefined => {
     for (const tree of itemTree) {
-      const item = tree.itemTreeList.find((item) => item.idx === idx);
-      if (item) {
-        return item;
+      for (const item of tree.itemTreeList) {
+        if (item.idx === idx) {
+          return item;
+        }
       }
     }
-    return undefined; // idx에 해당하는 item이 없을 경우 undefined 반환
+    return undefined;
   };
-  const findChildItems1 = (parentIdx: number): ItemTreeType[] => {
+  const findChildItems = (parentIdx: number): ItemTreeType[] => {
     const children: ItemTreeType[] = [];
     for (const tree of itemTree) {
-      const filteredItems = tree.itemTreeList.filter(
-        (item) => item.parentIdx === parentIdx,
+      children.push(
+        ...tree.itemTreeList.filter((item) => item.parentIdx === parentIdx),
       );
-      children.push(...filteredItems);
     }
-    return children; // parentIdx에 해당하는 모든 하위 요소 반환
+    return children;
   };
 
   // 검색 단어 하이라이트 && 하이라이트간 이동 처리
@@ -837,17 +816,15 @@ export function UnitTypeTab({
                                           value={item?.idx}
                                           level={item?.level}
                                           onChange={(e) =>
-                                            handleSingleCheck1(
+                                            handleSingleCheck(
                                               e.target.checked,
                                               item?.name,
                                               item?.idx,
                                               item?.level,
                                             )
                                           }
-                                          checked={Object.values(
-                                            unitCategory.category,
-                                          ).some((list) =>
-                                            list.includes(item?.name),
+                                          checked={checkedDepthList.includes(
+                                            item?.idx,
                                           )}
                                           searchValue={searchValue}
                                         >
@@ -877,17 +854,15 @@ export function UnitTypeTab({
                                           value={item?.idx}
                                           level={item?.level}
                                           onChange={(e) =>
-                                            handleSingleCheck1(
+                                            handleSingleCheck(
                                               e.target.checked,
                                               item?.name,
                                               item?.idx,
                                               item?.level,
                                             )
                                           }
-                                          checked={Object.values(
-                                            unitCategory.category,
-                                          ).some((list) =>
-                                            list.includes(item?.name),
+                                          checked={checkedDepthList.includes(
+                                            item?.idx,
                                           )}
                                           searchValue={searchValue}
                                         >
