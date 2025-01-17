@@ -1424,6 +1424,19 @@ export function Step2() {
     setIsPriorityEven(!isPriorityQuiz);
   };
 
+
+  // 유사문항
+  const [isSimilar, setIsSimilar] = useState(false);
+  const [similarItems, setSimilarItems] = useState<SimilarQuizList | null>(
+    null,
+  );
+  const [similarItemCode, setSimilarItemCode] = useState<string>('');
+  const [similarItemIndex, setSimilarItemIndex] = useState<number | null>(null);
+  const [similarItemNumber, setSimilarItemNumber] = useState<number>();
+  const [similarPrevItems, setSimilarPrevItems] = useState<SimilarQuizList[]>(
+    [],
+  );
+
   // 유사문항 요청 api
   const postSimilarItems = async () => {
     const data = {

@@ -2,6 +2,8 @@ import * as React from 'react';
 import { useState, useEffect, useMemo } from 'react';
 
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { IoMdClose, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
+import { IoSettingsOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -21,7 +23,15 @@ import {
 } from '../..';
 import { quizService } from '../../../api/axios';
 import { pageAtom } from '../../../store/utilAtom';
+import {
+  ItemCategoryType,
+  ItemTreeListType,
+  csatListType,
+  CastQuizListType,
+  ItemTreeType,
+} from '../../../types';
 import { TextbookInfoType } from '../../../types/TextbookType';
+import { DifficultyDataType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 
