@@ -48,7 +48,8 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
 
   const script = document.createElement('script');
   script.id = 'MathJax-script';
-  script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+  script.src = '/static/iTeX_EQ/js/tex-svg-full_3_2_2.js';
+  // script.src = '/client/public/static/iTeX_EQ/js/tex-svg-full_3_2_2.js';
   script.async = true;
   script.onload = () => {
     setLoaded(true);
@@ -95,11 +96,24 @@ export function EditerOneFile({
     console.log('type', type);
   }, [type]);
   useEffect(() => {}, [tabView]);
+
   return (
     <Container className={type === 'type2' ? `type2` : ''}>
       {isMathJaxLoaded ? (
         <>
           {type === 'edit' && (
+            <Type4
+              saveHandler={saveHandler}
+              onItemClickData={onItemClickData}
+            />
+          )}
+          {type === 'copyedit' && (
+            <Type4
+              saveHandler={saveHandler}
+              onItemClickData={onItemClickData}
+            />
+          )}
+          {type === 'inspection' && (
             <Type4
               saveHandler={saveHandler}
               onItemClickData={onItemClickData}
@@ -121,7 +135,7 @@ export function EditerOneFile({
 
 const Container = styled.div`
   width: calc(100% - 330px);
-  height: calc(100vh - 100px); // 탭 네비 높이, 하단 셀렉트 높이 제외
+  height: calc(100vh - 140px); // 탭 네비 높이, 하단 셀렉트 높이 제외
   padding: 0;
   margin: 0;
   display: flex;

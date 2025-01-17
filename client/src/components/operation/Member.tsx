@@ -5,6 +5,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
+import { userInstance } from '../../api/axios';
 import { getUserList, getUserListTotal, patchChangeUse } from '../../api/user';
 import {
   Button,
@@ -35,7 +36,7 @@ import { RegisterModal } from './member/RegisterModal';
 
 export function Member() {
   const { openModal } = useModal();
-  const [tabVeiw, setTabVeiw] = useState<string>('전체');
+  const [tabView, setTabView] = useState<string>('전체');
   const backgroundRef = useRef<HTMLDivElement>(null);
 
   const [checkList, setCheckList] = useState<number[]>([]);
@@ -46,14 +47,27 @@ export function Member() {
   const [searchValue, setSearchValue] = useState<string>('');
   const [searchKeywordValue, setSearchKeywordValue] = useState<string>('');
   const [totalMemberList, setTotalMemberList] = useState<MemberType[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  //회원의 기업코드 가져오기
+  const [companyCoadValue, setCompanyCoadValue] = useState<string | null>(null);
+  const [companyNameValue, setCompanyNameValue] = useState<string | null>(null);
+  const [companyIdxValue, setCompanyIdxValue] = useState<string>('0');
+  const [companyCorporateIdentifier, setCompanyCorporateIdentifier] = useState<
+    string | null
+  >(null);
+
+  //로컬스토리지에 있는 기업코드 가져오기
+  useEffect(() => {
+    const storedCompanyCode = localStorage.getItem('companyCode');
+    setCompanyCoadValue(storedCompanyCode);
+  }, []);
 
   // 유저 리스트 불러오기 api
   const isUseFilter = useMemo(() => {
-    if (tabVeiw === '전체') return '';
-    if (tabVeiw === '활성화') return 'Y';
-    if (tabVeiw === '비활성화') return 'N';
-  }, [tabVeiw]);
+    if (tabView === '전체') return '';
+    if (tabView === '활성화') return 'Y';
+    if (tabView === '비활성화') return 'N';
+  }, [tabView]);
 
   const {
     isLoading,
@@ -62,11 +76,21 @@ export function Member() {
     isSuccess,
   } = useQuery({
     queryKey: ['get-memberlist'],
-    queryFn: () => getUserList({ page, searchKeywordValue, isUseFilter }),
+    queryFn: () =>
+      getUserList({
+        page,
+        searchKeywordValue,
+        isUseFilter,
+        idxValue: companyIdxValue,
+      }),
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
   });
+
+  useEffect(() => {
+    if (companyIdxValue !== '0') refetch();
+  }, [companyIdxValue]);
   // data 디렉토리
   const memberList = memberListData?.data.data;
 
@@ -90,7 +114,11 @@ export function Member() {
   // 아이디 중복 확인 && 토탈 유저 수
   const { data: totalData, refetch: totalDataRefetch } = useQuery({
     queryKey: ['get-memberlist-total'],
-    queryFn: () => getUserListTotal({ totalCount }),
+    queryFn: () =>
+      getUserListTotal({
+        totalCount,
+        idxValue: companyIdxValue,
+      }),
     meta: {
       errorMessage: 'get-memberlist 에러 메세지',
     },
@@ -98,7 +126,6 @@ export function Member() {
   });
 
   useEffect(() => {
-    // console.log('totalData', totalData);
     if (totalData) {
       setTotalMemberList(totalData.data.data.list);
     } else {
@@ -107,9 +134,68 @@ export function Member() {
   }, [totalData]);
 
   useEffect(() => {
-    // console.log('isSuccess', isSuccess);
     if (isSuccess) setTotalCount(memberList?.pagination?.totalCount);
   }, [isSuccess]);
+
+  //기업코드로 기업 idx 가져오기
+  const getCompanyList = async () => {
+    const res = await userInstance.get(
+      `/v1/company?searchCondition=${companyCoadValue}`,
+    );
+    //console.log(`getCompanyList 결과값`, res);
+    return res;
+  };
+
+  const { data: companyListData, refetch: companyListRefetch } = useQuery({
+    queryKey: ['get-companyList'],
+    queryFn: getCompanyList,
+    meta: {
+      errorMessage: 'get-companyList 에러 메세지',
+    },
+    enabled: companyCoadValue !== null,
+  });
+
+  useEffect(() => {
+    if (companyListData) {
+      setCompanyNameValue(companyListData?.data.data.list[0].name);
+      setCompanyIdxValue(
+        companyListData?.data.data.list[0].idx.toLocaleString(),
+      );
+    }
+  }, [companyListData]);
+
+  // 기업 상세 정보 불러오기 api
+  const getCompanyInfo = async () => {
+    if (companyIdxValue === '0') {
+      return null;
+    } else {
+      const res = await userInstance.get(`/v1/company/${companyIdxValue}`);
+      // console.log(`getWorkbook 결과값`, res);
+      return res;
+    }
+  };
+
+  const { data: companyInfoData, refetch: companyInfoRefetch } = useQuery({
+    queryKey: ['get-companyInfo'],
+    queryFn: getCompanyInfo,
+    meta: {
+      errorMessage: 'get-companyInfo 에러 메세지',
+    },
+  });
+
+  //기업Idx 들어왔을때 호출
+  useEffect(() => {
+    companyInfoRefetch();
+  }, [companyIdxValue]);
+
+  //기업 상세정보 저장
+  useEffect(() => {
+    if (companyInfoData) {
+      setCompanyCorporateIdentifier(
+        companyInfoData.data.data.companyRecord.corporateIdentifier,
+      );
+    }
+  }, [companyInfoData]);
 
   /* 아이디 만들기 모달 열기 */
   const openCreateModal = () => {
@@ -117,7 +203,16 @@ export function Member() {
     setCheckList([]);
     openModal({
       title: '',
-      content: <RegisterModal memberList={totalMemberList} refetch={refetch} />,
+      content: (
+        <RegisterModal
+          memberList={totalMemberList}
+          refetch={refetch}
+          companyIdx={companyIdxValue as string}
+          companyCode={companyCoadValue as string}
+          companyName={companyNameValue as string}
+          companyCorporateIdentifier={companyCorporateIdentifier as string}
+        />
+      ),
     });
   };
 
@@ -126,6 +221,7 @@ export function Member() {
     event: React.MouseEvent<HTMLButtonElement>,
     accountIdx: number,
     userKey: string,
+    companyIdx: number,
   ) => {
     event.stopPropagation();
     // console.log(accountIdx, 'accountIdx');
@@ -137,6 +233,7 @@ export function Member() {
       content: (
         <EditModal
           accountIdx={accountIdx}
+          companyIdx={companyIdx}
           userKey={userKey}
           refetch={refetch}
         />
@@ -154,7 +251,7 @@ export function Member() {
   // 활성화/비활성화 데이터 전송
   const submitChangeUse = () => {
     // console.log('checkList :', checkList);
-    mutateChangeUse(checkList);
+    mutateChangeUse({ isUse: false, checkList });
     setIsAlertOpen(false);
   };
 
@@ -195,7 +292,7 @@ export function Member() {
   };
 
   // 탭메뉴 클릭시 페이지네이션 초기화
-  //              && 리스트 데이터 전송값 변경
+  // && 리스트 데이터 전송값 변경
   const changeTab = () => {
     setPage(1);
   };
@@ -235,7 +332,7 @@ export function Member() {
     // 데이터 바뀔시 초기화
     setCheckList([]);
     // 비활성화 이후 토탈 멤버 api 재호출
-    if (memberListData) totalDataRefetch();
+    //if (memberListData) totalDataRefetch();
   }, [memberListData]);
 
   const tabMenuList = [
@@ -262,12 +359,12 @@ export function Member() {
     return () => window.removeEventListener('click', handleClick);
   }, [backgroundRef]);
 
-  // 대이터 변경시 리랜더링 (초기화)
+  // 데이터 변경시 리랜더링 (초기화)
   useEffect(() => {
     refetch();
   }, [page, searchKeywordValue, isUseFilter, changeUse]);
 
-  useEffect(() => {}, [memberList, totalMemberList]);
+  //useEffect(() => {}, [memberList, totalMemberList]);
 
   return (
     <Container ref={backgroundRef}>
@@ -307,9 +404,9 @@ export function Member() {
           <TabMenu
             length={3}
             menu={tabMenuList}
-            selected={tabVeiw}
+            selected={tabView}
             width={'300px'}
-            setTabVeiw={setTabVeiw}
+            setTabView={setTabView}
             lineStyle
             $margin={'10px 0'}
             onClickTab={changeTab}
@@ -340,7 +437,7 @@ export function Member() {
             </LoaderWrapper>
           ) : (
             <>
-              {totalMemberList && memberList.list.length !== 0 ? (
+              {memberList.list.length !== 0 ? (
                 <>
                   <ButtonWrapper>
                     <CheckBoxWrapper>
@@ -357,7 +454,7 @@ export function Member() {
                       />
                       <span className="title_top">전체선택</span>
                     </CheckBoxWrapper>
-                    {tabVeiw !== '비활성화' && (
+                    {tabView !== '비활성화' && (
                       <Button
                         height={'35px'}
                         width={'130px'}
@@ -433,7 +530,12 @@ export function Member() {
                           cursor
                           $border
                           onClick={(e) =>
-                            openEditModal(e, list.idx, list.userKey)
+                            openEditModal(
+                              e,
+                              list.idx,
+                              list.userKey,
+                              list.companyIdx,
+                            )
                           }
                         >
                           상세 수정

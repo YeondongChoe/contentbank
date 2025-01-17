@@ -1,5 +1,11 @@
+/* eslint-disable no-undef */
 // 업로드 다운로드 요청 url
-var dream_server_url = 'http://43.201.205.140:40030';
+var dream_server_url = 'https://j-dev01.dreamonesys.co.kr/file'; // 드림원시스 쪽 노드서버 연결
+
+// 업로드 이미지 URL
+// var uploaded_img_url = 'https://itex-dev-image.s3.ap-northeast-2.amazonaws.com';
+// var uploaded_img_url =
+//   'https://contentbank20241017.s3.ap-northeast-2.amazonaws.com/webdev2test';
 
 // 데이터 로드 화면 탭 개수 설정
 var tabCount = 5;
@@ -9,8 +15,19 @@ var bookmarkCount = 10;
 var bookmarkCount_pc = 30;
 
 // 편집기 종류(PC: true, tab: false);
-var editorType = true;
+var editorType;
 // var editorType = false;
+const userAgent = window.navigator.userAgent;
+if (/iPhone|iPad|iPod|Android|Linux/i.test(userAgent)) {
+  // alert("모바일");
+  editorType = false;
+} else if (/Windows|Macintosh/i.test(userAgent)) {
+  // alert("PC");
+  editorType = true;
+} else {
+  // alert("기타");
+  editorType = true;
+}
 
 // redo, undo 단계 설정
 var undo_redo_level = 10;
@@ -34,24 +51,24 @@ var undo_redo_level = 10;
 var divideKey = ['tag_group'];
 
 // 이미지 저장 설정 (1: 로컬, 2: ftp, 3: s3)
-var img_save_type = 1;
+var img_save_type = 3;
 
 // 수식 입력 버튼 누를때 출력되는 값 반환
 
 // 수식만 넣을때 수식을 넣는 공간의 class명
 var onlyEQ = false;
-var onlyEQNode = '';
+var onlyEQNode = 'eq_wrap_node'; // 수식 입력창 열리는 곳 부모요소
 var getEQData = () => {
-  // const output = document.querySelector(`.${onlyEQNode}`);
+  const output = document.querySelector(`.${onlyEQNode}`);
   iTeXEQ
     .insertEqn()
     .then((node) => {
-      openEQ();
+      window.openEQ();
       console.log(node);
-      console.log(node.html);
+      console.log(node[0].html);
       // result에 들어가는 값
-      const result = node.html;
-      output.innerHTML = result;
+      const result = node[0].html;
+      output.innerHTML += result;
     })
     .then(() => {
       iTeXEQ.recoverynew(output);
@@ -61,4 +78,73 @@ var getEQData = () => {
     .catch(() => {
       console.log('수식 입력 실패');
     });
+};
+
+// 태그 컨트롤
+var tag_control = {
+  tag_group: {
+    // 그룹
+    use: false,
+    available_num: 2,
+  },
+  tag_bigcontent: {
+    // 대발문
+    use: true,
+    available_num: 1,
+  },
+  tag_content: {
+    // 지문
+    use: true,
+    available_num: 1,
+  },
+  tag_exam: {
+    // 문제
+    use: true,
+    available_num: 1,
+  },
+  tag_exam_sm: {
+    // 소문제
+    use: false,
+    available_num: 1,
+  },
+  tag_example: {
+    // 보기
+    use: false,
+    available_num: 3,
+  },
+  tag_choices: {
+    // 선지
+    use: true,
+    available_num: 3,
+  },
+  tl_answer: {
+    // 정답
+    use: true,
+    available_num: 1,
+  },
+  tag_commentary: {
+    // 해설
+    use: true,
+    available_num: 3,
+  },
+  tag_hint: {
+    // 힌트
+    use: true,
+    available_num: 3,
+  },
+  tag_concept: {
+    // 개념
+    use: true,
+    available_num: 3,
+  },
+  tag_title: {
+    // 제목
+    use: false,
+    available_num: 3,
+  },
+  tag_tip: {
+    // 팁
+    use: false,
+    available_num: 3,
+  },
 };

@@ -130,6 +130,8 @@ export function MetaRadioSelect({
   const [isCategoryLoaded, setIsCategoryLoaded] = useState(false);
   const [refreshTokenCalled, setRefreshTokenCalled] = useState(false);
 
+  const [categoryTypeList, setCategoryTypeList] = useState<string>('');
+
   //  카테고리 불러오기 api
   const getCategory = async () => {
     const res = await classificationInstance.get(`/v1/category`);
@@ -163,7 +165,7 @@ export function MetaRadioSelect({
   // 카테고리 항목이 변경될 때 각 항목의 상세 리스트를 불러오는 함수
   const getCategoryGroups = async () => {
     const response = await classificationInstance.get('/v1/category/group/A');
-    return response.data.data.typeList;
+    return response.data.data;
   };
   const {
     data: groupsData,
@@ -179,8 +181,15 @@ export function MetaRadioSelect({
   });
 
   useEffect(() => {
+    if (categoryTypeList) {
+      fetchCategoryItems(categoryTypeList, setCategoryList);
+    }
+  }, [categoryTypeList]);
+
+  //groupsData값 들어왔을때 typeList 관리
+  useEffect(() => {
     if (groupsData) {
-      fetchCategoryItems(groupsData, setCategoryList);
+      setCategoryTypeList(groupsData.typeList);
     }
   }, [groupsData]);
 
@@ -212,15 +221,17 @@ export function MetaRadioSelect({
     try {
       setIsCategoryLoaded(true);
       const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/${id}`).catch((error) => {
-          console.log(error);
-          if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
-            setRefreshTokenCalled(true);
-            postRefreshToken().then(() => {
-              setRefreshTokenCalled(false);
-            });
-          }
-        }),
+        classificationInstance
+          .get(`/v1/category/class/${id}`)
+          .catch((error) => {
+            console.log(error);
+            if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
+              setRefreshTokenCalled(true);
+              postRefreshToken().then(() => {
+                setRefreshTokenCalled(false);
+              });
+            }
+          }),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
@@ -305,7 +316,8 @@ export function MetaRadioSelect({
   /* 선택된 유형에따라 항목 조회 */
   //1뎁스 선택시 2뎁스 설정되게
   const getNextList1 = async () => {
-    const itemIdx = categoryItems[1].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[1];
     const pidx = radio1depthChangeCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
@@ -331,7 +343,8 @@ export function MetaRadioSelect({
 
   //2뎁스 선택시 3뎁스 설정되게
   const getNextList2 = async () => {
-    const itemIdx = categoryItems[2].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[2];
     const pidx = radio2depthChangeCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
@@ -356,7 +369,8 @@ export function MetaRadioSelect({
 
   //3뎁스 선택시 4뎁스 설정되게
   const getNextList3 = async () => {
-    const itemIdx = categoryItems[3].idx; //다음으로 선택할 배열의 idx
+    const groupsArray = categoryTypeList.split(',').map(Number);
+    const itemIdx = groupsArray[3];
     const pidx = radio3depthChangeCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
@@ -436,7 +450,7 @@ export function MetaRadioSelect({
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
-    const radioChecks = [
+    const depthChecks = [
       radio1depthChangeCheck,
       radio2depthChangeCheck,
       radio3depthChangeCheck,
@@ -444,22 +458,24 @@ export function MetaRadioSelect({
       radio5depthChangeCheck, //TODO : api 키값 추가되면 주석 해제
       radio6depthChangeCheck,
     ];
+    // itemTreeKeyList 객체를 빈 객체로 초기화
+    const itemTreeKeyList: ItemTreeKeyType = {};
 
-    const keyValuePairs = radioChecks.reduce<ItemTreeKeyType>((acc, curr) => {
-      if (curr.key && curr.title) {
-        acc[curr.key] = curr.title;
+    // depthChecks 배열을 순회하여 itemTreeKeyList에 각 라디오 버튼의 code와 title 추가
+    depthChecks.forEach((depthCheck) => {
+      if (depthCheck && depthCheck.code && depthCheck.title) {
+        itemTreeKeyList[`${depthCheck.code}`] = `${depthCheck.title}`;
       }
-      return acc;
-    }, {});
+    });
 
-    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
     console.log(
-      'itemTreeKeyList 최종적으로 보내는 탭선택값: 바꿀 분류',
+      '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
       itemTreeKeyList,
     );
-
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
-    console.log('classificationInstance 응답 : ***바꿀 분류***', res);
+    const data = {
+      itemTreeKeyList: [itemTreeKeyList],
+    };
+    const res = await classificationInstance.post('/v1/item', data);
     return res;
   };
 
@@ -698,7 +714,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 학교급 */}
-                  {[categoryItems[1]].map((item) => (
+                  {[categoryItems[41]].map((item) => (
                     <div
                       className={`2depth-change`}
                       id={`${item.name}`}
@@ -716,7 +732,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 학년 */}
-                  {[categoryItems[2]].map((item) => (
+                  {[categoryItems[1]].map((item) => (
                     <div
                       className={`3depth-change`}
                       id={`${item.name}`}
@@ -734,7 +750,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 학기 */}
-                  {[categoryItems[3]].map((item) => (
+                  {[categoryItems[2]].map((item) => (
                     <div
                       className={`4depth-change`}
                       id={`${item.name}`}
@@ -752,7 +768,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 교과 */}
-                  {[categoryItems[6]].map((item) => (
+                  {[categoryItems[5]].map((item) => (
                     <div
                       className={`5depth-change`}
                       id={`${item.name}`}
@@ -770,7 +786,7 @@ export function MetaRadioSelect({
                     </div>
                   ))}
                   {/* 과목 */}
-                  {[categoryItems[7]].map((item) => (
+                  {[categoryItems[6]].map((item) => (
                     <div
                       className={`6depth-change`}
                       id={`${item.name}`}

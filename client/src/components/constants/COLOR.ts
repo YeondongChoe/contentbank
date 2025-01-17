@@ -5,8 +5,10 @@ export const COLOR = {
   SUCCESS: '#11c218',
   WARNING: '#ffcc06',
   ERROR: '#ff523e',
+  NAVI_HOVER: '#5a76be',
 
   FONT_BLACK: '#252525',
+  FONT_GRAY: '#9a9a9a',
   FONT_NAVI: '#8299D4',
   LIGHT_GRAY: '#eeeeee',
   SPAN_BlUE: '#1976d2',

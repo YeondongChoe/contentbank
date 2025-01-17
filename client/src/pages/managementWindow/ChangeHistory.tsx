@@ -83,9 +83,9 @@ export function ChangeHistory() {
 
   const selectCategory = [
     {
-      id: '변경 영역',
-      label: '변경 영역',
-      name: '변경 영역',
+      id: '기능',
+      label: '기능',
+      name: '기능',
       options: [
         { id: '0', label: '전체', name: '전체' },
         { id: '1', label: '문항 내용 바꾸기', name: '문항 내용 바꾸기' },
@@ -96,6 +96,9 @@ export function ChangeHistory() {
 
   return (
     <Container>
+      <TitleWrapper>
+        <Title>문항 편집 이력</Title>
+      </TitleWrapper>
       <InputWrapper>
         <SelectWrapper>
           <CommonDate
@@ -138,7 +141,7 @@ export function ChangeHistory() {
           {selectCategory.map((el) => (
             <Select
               isnormalizedOptions
-              width={'150px'}
+              width={'200px'}
               defaultValue={el.label}
               key={el.label}
               options={el.options}
@@ -147,7 +150,7 @@ export function ChangeHistory() {
           ))}
         </SelectWrapper>
 
-        <Search
+        {/* <Search
           value={searchValue}
           onClick={() => filterSearchValue()}
           onKeyDown={(e) => {
@@ -157,19 +160,20 @@ export function ChangeHistory() {
           placeholder="변경사항,담당자 검색"
           width={'50%'}
           height="40px"
-        />
+        /> */}
       </InputWrapper>
 
       {!isLoading ? (
         <ListWrapper>
           <Total> Total : {historyList.length}</Total>
           <ListTitle>
-            <strong className="width_10px">NO</strong>
+            <strong className="width_20px">NO</strong>
             <strong>담당자</strong>
             <strong>변경일시</strong>
-            <strong>변경영역</strong>
-            <strong className="width_40">변경사항</strong>
-            <strong>건수</strong>
+            <strong className="width_20">검색조건</strong>
+            <strong className="width_50px">기능</strong>
+            <strong className="width_20">변경내용</strong>
+            {/* <strong>건수</strong> */}
           </ListTitle>
           <ScrollWrapper>
             <PerfectScrollbar>
@@ -194,20 +198,22 @@ export function ChangeHistory() {
                           <div className="line"></div>
                           <span>{item.changedAt} </span>
                           <div className="line"></div>
+                          <span className="width_20"> 검색조건 </span>
+                          <div className="line"></div>
                           <span>{item.functionName} </span>
                           <div className="line"></div>
-                          <span className="width_50">{item.content} </span>
-                          <div className="line"></div>
-                          <span className="width_5">{item.changedCnt}</span>
+                          <span className="width_20">{item.content} </span>
+                          {/* <div className="line"></div> */}
+                          {/* <span className="width_5">{item.changedCnt}</span> */}
                         </ItemLayout>
                       </ListItem>
                     ))}
                   </List>
                 </>
               ) : (
-                <>
+                <ValueNoneWrapper>
                   <ValueNone />
-                </>
+                </ValueNoneWrapper>
               )}
             </PerfectScrollbar>
           </ScrollWrapper>
@@ -226,23 +232,24 @@ export function ChangeHistory() {
 }
 
 const Container = styled.div`
-  border: 1px solid ${COLOR.BORDER_BLUE};
-  border-top: none;
   min-height: 700px;
-  position: relative;
   padding-bottom: 30px;
   margin-bottom: 10px;
 
   .position_bottom {
-    position: absolute;
-    width: 100%;
-    bottom: 20px;
   }
 `;
-const Title = styled.p`
+const TitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  padding-bottom: 15px;
+`;
+const Title = styled.div`
   font-size: 24px;
   font-weight: 800;
 `;
+
 const Total = styled.span`
   text-align: right;
   font-size: 15px;
@@ -255,7 +262,6 @@ const InputWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: 10px;
-  background-color: ${COLOR.LIGHT_GRAY};
 `;
 const SelectWrapper = styled.div`
   display: flex;
@@ -275,6 +281,9 @@ const LoaderWrapper = styled.div`
   width: 100%;
   padding-top: 30px;
   padding-left: calc(50% - 35px);
+`;
+const ValueNoneWrapper = styled.div`
+  padding: 100px 0;
 `;
 const ListWrapper = styled.div`
   padding: 10px;
@@ -313,15 +322,11 @@ const ListTitle = styled.p`
     height: 15px;
     /* background-color: ${COLOR.BORDER_GRAY}; */
   }
-
-  .width_10px {
-    width: 10px;
+  .width_50px {
+    width: 50px;
   }
-  .width_20px {
-    width: 20px;
-  }
-  .width_40 {
-    width: 45%;
+  .width_20 {
+    width: 22%;
   }
 `;
 
@@ -349,10 +354,10 @@ const ItemLayout = styled.div`
     width: 5%;
   }
   .width_10 {
-    width: 10%;
+    width: 8%;
   }
-  .width_20px {
-    width: 20px;
+  .width_20 {
+    width: 24%;
   }
   .width_50 {
     width: 50%;

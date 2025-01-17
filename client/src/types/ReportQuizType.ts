@@ -1,6 +1,6 @@
 import { QuizList } from './WorkbookType';
 
-export interface Report {
+export interface ReportType {
   idx: number;
   quiz: QuizList;
   reportType: string;
@@ -12,10 +12,16 @@ export interface Report {
   answerBy: string;
   answerAt: string;
   isUse: boolean;
+  articleList: {
+    idx: number;
+    originalName: string;
+    storedPath: string;
+    type: string;
+  }[];
 }
 
 export interface ReportData {
-  reportList: Report[];
+  reportList: ReportType[];
 }
 
 // export interface ReportData {

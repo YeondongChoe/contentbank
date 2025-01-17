@@ -42,8 +42,8 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
   const [assign, setAssign] = useState<string>('');
   const [isDate, setIsDate] = useState<boolean>(false);
   const [isQuizType, setIsQuizType] = useState<boolean>(false);
-  const [itemType, setItemType] = useState<number>();
-
+  const [itemType, setItemType] = useState<number>(0);
+  console.log('initialItems', initialItems);
   const getWorkbookData = async () => {
     const res = await workbookInstance.get(
       `/v1/workbook/detail/${workbookIndex}`,
@@ -69,7 +69,27 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
 
   useEffect(() => {
     if (workbookData) {
-      setInitialItems(workbookData?.data.data.quizList);
+      let numCounter = 1; // QUESTION 타입의 항목에 부여할 num 값
+
+      const quizListWithNum = workbookData?.data.data.quizList.map(
+        (quiz: any) => {
+          // If type is 'TEXT', delete 'score' key
+          if (quiz.type === 'TEXT') {
+            const { score, ...restQuiz } = quiz; // Destructure and remove 'score' key
+            return {
+              ...restQuiz, // Return the object without 'score'
+            };
+          }
+
+          // If type is 'QUESTION', assign num
+          return {
+            ...quiz,
+            num: quiz.type === 'QUESTION' ? numCounter++ : null, // QUESTION 타입만 순차적으로 num 추가
+          };
+        },
+      );
+
+      setInitialItems(quizListWithNum);
       setNameValue(workbookData?.data.data.name);
       setGradeValue(workbookData?.data.data.grade);
       setTag(workbookData?.data.data.tag);
@@ -119,7 +139,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       leftArray: [],
       rightArray: [],
     };
-
+    console.log('items', items);
     let leftMaxItems = 0;
     let rightMaxItems = 0;
 
@@ -177,9 +197,19 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     let rightFull = false; // 오른쪽 배열이 가득 찼는지 여부를 나타내는 플래그
     let leftItemCount = 0;
     let rightItemCount = 0;
+    let extraLeftHeight = 0;
+    let extraRightHeight = 0;
     //console.log('items:', items);
+    if (itemType === 3) {
+      extraLeftHeight = type === 'A' ? 100 : 0;
+      extraRightHeight = type === 'A' ? 100 : 0;
+    } else {
+      extraLeftHeight = type === 'A' ? 250 : 250; //이미지 제대로 들어오면 다시 수정
+      extraRightHeight = type === 'A' ? 150 : 150; //이미지 제대로 들어오면 다시 수정
+    }
     items.forEach((item) => {
-      const maxHeight = type === 'A' ? 740 : 900;
+      console.log('items', item);
+      const maxHeight = type === 'A' ? 740 : 800;
       //console.log('if문 전 item:', item);
       //console.log('if문 전 maxHeight:', maxHeight);
       //console.log('if문 전 leftTotalHeight:', leftTotalHeight);
@@ -190,7 +220,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       //console.log('leftFull:', leftFull);
       //console.log('rightFull:', rightFull);
       if (
-        leftTotalHeight + item.height < maxHeight &&
+        leftTotalHeight + item.height + extraLeftHeight < maxHeight &&
         leftItemCount < leftMaxItems
       ) {
         leftFull = true;
@@ -216,12 +246,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
       } else if (
         rightFull === true &&
         leftFull === false &&
-        rightTotalHeight + 200 < maxHeight &&
+        rightTotalHeight < maxHeight &&
         rightItemCount + 1 <= rightMaxItems
       ) {
         currentPage.rightArray.push(item);
         //console.log('if문 안 currentPage.rightArray:', currentPage.rightArray);
-        rightTotalHeight += item.height;
+        rightTotalHeight += item.height + extraRightHeight;
         //console.log('if문 안 item.height:', item.height);
         //console.log('if문 안 rightTotalHeight:', rightTotalHeight);
         rightItemCount++;
@@ -247,7 +277,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     if (currentPage.leftArray.length > 0 || currentPage.rightArray.length > 0) {
       pages.push(currentPage);
     }
-
+    console.log('pages', pages);
     return pages;
   };
 
@@ -257,6 +287,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
     multiLevel,
     assign,
   );
+  console.log('pages', pages);
 
   // 현재 시간을 YYYY/MM/DD 형식으로 반환하는 함수
   const formatDate = (createdAt: string) => {
@@ -342,7 +373,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                   quizItemList.quizItemList
                                     .filter(
                                       (quizItem) =>
-                                        quizItem.type === 'QUESTION',
+                                        quizItem.type === 'QUESTION' ||
+                                        quizItem.type === 'BIG' ||
+                                        quizItem.type === 'TEXT',
                                     )
                                     .map((quizItem, i) => {
                                       const quizCategory =
@@ -354,7 +387,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       return (
                                         <MathViewerWrapperA
                                           key={i}
-                                          height={quizItemList.height as number}
+                                          //height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '1' &&
                                             assign === '4' &&
@@ -388,12 +421,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                             : ''
                                           }
                                         >
-                                          {isQuizType && (
-                                            <ContentTitleA>
-                                              |{quizCategory?.유형}|
-                                            </ContentTitleA>
-                                          )}
                                           <EachMathViewerA>
+                                            {isQuizType && (
+                                              <ContentTitleA>
+                                                |{quizCategory?.유형?.[0].name}|
+                                              </ContentTitleA>
+                                            )}
                                             <MathJaxWrapperA>
                                               <WorkbookMathViewer
                                                 data={quizItemList}
@@ -409,6 +442,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                           ? '문제+해설같이'
                                                           : '문제만'
                                                 }
+                                                isPdfModal
                                               ></WorkbookMathViewer>
                                               {quizItemList.score &&
                                               quizItemList.score !== 0 ? (
@@ -431,7 +465,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                   quizItemList.quizItemList
                                     .filter(
                                       (quizItem) =>
-                                        quizItem.type === 'QUESTION',
+                                        quizItem.type === 'QUESTION' ||
+                                        quizItem.type === 'BIG' ||
+                                        quizItem.type === 'TEXT',
                                     )
                                     .map((quizItem, i) => {
                                       const quizCategory =
@@ -442,7 +478,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       return (
                                         <MathViewerWrapperA
                                           key={i}
-                                          height={quizItemList.height as number}
+                                          //height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '2' &&
                                             assign === '4' &&
@@ -461,12 +497,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                     : ''
                                           }
                                         >
-                                          {isQuizType && (
-                                            <ContentTitleA>
-                                              |{quizCategory?.유형}|
-                                            </ContentTitleA>
-                                          )}
                                           <EachMathViewerA>
+                                            {isQuizType && (
+                                              <ContentTitleA>
+                                                |{quizCategory?.유형?.[0].name}|
+                                              </ContentTitleA>
+                                            )}
                                             <MathJaxWrapperA>
                                               <WorkbookMathViewer
                                                 data={quizItemList}
@@ -482,6 +518,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                           ? '문제+해설같이'
                                                           : '문제만'
                                                 }
+                                                isPdfModal
                                               ></WorkbookMathViewer>
                                               {quizItemList.score &&
                                               quizItemList.score !== 0 ? (
@@ -582,7 +619,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                     quizItemList.quizItemList
                                       .filter(
                                         (quizItem) =>
-                                          quizItem.type === 'QUESTION',
+                                          quizItem.type === 'QUESTION' ||
+                                          quizItem.type === 'BIG' ||
+                                          quizItem.type === 'TEXT',
                                       )
                                       .map((quizItem, i) => {
                                         const quizCategory =
@@ -595,9 +634,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         return (
                                           <MathViewerWrapperA
                                             key={i}
-                                            height={
-                                              quizItemList.height as number
-                                            }
+                                            // height={
+                                            //   quizItemList.height as number
+                                            // }
                                             padding={
                                               multiLevel === '1' &&
                                               assign === '4' &&
@@ -642,6 +681,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                 <WorkbookMathViewer
                                                   data={quizItemList}
                                                   isSetp3
+                                                  isPdfModal
                                                   answerCommentary={'해설별도'}
                                                 ></WorkbookMathViewer>
                                                 {/* {quizItemList.score &&
@@ -665,7 +705,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                     quizItemList.quizItemList
                                       .filter(
                                         (quizItem) =>
-                                          quizItem.type === 'QUESTION',
+                                          quizItem.type === 'QUESTION' ||
+                                          quizItem.type === 'BIG' ||
+                                          quizItem.type === 'TEXT',
                                       )
                                       .map((quizItem, i) => {
                                         const quizCategory =
@@ -677,9 +719,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         return (
                                           <MathViewerWrapperA
                                             key={i}
-                                            height={
-                                              quizItemList.height as number
-                                            }
+                                            // height={
+                                            //   quizItemList.height as number
+                                            // }
                                             padding={
                                               multiLevel === '2' &&
                                               assign === '4' &&
@@ -708,6 +750,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                 <WorkbookMathViewer
                                                   data={quizItemList}
                                                   isSetp3
+                                                  isPdfModal
                                                   answerCommentary={'해설별도'}
                                                 ></WorkbookMathViewer>
                                                 {/* {quizItemList.score &&
@@ -808,7 +851,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                   quizItemList.quizItemList
                                     .filter(
                                       (quizItem) =>
-                                        quizItem.type === 'QUESTION',
+                                        quizItem.type === 'QUESTION' ||
+                                        quizItem.type === 'BIG' ||
+                                        quizItem.type === 'TEXT',
                                     )
                                     .map((quizItem, i) => {
                                       const quizCategory =
@@ -820,7 +865,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       return (
                                         <MathViewerWrapperB
                                           key={i}
-                                          height={quizItemList.height as number}
+                                          //height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '1' &&
                                             assign === '4' &&
@@ -854,12 +899,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                             : ''
                                           }
                                         >
-                                          {isQuizType && (
-                                            <ContentTitleB>
-                                              |{quizCategory?.유형}|
-                                            </ContentTitleB>
-                                          )}
                                           <EachMathViewerB>
+                                            {isQuizType && (
+                                              <ContentTitleB>
+                                                |{quizCategory?.유형?.[0].name}|
+                                              </ContentTitleB>
+                                            )}
                                             <MathJaxWrapperB>
                                               <WorkbookMathViewer
                                                 data={quizItemList}
@@ -875,6 +920,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                           ? '문제+해설같이'
                                                           : '문제만'
                                                 }
+                                                isPdfModal
                                               ></WorkbookMathViewer>
                                               {quizItemList.score !== 0 && (
                                                 <ScoreWrapper>
@@ -894,7 +940,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                   quizItemList.quizItemList
                                     .filter(
                                       (quizItem) =>
-                                        quizItem.type === 'QUESTION',
+                                        quizItem.type === 'QUESTION' ||
+                                        quizItem.type === 'BIG' ||
+                                        quizItem.type === 'TEXT',
                                     )
                                     .map((quizItem, i) => {
                                       const quizCategory =
@@ -905,7 +953,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                       return (
                                         <MathViewerWrapperB
                                           key={i}
-                                          height={quizItemList.height as number}
+                                          //height={quizItemList.height as number}
                                           padding={
                                             multiLevel === '2' &&
                                             assign === '4' &&
@@ -924,12 +972,12 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                     : ''
                                           }
                                         >
-                                          {isQuizType && (
-                                            <ContentTitleB>
-                                              |{quizCategory?.유형}|
-                                            </ContentTitleB>
-                                          )}
                                           <EachMathViewerB>
+                                            {isQuizType && (
+                                              <ContentTitleB>
+                                                |{quizCategory?.유형?.[0].name}|
+                                              </ContentTitleB>
+                                            )}
                                             <MathJaxWrapperB>
                                               <WorkbookMathViewer
                                                 data={quizItemList}
@@ -945,6 +993,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                           ? '문제+해설같이'
                                                           : '문제만'
                                                 }
+                                                isPdfModal
                                               ></WorkbookMathViewer>
                                               {quizItemList.score !== 0 && (
                                                 <ScoreWrapper>
@@ -1031,7 +1080,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                     quizItemList.quizItemList
                                       .filter(
                                         (quizItem) =>
-                                          quizItem.type === 'QUESTION',
+                                          quizItem.type === 'QUESTION' ||
+                                          quizItem.type === 'BIG' ||
+                                          quizItem.type === 'TEXT',
                                       )
                                       .map((quizItem, i) => {
                                         const quizCategory =
@@ -1044,9 +1095,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         return (
                                           <MathViewerWrapperB
                                             key={i}
-                                            height={
-                                              quizItemList.height as number
-                                            }
+                                            // height={
+                                            //   quizItemList.height as number
+                                            // }
                                             padding={
                                               multiLevel === '1' &&
                                               assign === '4' &&
@@ -1091,6 +1142,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                 <WorkbookMathViewer
                                                   data={quizItemList}
                                                   isSetp3
+                                                  isPdfModal
                                                   answerCommentary={'해설별도'}
                                                 ></WorkbookMathViewer>
                                                 {/* {quizItemList.score !== 0 && (
@@ -1111,7 +1163,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                     quizItemList.quizItemList
                                       .filter(
                                         (quizItem) =>
-                                          quizItem.type === 'QUESTION',
+                                          quizItem.type === 'QUESTION' ||
+                                          quizItem.type === 'BIG' ||
+                                          quizItem.type === 'TEXT',
                                       )
                                       .map((quizItem, i) => {
                                         const quizCategory =
@@ -1123,9 +1177,9 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                         return (
                                           <MathViewerWrapperB
                                             key={i}
-                                            height={
-                                              quizItemList.height as number
-                                            }
+                                            // height={
+                                            //   quizItemList.height as number
+                                            // }
                                             padding={
                                               multiLevel === '2' &&
                                               assign === '4' &&
@@ -1154,6 +1208,7 @@ export function WorkbookPDFModal({ idx }: PDFModalProps) {
                                                 <WorkbookMathViewer
                                                   data={quizItemList}
                                                   isSetp3
+                                                  isPdfModal
                                                   answerCommentary={'해설별도'}
                                                 ></WorkbookMathViewer>
                                                 {/* {quizItemList.score !== 0 && (
@@ -1349,7 +1404,9 @@ const HeaderTriangleA = styled.div`
 `;
 const ContentTitleA = styled.div`
   color: #888888;
-  margin-left: -10px;
+  margin-left: 60px;
+  padding-bottom: 10px;
+  scale: 1.3;
 `;
 //전체
 const WorksheetBodyA = styled.div`
@@ -1381,19 +1438,22 @@ const WorksheetBodyRightA = styled.div`
   flex-direction: column;
 `;
 //각 아이템
-const MathViewerWrapperA = styled.div<{ height?: number; padding: string }>`
+const MathViewerWrapperA = styled.div<{ padding: string }>`
   width: 400px;
-  height: ${({ height }) => `${height}px`};
   padding: ${({ padding }) => `${padding}`};
-  margin-bottom: 40px;
+  margin-bottom: -40px;
+  margin-top: -80px;
   font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 `;
 //비율
 const EachMathViewerA = styled.div`
   max-width: 500px;
-  scale: 0.7;
-  margin-top: -5px;
-  margin-left: -80px;
+  scale: 0.6;
+  margin-left: -100px;
 `;
 const MathJaxWrapperA = styled.div`
   strong {
@@ -1484,7 +1544,9 @@ const WorksheetHeaderB = styled.div`
 `;
 const ContentTitleB = styled.div`
   color: #888888;
-  margin-left: -10px;
+  margin-left: 60px;
+  padding-bottom: 10px;
+  scale: 1.3;
 `;
 const HeaderCircleB = styled.div`
   position: relative;
@@ -1568,17 +1630,21 @@ const WorksheetBodyRightB = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const MathViewerWrapperB = styled.div<{ height: number; padding: string }>`
+//각 아이템
+const MathViewerWrapperB = styled.div<{ padding: string }>`
   width: 400px;
-  height: ${({ height }) => `${height}px`};
   padding: ${({ padding }) => `${padding}`};
-  margin-bottom: 40px;
+  margin-bottom: -140px;
+  margin-top: -20px;
   font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
 `;
 const EachMathViewerB = styled.div`
   max-width: 500px;
   scale: 0.7;
-  margin-top: -5px;
   margin-left: -80px;
 `;
 const MathJaxWrapperB = styled.div`

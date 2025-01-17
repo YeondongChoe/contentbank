@@ -19,22 +19,60 @@ export function Options({
   titleIdx,
   listItem,
   onOptionChange,
+  initList,
 }: {
   titleIdx: string;
   listItem: ItemCategoryType;
   onOptionChange: React.Dispatch<
-    React.SetStateAction<{ titleIdx: string; name: string; value: string }>
+    React.SetStateAction<{
+      titleIdx: string;
+      name: string;
+      value: string | number;
+    }>
   >;
+  initList?: any;
 }) {
   const { openModal } = useModal();
   const [startDate, setStartDate] = useState<string>('');
   const [selected, setSelected] = useState<string>('');
   const [content, setContent] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string | number>('');
   const [schoolNameValue, setSchoolNameValue] = useState<{
     cityIdx: number;
     schoolName: string;
   }>({ cityIdx: 0, schoolName: '' });
+
+  // 특정 키가 listItem.name과 일치하는 값 찾기
+  const initValue = useMemo(() => {
+    if (initList && listItem.name in initList) {
+      return initList[listItem.name];
+    }
+    return '';
+  }, [initList, listItem.name]);
+
+  console.log('initList[listItem.name]', initList && initList[listItem?.name]);
+
+  // initList에서 가져온 초기값으로 DOM 요소 상태 설정
+  useEffect(() => {
+    if (initValue) {
+      switch (listItem.type) {
+        case 'INPUT':
+          setInputValue(initValue);
+          break;
+        case 'DATEPICKER':
+          setStartDate(initValue);
+          break;
+        case 'MODAL':
+          setSchoolNameValue({ ...schoolNameValue, schoolName: initValue });
+          break;
+        case 'SELECT':
+          setSelected(initValue);
+          break;
+        default:
+          break;
+      }
+    }
+  }, [initValue]);
 
   const modalData = {
     title: '',
@@ -94,8 +132,9 @@ export function Options({
   // 셀렉트 api 호출
   const getCategoryItems = async () => {
     const response = await classificationInstance.get(
-      `/v1/category/${listItem.idx}`,
+      `/v1/category/class/${listItem.idx}`,
     );
+    // console.log('response -------select', response);
     return response.data.data.categoryClassList;
   };
   const { data: categoryItems, refetch: categoryItemsRefetch } = useQuery({
@@ -107,7 +146,8 @@ export function Options({
   });
 
   useEffect(() => {
-    if (categoryItems) categoryItemsRefetch();
+    // console.log('listItem --------------- 옵션 아이템', listItem);
+    if (listItem?.type === 'SELECT' && categoryItems) categoryItemsRefetch();
   }, [listItem]);
 
   return (
@@ -118,7 +158,10 @@ export function Options({
             placeholder={`${listItem.name}`}
             value={inputValue}
             onChange={(e) => {
-              setInputValue(e.target.value);
+              const value = listItem.name.includes('페이지')
+                ? Number(e.target.value)
+                : e.target.value;
+              setInputValue(value as number | string); // 숫자 또는 텍스트 값으로 처리
             }}
           />
         )}
@@ -159,7 +202,11 @@ export function Options({
           <OtionsSelect
             width={'115px'}
             height={'30px'}
-            defaultValue={listItem.name}
+            defaultValue={
+              initList?.[listItem.name]
+                ? `${initList[listItem.name]}`
+                : `${listItem.name}`
+            }
             key={listItem.name}
             options={categoryItems}
             onSelect={(

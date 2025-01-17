@@ -12,7 +12,7 @@ interface DnDWrapperPropsType {
   onDragEnd: (newOrder: any[]) => void; // 드래그가 종료되었을 때 호출되는 함수
   children: (
     item: any,
-    ref: React.RefObject<HTMLLIElement>,
+    ref: React.RefObject<HTMLLIElement | HTMLButtonElement>,
     isDragging: boolean,
   ) => React.ReactNode; // 각 항목을 랜더링하는 함수
   dragSectionName: string; // 드래그 섹션 이름(각  드래그리스트는 섹션 이름을 다르게 해야 각 섹션 아이템간 이동이 불가)
@@ -28,7 +28,7 @@ interface DraggableItemProps {
   onMove: (dragIndex: number, hoverIndex: number, isFinished: boolean) => void; // 항목이 이동했을 때 호출되는 함수
   itemRenderer: (
     dragItem: any,
-    ref: React.RefObject<HTMLLIElement>,
+    ref: React.RefObject<HTMLLIElement | HTMLButtonElement>,
     isDragging: boolean,
   ) => React.ReactNode; // 항목을 랜더링하는 함수
   dragSectionName: string; // 드래그 섹션 이름

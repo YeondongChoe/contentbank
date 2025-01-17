@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import { IoMdArrowDropdown } from 'react-icons/io';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { styled } from 'styled-components';
 
 import { ItemCategoryType } from '../../../types';
@@ -19,7 +18,7 @@ export type ItemSelectProps = {
 
 type SelectProps = {
   options?: ItemCategoryType[] | ItemCategoryType | ItemSelectProps[] | any[];
-  onClick?: () => void;
+  onClick?: (e?: any) => void;
   onSelect?: (
     event: React.MouseEvent<HTMLButtonElement>,
     code: string | undefined,
@@ -29,6 +28,7 @@ type SelectProps = {
   height?: string;
   children?: string;
   padding?: string;
+  margin?: string;
   text?: string;
   top?: string;
   blackMode?: boolean;
@@ -39,7 +39,6 @@ type SelectProps = {
   setSelectedQuotientValue?: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
-
   onDefaultSelect?: () => void;
   selectedValue?: string;
   heightScroll?: string;
@@ -54,6 +53,7 @@ export function Select({
   width,
   height = '40px',
   padding,
+  margin,
   text,
   blackMode,
   disabled,
@@ -70,18 +70,34 @@ export function Select({
   const [selected, setSelected] = useState<string>();
   const [code, setCode] = useState<string>();
 
+  // useEffect(() => {
+  //   setSelected(selectedValue);
+  // }, [selectedValue]);
+
+  // if (setSelectedValue !== undefined && selected && code) {
+  //   setSelectedValue(selected);
+  // }
+
+  // // 권한 코드
+  // if (setSelectedCode !== undefined && selected && code) {
+  //   setSelectedCode(code);
+  // }
+
   useEffect(() => {
-    setSelected(selectedValue);
+    if (selectedValue !== undefined) {
+      setSelected(selectedValue);
+    }
   }, [selectedValue]);
 
-  if (setSelectedValue !== undefined && selected && code) {
-    setSelectedValue(selected);
-  }
-
-  // 권한 코드
-  if (setSelectedCode !== undefined && selected && code) {
-    setSelectedCode(code);
-  }
+  // `setSelectedValue`와 `setSelectedCode` 호출을 useEffect 외부에서 수행
+  useEffect(() => {
+    if (setSelectedValue && selected) {
+      setSelectedValue(selected);
+    }
+    if (setSelectedCode && code) {
+      setSelectedCode(code);
+    }
+  }, [selected, code, setSelectedValue, setSelectedCode]);
 
   const normalizedOptions = Array.isArray(options)
     ? options
@@ -115,10 +131,12 @@ export function Select({
   return (
     <Component
       $padding={padding}
+      $margin={margin}
       onMouseLeave={() => {
         setIsOptionShow(false);
       }}
       onClick={onClick}
+      disabled={disabled}
     >
       <IconButton
         width={width}
@@ -143,36 +161,34 @@ export function Select({
           height={height}
         >
           <ScrollWrapper $heightScroll={heightScroll}>
-            <PerfectScrollbar>
-              {isnormalizedOptions
-                ? normalizedOptions.map((el) => (
-                    <div className="li" key={el.code}>
-                      <button
-                        disabled={disabled}
-                        value={el.name}
-                        className={el.code}
-                        onClick={(event) => {
-                          handleOptionSelect(event, el.code);
-                          clickQuotientValue(el.value as number);
-                        }}
-                      >
-                        <span>{el.name}</span>
-                      </button>
-                    </div>
-                  ))
-                : optionsWithDefault.map((el) => (
-                    <div className="li" key={el.code}>
-                      <button
-                        disabled={disabled}
-                        value={el.name}
-                        className={el.code}
-                        onClick={(event) => handleOptionSelect(event, el.code)}
-                      >
-                        <span>{el.name}</span>
-                      </button>
-                    </div>
-                  ))}
-            </PerfectScrollbar>
+            {isnormalizedOptions
+              ? normalizedOptions.map((el) => (
+                  <div className="li" key={el.code}>
+                    <button
+                      disabled={disabled}
+                      value={el.name}
+                      className={el.code}
+                      onClick={(event) => {
+                        handleOptionSelect(event, el.code);
+                        clickQuotientValue(el.value as number);
+                      }}
+                    >
+                      <span>{el.name}</span>
+                    </button>
+                  </div>
+                ))
+              : optionsWithDefault.map((el) => (
+                  <div className="li" key={el.code}>
+                    <button
+                      disabled={disabled}
+                      value={el.name}
+                      className={el.code}
+                      onClick={(event) => handleOptionSelect(event, el.code)}
+                    >
+                      <span>{el.name}</span>
+                    </button>
+                  </div>
+                ))}
           </ScrollWrapper>
         </SelectOptionsList>
       )}
@@ -180,16 +196,23 @@ export function Select({
   );
 }
 
-const Component = styled.div<{ $padding?: string }>`
+const Component = styled.div<{
+  $padding?: string;
+  $margin?: string;
+  disabled?: boolean;
+}>`
   position: relative;
   padding: ${({ $padding }) => ($padding ? `${$padding};` : '0px')};
+  margin: ${({ $margin }) => ($margin ? `${$margin};` : '0')};
+  ${({ disabled }) => disabled && 'opacity: 0.5;'};
 `;
 
 const ScrollWrapper = styled.div<{ $heightScroll?: string }>`
   overflow-y: auto;
   width: 100%;
   border-radius: 5px;
-  ${({ $heightScroll }) => ($heightScroll ? `height: ${$heightScroll}` : '')};
+  ${({ $heightScroll }) =>
+    $heightScroll ? `max-height: ${$heightScroll}` : ''};
 `;
 
 const SelectOptionsList = styled.div<{
@@ -205,7 +228,7 @@ const SelectOptionsList = styled.div<{
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1;
+  z-index: 999999999999999;
   width: 100%;
   height: 100%;
 

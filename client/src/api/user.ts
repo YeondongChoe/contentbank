@@ -32,7 +32,13 @@ export const getMyInfo = async () => {
 
 type PostCreateAccountFn = MutationFunction<
   { code: string; message: string },
-  { Id: string; Name: string; selectedCode: string; Comment: string }
+  {
+    Id: string;
+    Name: string;
+    selectedCode: string;
+    Comment: string;
+    IdxValue: string;
+  }
 >;
 // 계정 등록하기 api
 export const postCreateAccount: PostCreateAccountFn = async ({
@@ -40,12 +46,14 @@ export const postCreateAccount: PostCreateAccountFn = async ({
   Name,
   selectedCode,
   Comment,
+  IdxValue,
 }) => {
   const account = {
     id: Id,
     name: Name,
     authorityCode: selectedCode,
     note: Comment,
+    companyIdx: IdxValue,
   };
   const response: AxiosResponse<{ code: string; message: string }> =
     await userInstance.post(`/v1/account`, account);
@@ -53,14 +61,15 @@ export const postCreateAccount: PostCreateAccountFn = async ({
 };
 
 // 권한 리스트 불러오기 api
-export const getAuthorityList = async () => {
-  const res = await userInstance.get(`/v1/authority`);
+export const getAuthorityList = async (companyIdx: string) => {
+  const res = await userInstance.get(
+    `/v1/authority?searchCondition=${companyIdx}`,
+  );
   return res;
 };
-
 // 선택된 권한 불러오기 api
 export const getAuthorityItem = async (codeValue: string) => {
-  if (codeValue !== '')
+  if (codeValue !== null)
     return await userInstance.get(`/v1/authority/${codeValue}`);
 };
 
@@ -75,6 +84,7 @@ type PermissionOutput = {
 export const putChangeAuthority = async (data: {
   name: string;
   code: string;
+  companyIdx: number;
   permissionList: PermissionOutput[];
 }) => {
   const res = await userInstance.put(`/v1/authority`, data);
@@ -85,6 +95,7 @@ export const putChangeAuthority = async (data: {
 // 선택된 권한 생성하기 api
 export const postCreateAuthority = async (data: {
   name: string;
+  companyIdx: number;
   permissionList: PermissionOutput[];
 }) => {
   const res = await userInstance.post(`/v1/authority`, data);
@@ -102,35 +113,53 @@ export const getUserList = async ({
   page,
   searchKeywordValue,
   isUseFilter,
+  idxValue,
 }: {
   page: number;
   searchKeywordValue: string;
   isUseFilter: '' | 'Y' | 'N' | undefined;
+  idxValue: string;
 }) => {
-  const res = await userInstance.get(
-    `/v1/account?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}
-			`,
-  );
-  // console.log(`유저리스트 get 결과값`, res);
-  return res;
+  if (idxValue === '0') {
+    return null;
+  } else {
+    const res = await userInstance.get(
+      `/v1/account?pageIndex=${page}&pageUnit=${8}&searchKeyword=${searchKeywordValue}&isUseFilter=${isUseFilter}&searchCondition=${idxValue}
+        `,
+    );
+    // console.log(`유저리스트 get 결과값`, res);
+    return res;
+  }
 };
 
 // 아이디 중복 확인 && 토탈 유저 수
 export const getUserListTotal = async ({
   totalCount,
+  idxValue,
 }: {
   totalCount: number;
+  idxValue: string | null;
 }) => {
+  const validCount = totalCount > 0 ? totalCount : 10; // 기본값 설정
+  const validIdxValue = idxValue || 'default';
   const res = await userInstance.get(
-    `/v1/account?&pageIndex=${1}&pageUnit=${totalCount}
+    `/v1/account?&pageIndex=${1}&pageUnit=${validCount}&searchCondition=${idxValue}
 		`,
   );
+  //console.log(res);
   return res;
 };
 
 // 활성화/비활성화 api
-export const patchChangeUse = async (checkList: number[]) => {
+export const patchChangeUse = async ({
+  isUse,
+  checkList,
+}: {
+  isUse: boolean;
+  checkList: number[];
+}) => {
   return await userInstance.patch(`/v1/account/change-use`, {
+    isUse: isUse,
     idxList: checkList,
   });
 };
@@ -145,6 +174,7 @@ type PutChangeUserInfoFn = MutationFunction<
       authorityCode: string;
       note: string;
       isUseNot: string;
+      companyIdx: number;
     };
   } // 함수가 받아들이는 인자 타입
 >;
@@ -158,6 +188,7 @@ export const putChangeUserInfo: PutChangeUserInfoFn = async ({
     authorityCode: string;
     note: string;
     isUseNot: string;
+    companyIdx: number;
   };
 }) => {
   const res = await userInstance.put(`/v1/account/${accountIdx}`, userInfo);

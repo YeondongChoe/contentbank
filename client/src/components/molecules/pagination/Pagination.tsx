@@ -13,14 +13,15 @@ type PaginationBoxProps = {
   totalItemsCount: number;
   onClick?: () => void;
   onChange?: (e: any) => void;
+  $margin?: string;
 };
 
 export function PaginationBox({
+  $margin,
   itemsCountPerPage,
   totalItemsCount,
 }: PaginationBoxProps) {
   const [page, setPage] = useRecoilState(pageAtom);
-
   const pageRangeDisplay = () => {
     if (totalItemsCount < 5) return totalItemsCount;
     if (totalItemsCount > 5) return 5;
@@ -28,11 +29,11 @@ export function PaginationBox({
 
   // 페이지 이동시 초기화
   useEffect(() => {
-    setPage(1);
-  }, []);
+    setPage(page);
+  }, [page]);
 
   return (
-    <Wrapper>
+    <Wrapper $margin={$margin}>
       <Pagination
         activePage={page}
         itemsCountPerPage={itemsCountPerPage} // 한페이지에서 보일 아이템 갯수
@@ -48,7 +49,8 @@ export function PaginationBox({
   );
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ $margin?: string }>`
+  margin: ${({ $margin }) => $margin || '0px'};
   .pagination {
     display: flex;
     justify-content: center;

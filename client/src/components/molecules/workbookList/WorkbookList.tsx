@@ -1,17 +1,9 @@
 import * as React from 'react';
 import { useState, useEffect, useRef } from 'react';
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  RefetchOptions,
-  QueryObserverResult,
-} from '@tanstack/react-query';
-import { AxiosResponse } from 'axios';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { LuFileSearch2 } from 'react-icons/lu';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
-import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
 
 import { workbookInstance } from '../../../api/axios';
@@ -28,10 +20,11 @@ import {
   Icon,
   openToastifyAlert,
   PaginationBox,
+  ValueNone,
 } from '../../../components';
 import { useModal } from '../../../hooks';
-import { isEditWorkbookAtom } from '../../../store/utilAtom';
 import { WorksheetListType } from '../../../types';
+import { selectedListType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { windowOpenHandler } from '../../../utils/windowHandler';
 import { COLOR } from '../../constants';
@@ -39,26 +32,30 @@ import { WorkbookPDFModal } from '../PDFModal/WorkbookPDFModal';
 
 type ContentListProps = {
   list: WorksheetListType[] | any[]; // TODO
-  tabVeiw: string;
+  tabView: string;
   deleteBtn?: boolean;
   ondeleteClick?: () => void;
   totalCount?: number;
   itemsCountPerPage?: number;
+  selectedList: selectedListType[];
 };
 
 export function WorkbookList({
   list,
-  tabVeiw,
+  tabView,
   deleteBtn,
   ondeleteClick,
   itemsCountPerPage,
   totalCount,
+  selectedList,
 }: ContentListProps) {
   const queryClient = useQueryClient();
   const { openModal } = useModal();
   const backgroundRef = useRef<HTMLDivElement>(null);
   const [checkList, setCheckList] = useState<string[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const [workbookIdx, setWorkbookIdx] = useState<number>(0);
+  const [isEditWorkbook, setIsEditWorkbook] = useState<boolean>(false);
 
   const openSettingList = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -94,9 +91,6 @@ export function WorkbookList({
     }
   };
 
-  const [workbookIdx, setWorkbookIdx] = useState<number>(0);
-  const [isEditWorkbook, setIsEditWorkbook] = useState<boolean>(false);
-
   // 문항 수정 윈도우 열기
   const openCreateEditWindow = (idx: number) => {
     setWorkbookIdx(idx);
@@ -111,7 +105,6 @@ export function WorkbookList({
   //문항 삭제
   const [isDeleteWorkbook, setIsDeleteWorkbook] = useState(false);
   const clickDeleteWorkbook = (idx: number) => {
-    console.log(idx);
     setIsDeleteWorkbook(true);
     setWorkbookIdx(idx);
   };
@@ -131,6 +124,9 @@ export function WorkbookList({
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { message: string } }) => {
       setIsDeleteWorkbook(false);
@@ -212,20 +208,6 @@ export function WorkbookList({
     },
   });
 
-  //pdf 미리보기
-  const [showPdf, setShowPdf] = useState(false);
-
-  const closePdfViewer = () => {
-    setShowPdf(false);
-  };
-
-  const [pdfUrl, setPdfUrl] = useState<string>('');
-
-  const getPdf = (fileName: string) => {
-    setShowPdf(true);
-    setPdfUrl(`https://j-dev01.dreamonesys.co.kr/CB/${fileName}`);
-  };
-
   // 배경 클릭시 체크리스트 초기화
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -247,7 +229,7 @@ export function WorkbookList({
   // 탭 바뀔시 초기화
   useEffect(() => {
     setCheckList([]);
-  }, [tabVeiw]);
+  }, [tabView]);
 
   const openCreatePDFModal = (idx: number) => {
     openModal({
@@ -260,215 +242,269 @@ export function WorkbookList({
 
   return (
     <>
-      {showPdf ? (
-        <IframeWrapper>
-          <IframeButtonWrapper>
-            <Button
-              height={'30px'}
-              width={'80px'}
-              fontSize="13px"
-              $filled
-              cursor
-              onClick={closePdfViewer}
-            >
-              닫기
-            </Button>
-          </IframeButtonWrapper>
-          <iframe
-            title="PDF Viewer"
-            src={pdfUrl}
-            width="1100"
-            height="750"
-            style={{ border: 'none', borderRadius: 25 }}
-          ></iframe>
-        </IframeWrapper>
-      ) : (
-        <>
-          <Total> Total : {totalCount ? totalCount : 0}</Total>
-          <ListButtonWrapper>
-            {/* <InputWrapper>
-              <ButtonWrapper>
-                <CheckBoxWrapper>
-                  <CheckBoxI
-                    $margin={'0 5px 0 0'}
-                    onChange={(e) => handleAllCheck(e)}
-                    checked={checkList.length === list.length ? true : false}
-                    id={'all check'}
-                    value={'all check'}
-                  />
-                  <span className="title_top">전체선택</span>
-                </CheckBoxWrapper>
-                <ActionButtonWrapper>
-                  <Button
-                    width="100px"
-                    height="35px"
-                    fontSize="14px"
-                    $borderRadius="7px"
-                    $filled
-                    $normal
-                    onClick={() => {}}
-                    disabled={isEnabled}
-                    cursor
-                  >
-                    문항 출력
-                  </Button>
-                </ActionButtonWrapper>
-              </ButtonWrapper>
-            </InputWrapper> */}
-          </ListButtonWrapper>
-          <ListWrapper ref={backgroundRef}>
-            <List margin={`10px 0`}>
-              {list.map((item: WorksheetListType) => (
-                <ListItem
-                  height="80px"
-                  key={item.code as string}
-                  isChecked={checkList.includes(item.code)}
-                  onClick={(e) => handleButtonCheck(e, item.code)}
-                >
-                  <CheckBoxI
-                    id={item.code}
-                    value={item.code}
-                    $margin={`0 5px 0 0`}
-                    checked={checkList.includes(item.code)}
-                    readOnly
-                  />
-                  {item.isFavorite ? (
-                    <Icon
-                      width={`18px`}
-                      $margin={'0 0 0 12px'}
-                      src={`/images/icon/favorites_on.svg`}
-                      onClick={(e) =>
-                        clickFavorite(e, item.idx, item.isFavorite)
-                      }
-                      cursor
-                    />
-                  ) : (
-                    <Icon
-                      width={`18px`}
-                      $margin={'0 0 0 12px'}
-                      src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
-                      onClick={(e) =>
-                        clickFavorite(e, item.idx, item.isFavorite)
-                      }
-                      cursor
-                    />
-                  )}
-                  <ItemLayout>
-                    {/* //TODO */}
-                    <i className="line"></i>
-                    <span>{item.grade}</span>
-                    <i className="line"></i>
-                    <span>
-                      {(item.tag === 'DAILY_TEST' && '일일테스트') ||
-                        (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
-                        (item.tag === 'EXERCISES' && '연습문제') ||
-                        (item.tag === 'PRACTICE_TEST' && '모의고사') ||
-                        (item.tag === 'TEST_PREP' && '내신대비')}
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_20">{item.name}</span>
-                    <i className="line"></i>
-                    <span className="width_20">{item.createdAt}</span>
-                    <i className="line"></i>
-                    <span className="width_5">{item.examiner}</span>
-                    <i className="line"></i>
-                    <span className="width_5">
-                      <LuFileSearch2
-                        style={{ fontSize: '22px', cursor: 'pointer' }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openCreatePDFModal(item.idx);
-                        }}
-                        // onClick={() =>
-                        //   getPdf(item.lastArticle.originalName as string)
-                        // }
-                      />
-                    </span>
-                    <i className="line"></i>
-                    <span className="width_5">
-                      <SettingButton
-                        type="button"
-                        onClick={(e) => openSettingList(e)}
-                        onMouseLeave={(e) => closeSettingList(e)}
-                      >
-                        <SlOptionsVertical
-                          style={{ fontSize: '16px', cursor: 'pointer' }}
-                        />
-                        <SettingList>
-                          <li>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openCreateEditWindow(item.idx);
-                                setIsEditWorkbook(true);
-                              }}
-                            >
-                              수정
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openCreateEditWindow(item.idx);
-                                setIsEditWorkbook(false);
-                              }}
-                            >
-                              복제 후 수정
-                            </button>
-                          </li>
-                          <li>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                clickDeleteWorkbook(item.idx);
-                              }}
-                            >
-                              삭제
-                            </button>
-                          </li>
-                        </SettingList>
-                      </SettingButton>
-                    </span>
-                  </ItemLayout>
-                </ListItem>
-              ))}
-            </List>
-          </ListWrapper>
-          {isDeleteWorkbook && (
-            <Alert
-              description={'학습지를 삭제하시겠습니까?'}
-              isAlertOpen={isDeleteWorkbook}
-              action="삭제"
-              onClose={() => setIsDeleteWorkbook(false)}
-              onClick={() => deleteItemMutate()}
-            ></Alert>
-          )}
-          <PaginationBox
-            itemsCountPerPage={itemsCountPerPage as number}
-            totalItemsCount={totalCount as number}
+      <Total> Total : {totalCount ? totalCount : 0}</Total>
+      {/* <ListButtonWrapper>
+        <InputWrapper>
+          <ButtonWrapper>
+            <CheckBoxWrapper>
+              <CheckBoxI
+                $margin={'0 5px 0 0'}
+                onChange={(e) => handleAllCheck(e)}
+                checked={checkList.length === list.length ? true : false}
+                id={'all check'}
+                value={'all check'}
+              />
+              <span className="title_top">전체선택</span>
+            </CheckBoxWrapper>
+            <ActionButtonWrapper>
+              <Button
+                width="100px"
+                height="35px"
+                fontSize="14px"
+                $borderRadius="7px"
+                $filled
+                $normal
+                onClick={() => {}}
+                disabled={isEnabled}
+                cursor
+              >
+                문항 출력
+              </Button>
+            </ActionButtonWrapper>
+          </ButtonWrapper>
+        </InputWrapper>
+      </ListButtonWrapper> */}
+      <List margin={`10px 0 5px 0`} height="none">
+        <ListItem isChecked={false} columnTitle marginBottom="0px">
+          <CheckBoxI
+            id={''}
+            value={''}
+            $margin={`0 5px 0 0`}
+            checked={false}
+            readOnly
           />
-        </>
+          <Icon
+            width={`18px`}
+            $margin={'0 0 0 10px'}
+            src={`/images/icon/favorites_off_B.svg`}
+            onClick={() => {}}
+            cursor
+          />
+          <ItemLayout>
+            {selectedList.map((list) => {
+              if (
+                ['태그', '대상학년', '작성자'].includes(list.name) &&
+                list.view === true
+              ) {
+                return (
+                  <>
+                    <span key={list.name} className="width_80px item_wrapper">
+                      <strong>{list.name}</strong>
+                    </span>
+                    <i className="line"></i>
+                  </>
+                );
+              } else if (
+                ['학습지명', '등록일'].includes(list.name) &&
+                list.view === true
+              ) {
+                return (
+                  <>
+                    <span key={list.name} className="width_150px item_wrapper">
+                      <strong>{list.name}</strong>
+                    </span>
+                    <i className="line"></i>
+                  </>
+                );
+              }
+              return null;
+            })}
+            <span className="width_80px item_wrapper">
+              <strong>미리보기</strong>
+            </span>
+            <i className="line"></i>
+            <span className="width_20px item_wrapper">
+              <strong>설정</strong>
+            </span>
+          </ItemLayout>
+        </ListItem>
+      </List>
+      {list?.length > 0 ? (
+        <ListWrapper ref={backgroundRef}>
+          <List margin={`10px 0`}>
+            {list.map((item: WorksheetListType) => (
+              <ListItem
+                height="90px"
+                key={item.code as string}
+                isChecked={checkList.includes(item.code)}
+                onClick={(e) => handleButtonCheck(e, item.code)}
+              >
+                <CheckBoxI
+                  id={item.code}
+                  value={item.code}
+                  $margin={`0 5px 0 0`}
+                  checked={checkList.includes(item.code)}
+                  readOnly
+                />
+                {item.isFavorite ? (
+                  <Icon
+                    width={`18px`}
+                    $margin={'0 0 0 10px'}
+                    src={`/images/icon/favorites_on.svg`}
+                    onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
+                    cursor
+                  />
+                ) : (
+                  <Icon
+                    width={`18px`}
+                    $margin={'0 0 0 10px'}
+                    src={`/images/icon/favorites${checkList.includes(item.code) ? `_off_W` : `_off_B`}.svg`}
+                    onClick={(e) => clickFavorite(e, item.idx, item.isFavorite)}
+                    cursor
+                  />
+                )}
+                <ItemLayout>
+                  {selectedList.map((list) => {
+                    if (list.name === '태그' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_80px item_wrapper">
+                            <span className="ellipsis">
+                              {(item.tag === 'DAILY_TEST' && '일일테스트') ||
+                                (item.tag === 'MONTHLY_TEST' && '월말테스트') ||
+                                (item.tag === 'EXERCISES' && '연습문제') ||
+                                (item.tag === 'PRACTICE_TEST' && '모의고사') ||
+                                (item.tag === 'TEST_PREP' && '내신대비')}
+                            </span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    } else if (list.name === '대상학년' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_80px item_wrapper">
+                            <span className="ellipsis">{item.grade}</span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    } else if (list.name === '작성자' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_80px item_wrapper">
+                            <span className="ellipsis">{item.examiner}</span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    } else if (list.name === '학습지명' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_150px item_wrapper">
+                            <span className="ellipsis">{item.name}</span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    } else if (list.name === '등록일' && list.view === true) {
+                      return (
+                        <>
+                          <span className="width_150px item_wrapper">
+                            <span className="ellipsis">{item.createdAt}</span>
+                          </span>
+                          <i className="line"></i>
+                        </>
+                      );
+                    }
+                  })}
+                  <span className="width_20px item_wrapper">
+                    <LuFileSearch2
+                      style={{ fontSize: '22px', cursor: 'pointer' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openCreatePDFModal(item.idx);
+                      }}
+                    />
+                  </span>
+                  <i className="line"></i>
+                  <span className="width_20px item_wrapper">
+                    <SettingButton
+                      type="button"
+                      onClick={(e) => openSettingList(e)}
+                      onMouseLeave={(e) => closeSettingList(e)}
+                    >
+                      <SlOptionsVertical
+                        style={{ fontSize: '16px', cursor: 'pointer' }}
+                      />
+                      <SettingList>
+                        <li>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openCreateEditWindow(item.idx);
+                              setIsEditWorkbook(true);
+                            }}
+                          >
+                            수정
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openCreateEditWindow(item.idx);
+                              setIsEditWorkbook(false);
+                            }}
+                          >
+                            복제 후 수정
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              clickDeleteWorkbook(item.idx);
+                            }}
+                          >
+                            삭제
+                          </button>
+                        </li>
+                      </SettingList>
+                    </SettingButton>
+                  </span>
+                </ItemLayout>
+              </ListItem>
+            ))}
+          </List>
+        </ListWrapper>
+      ) : (
+        <ValueNoneWrapper>
+          <ValueNone />
+        </ValueNoneWrapper>
       )}
+
+      {isDeleteWorkbook && (
+        <Alert
+          description={'학습지를 삭제하시겠습니까?'}
+          isAlertOpen={isDeleteWorkbook}
+          action="삭제"
+          onClose={() => setIsDeleteWorkbook(false)}
+          onClick={() => deleteItemMutate()}
+        ></Alert>
+      )}
+      <PaginationBox
+        itemsCountPerPage={itemsCountPerPage as number}
+        totalItemsCount={totalCount as number}
+      />
       <Modal />
     </>
   );
 }
 
-const IframeWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-`;
-const IframeButtonWrapper = styled.div`
-  width: 1100px;
-  display: flex;
-  justify-content: flex-end;
-`;
 const ListButtonWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -479,7 +515,6 @@ const InputWrapper = styled.div`
   justify-content: space-between;
   width: 100%;
 `;
-
 const Total = styled.span`
   display: inline-block;
   text-align: right;
@@ -503,7 +538,6 @@ const CheckBoxWrapper = styled.div`
   display: flex;
   align-items: center;
 `;
-
 const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -517,12 +551,44 @@ const ItemLayout = styled.span`
   align-items: center;
   flex-wrap: wrap;
 
-  > span {
+  .tooltip_wrapper {
+    position: relative;
+  }
+  .item_wrapper {
     display: flex;
     /* flex: 1 0 0; */
     justify-content: space-around;
     flex-wrap: wrap;
     word-break: break-all;
+    min-width: 30px;
+    max-width: 150px;
+    font-weight: normal;
+  }
+
+  /* 두줄 이상 ellipsis 처리  */
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .title {
+    width: 100%;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .tag {
+    margin: 0 5px;
+    padding: 3px 5px;
+    border-radius: 5px;
+    background-color: ${COLOR.BORDER_GRAY};
+    margin-top: 5px;
+  }
+  .tag_icon {
+    display: flex;
+    align-self: center;
   }
   .line {
     width: 1px;
@@ -538,8 +604,14 @@ const ItemLayout = styled.span`
   .width_20px {
     width: 20px;
   }
+  .width_80px {
+    width: 80px;
+  }
   .width_50 {
     width: 50%;
+  }
+  .width_150px {
+    width: 150px;
   }
 `;
 
@@ -597,4 +669,7 @@ const SettingList = styled.ul`
       }
     }
   }
+`;
+const ValueNoneWrapper = styled.div`
+  padding: 100px 0;
 `;

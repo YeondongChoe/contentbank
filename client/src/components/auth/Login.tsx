@@ -21,10 +21,9 @@ import {
   removeAuthorityCookie,
   setAuthorityCookie,
 } from '../../utils/cookies';
+import { postRefreshToken } from '../../utils/tokenHandler';
 
 export function Login() {
-  // const setAccessTokenAtom = useSetRecoilState(accessTokenAtom);
-
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('username') ? true : false,
   );
@@ -43,6 +42,19 @@ export function Login() {
 
   const navigate = useNavigate();
 
+  //jwt 변환
+  const jwtDecode = (token: string) => {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join(''),
+    );
+    return JSON.parse(jsonPayload);
+  };
+
   //로그인 api
   const {
     data: loginPostData,
@@ -57,6 +69,9 @@ export function Login() {
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
       // console.log('loginPostData error', context.response.status);
     },
     onSuccess: (response: {
@@ -73,7 +88,17 @@ export function Login() {
       console.log('accessToken ----login', response.data.data.accessToken);
       console.log('refreshToken ----login', response.data.data.refreshToken);
       console.log('sessionId -----login', response.data.data.sessionId);
-      // 로컬데이터에서 토큰과 세션을 저장
+
+      // JWT 디코딩하여 companyCode 추출
+      const accessToken = response.data.data.accessToken;
+
+      // JWT 디코드
+      const decodedToken = jwtDecode(accessToken);
+      const companyCode = decodedToken?.companyCode; // JWT 페이로드에 companyCode가 포함된 경우
+      if (companyCode) {
+        localStorage.setItem('companyCode', companyCode);
+      }
+
       setAuthorityCookie('accessToken', response.data.data.accessToken, {
         path: '/',
         sameSite: 'strict',

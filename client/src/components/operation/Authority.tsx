@@ -7,6 +7,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { redirect } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { userInstance } from '../../api/axios';
 import {
   deleteAuthority,
   getAuthorityItem,
@@ -53,12 +54,10 @@ export const defaultPermissions = [
   },
   { key: 'QM_isEdit', checked: false, menuCode: 'QM_isEdit' },
   { key: 'QM_isManage', checked: false, menuCode: 'QM_isManage' },
-  { key: 'isEditTreeChecked', checked: false, menuCode: 'isEditTreeChecked' },
-  {
-    key: 'isManageTreeChecked',
-    checked: false,
-    menuCode: 'isManageTreeChecked',
-  },
+  { key: 'RM_isEdit', checked: false, menuCode: 'RM_isEdit' },
+  { key: 'RM_isManage', checked: false, menuCode: 'RM_isManage' },
+  { key: 'IM_isEdit', checked: false, menuCode: 'IM_isEdit' },
+  { key: 'IM_isManage', checked: false, menuCode: 'IM_isManage' },
   {
     key: 'isEditOperationChecked',
     checked: false,
@@ -73,6 +72,30 @@ export const defaultPermissions = [
   { key: 'AM_isManage', checked: false, menuCode: 'AM_isManage' },
   { key: 'PM_isEdit', checked: false, menuCode: 'PM_isEdit' },
   { key: 'PM_isManage', checked: false, menuCode: 'PM_isManage' },
+  { key: 'PSM_isEdit', checked: false, menuCode: 'PSM_isEdit' },
+  { key: 'PSM_isManage', checked: false, menuCode: 'PSM_isManage' },
+  { key: 'COM_isEdit', checked: false, menuCode: 'COM_isEdit' },
+  { key: 'COM_isManage', checked: false, menuCode: 'COM_isManage' },
+  { key: 'MIM_isEdit', checked: false, menuCode: 'MIM_isEdit' },
+  { key: 'MIM_isManage', checked: false, menuCode: 'MIM_isManage' },
+  { key: 'LOM_isEdit', checked: false, menuCode: 'LOM_isEdit' },
+  { key: 'LOM_isManage', checked: false, menuCode: 'LOM_isManage' },
+  { key: 'STM_isEdit', checked: false, menuCode: 'STM_isEdit' },
+  { key: 'STM_isManage', checked: false, menuCode: 'STM_isManage' },
+  {
+    key: 'isEditMenuChecked',
+    checked: false,
+    menuCode: 'isEditMenuChecked',
+  },
+  {
+    key: 'isManageMenuChecked',
+    checked: false,
+    menuCode: 'isManageMenuChecked',
+  },
+  { key: 'CCC_isEdit', checked: false, menuCode: 'CCC_isEdit' },
+  { key: 'CCC_isManage', checked: false, menuCode: 'CCC_isManage' },
+  { key: 'CMC_isEdit', checked: false, menuCode: 'CMC_isEdit' },
+  { key: 'CMC_isManage', checked: false, menuCode: 'CMC_isManage' },
 ];
 
 export type PermissionInput = {
@@ -93,7 +116,7 @@ export function Authority() {
   const [authorityList, setAuthorityList] = useState<ItemAuthorityType[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [isClickedName, setIsClickedName] = useState(false);
-  const [codeValue, setCodeValue] = useState('');
+  const [codeValue, setCodeValue] = useState<string | null>(null);
   const [codeUpdateList, setCodeUpdateList] = useState<PermissionOutput[]>([]);
   const [deleteCodeValue, setDeleteCodeValue] = useState('');
 
@@ -102,16 +125,50 @@ export function Authority() {
   const [isCreateNameError, setIsCreateNameError] = useState(false);
   const [isCheckNullError, setIsCheckNullError] = useState(false);
   const [isDeleteAuthority, setIsDeleteAuthority] = useState(false);
-
   const [checkList, setCheckList] =
     useState<PermissionInput[]>(defaultPermissions);
+
+  const [companyCoadValue, setCompanyCoadValue] = useState<string | null>(null);
+  const [companyIdxValue, setCompanyIdxValue] = useState<string>('0');
+  //로컬스토리지에 있는 기업코드 가져오기
+  useEffect(() => {
+    const storedCompanyCode = localStorage.getItem('companyCode');
+    setCompanyCoadValue(storedCompanyCode);
+  }, []);
+
+  //기업코드로 기업 idx 가져오기
+  const getCompanyList = async () => {
+    const res = await userInstance.get(
+      `/v1/company?searchCondition=${companyCoadValue}`,
+    );
+    //console.log(`getCompanyList 결과값`, res);
+    return res;
+  };
+
+  const { data: companyListData, refetch: companyListRefetch } = useQuery({
+    queryKey: ['get-companyList'],
+    queryFn: getCompanyList,
+    meta: {
+      errorMessage: 'get-companyList 에러 메세지',
+    },
+    enabled: companyCoadValue !== null,
+  });
+
+  useEffect(() => {
+    if (companyListData) {
+      setCompanyIdxValue(
+        companyListData?.data.data.list[0].idx.toLocaleString(),
+      );
+    }
+  }, [companyListData]);
+
   const queryClient = useQueryClient();
 
-  // 권한 리스트 불러오기 api
+  //TODO: 권한 리스트 불러오기 api : 기업코드 변경해줘야함
   const { data: authorityListData, refetch: authorityListDataRefetch } =
     useQuery({
-      queryKey: ['get-authorityList'],
-      queryFn: getAuthorityList,
+      queryKey: ['get-authorityList', companyIdxValue],
+      queryFn: ({ queryKey }) => getAuthorityList(queryKey[1]),
       meta: {
         errorMessage: 'get-authorityList 에러 메세지',
       },
@@ -139,15 +196,14 @@ export function Authority() {
   const {
     data: authorityData,
     isSuccess,
-    isPending,
+    isFetching,
     refetch: authorityDataRefetch,
   } = useQuery({
-    queryKey: ['get-authority'],
-    queryFn: () => getAuthorityItem(codeValue),
+    queryKey: ['get-authority', codeValue],
+    queryFn: () => getAuthorityItem(codeValue as string),
     meta: {
       errorMessage: 'get-authority 에러 메세지',
     },
-    enabled: !!codeValue,
   });
 
   // 등록된 권한 데이터 불러올 시 체크박스에 맞춘 데이터로 변환
@@ -184,6 +240,7 @@ export function Authority() {
   const clickMemberAuthority = (code: string) => {
     setCodeValue(code);
     setIsClickedName(true);
+    authorityDataRefetch();
   };
   useEffect(() => {
     // queryClient.invalidateQueries({
@@ -213,20 +270,31 @@ export function Authority() {
 
   // 메뉴 코드 및 이름에 대한 매핑 정보
   const menuMapping: Record<string, { idx: number; name: string }> = {
-    QE: { idx: 7, name: '문항 편집' },
-    WE: { idx: 8, name: '학습지 편집' },
-    QM: { idx: 9, name: '문항 관리' },
-    AM: { idx: 11, name: '운영 관리' },
-    PM: { idx: 12, name: '권한 관리' },
+    QE: { idx: 1, name: '문항 제작' },
+    WE: { idx: 2, name: '학습지 제작' },
+    QM: { idx: 3, name: '문항 관리' },
+    RM: { idx: 4, name: '신고 문항' },
+    IM: { idx: 5, name: '검수 관리' },
+    AM: { idx: 6, name: '회원 관리' },
+    PM: { idx: 7, name: '권한 관리' },
+    PSM: { idx: 8, name: '프로세스 관리' },
+    COM: { idx: 9, name: '기업 관리' },
+    MIM: { idx: 10, name: '메타정보 관리' },
+    LOM: { idx: 11, name: '로그 관리' },
+    STM: { idx: 12, name: '통계 관리' },
+    CCC: { idx: 13, name: '콘텐츠 제작 설정' },
+    CMC: { idx: 14, name: '콘텐츠 관리 설정' },
   };
 
   // 등록 수정시 서버 데이터 형식 맞추는 함수
   const createPermissions = (permissions: PermissionInput[]) => {
     const results: PermissionOutput[] = [];
+    console.log('permissions', permissions);
 
     // 메뉴 매핑 정보를 기반으로 각 메뉴 코드에 대한 권한 설정
     Object.keys(menuMapping).forEach((code) => {
       const menuInfo = menuMapping[code];
+      console.log('menuInfo', menuInfo);
 
       // 'Edit' 권한 확인
       const isEdit = permissions.some(
@@ -261,7 +329,8 @@ export function Authority() {
     if (isClickedName && permissionList.length > 0) {
       mutateChangeAuthority({
         name: inputValue,
-        code: codeValue,
+        code: codeValue as string,
+        companyIdx: Number(companyIdxValue),
         permissionList,
       });
 
@@ -270,6 +339,7 @@ export function Authority() {
     if (!isClickedName && permissionList.length > 0) {
       mutateCreateAuthority({
         name: inputValue,
+        companyIdx: Number(companyIdxValue),
         permissionList,
       });
 
@@ -306,6 +376,8 @@ export function Authority() {
       authorityListDataRefetch();
       setInputValue('');
       setIsClickedName(false);
+      //리프레시토큰 재발급
+      postRefreshToken();
     },
   });
   // 선택된 권한 생성하기 api
@@ -433,7 +505,7 @@ export function Authority() {
     //콘텐츠 관리
     // [6] 편집 전체 선택 토글 // 편집 선택false시 관리 체크 초기화
 
-    // [8][10] 문항 학습지 전체 체크 초기화
+    // [8][10][12] 문항 신고 검수 전체 체크 초기화
     if (Number(target.value) === 8) {
       if (target.checked === false) {
         // 편집 false일시 관리도 false
@@ -448,6 +520,159 @@ export function Authority() {
 
       return;
     }
+    //신고문항
+    if (Number(target.value) === 10) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
+        onList.splice(11, 1, {
+          key: checkList[11].key,
+          checked: false,
+          menuCode: 'RM_isManage',
+        });
+
+        setCheckList([...onList]);
+      }
+
+      return;
+    }
+
+    //검수문항
+    if (Number(target.value) === 12) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
+        onList.splice(13, 1, {
+          key: checkList[13].key,
+          checked: false,
+          menuCode: 'IM_isManage',
+        });
+
+        setCheckList([...onList]);
+      }
+
+      return;
+    }
+
+    //운영 관리
+    // [14] 편집 전체 선택 토글 // 편집 선택false시 관리 체크 초기화
+
+    // [20][22][24][26][28] 프로세스 기업 메타정보 로그 통계 전체 체크 초기화
+    //프로세스관리
+    if (Number(target.value) === 20) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
+        onList.splice(21, 1, {
+          key: checkList[21].key,
+          checked: false,
+          menuCode: 'PSM_isManage',
+        });
+
+        setCheckList([...onList]);
+      }
+
+      return;
+    }
+
+    //기업관리
+    if (Number(target.value) === 22) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
+        onList.splice(23, 1, {
+          key: checkList[23].key,
+          checked: false,
+          menuCode: 'COM_isManage',
+        });
+
+        setCheckList([...onList]);
+      }
+
+      return;
+    }
+
+    //메타정보관리
+    if (Number(target.value) === 24) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
+        onList.splice(25, 1, {
+          key: checkList[25].key,
+          checked: false,
+          menuCode: 'MIM_isManage',
+        });
+
+        setCheckList([...onList]);
+      }
+
+      return;
+    }
+
+    //로그관리
+    if (Number(target.value) === 26) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
+        onList.splice(27, 1, {
+          key: checkList[27].key,
+          checked: false,
+          menuCode: 'LOM_isManage',
+        });
+
+        setCheckList([...onList]);
+      }
+
+      return;
+    }
+
+    //통계관리
+    if (Number(target.value) === 28) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
+        onList.splice(29, 1, {
+          key: checkList[29].key,
+          checked: false,
+          menuCode: 'STM_isManage',
+        });
+
+        setCheckList([...onList]);
+      }
+
+      return;
+    }
+
+    //메뉴 관리
+    // [30] 편집 전체 선택 토글 // 편집 선택false시 관리 체크 초기화
+
+    // [32][34] 콘텐츠 제작 설정 콘텐츠 관리 설정 전체 체크 초기화
+    //프로세스관리
+    //콘텐츠 제작 설정
+    if (Number(target.value) === 32) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
+        onList.splice(33, 1, {
+          key: checkList[33].key,
+          checked: false,
+          menuCode: 'CCC_isManage',
+        });
+
+        setCheckList([...onList]);
+      }
+
+      return;
+    }
+
+    //콘텐츠 관리 설정
+    if (Number(target.value) === 34) {
+      if (target.checked === false) {
+        // 편집 false일시 관리도 false
+        onList.splice(35, 1, {
+          key: checkList[35].key,
+          checked: false,
+          menuCode: 'CMC_isManage',
+        });
+
+        setCheckList([...onList]);
+      }
+
+      return;
+    }
+
     // [7][9][11] 관리 전체 선택 토글 또는 개별 선택
     // if (
     //   Number(target.value) === 7 ||
@@ -521,17 +746,17 @@ export function Authority() {
 
     //     setCheckList([...onList]);
     //   }
-    //   if (target.checked === false) {
-    //     onList.splice(14, 1, {
-    //       key: checkList[14].key,
-    //       checked: false,
-    //       menuCode: 'AM_isEdit',
-    //     });
-    //     onList.splice(16, 1, {
-    //       key: checkList[16].key,
-    //       checked: false,
-    //       menuCode: 'PM_isEdit',
-    //     });
+    // if (target.checked === false) {
+    //   onList.splice(14, 1, {
+    //     key: checkList[14].key,
+    //     checked: false,
+    //     menuCode: 'AM_isEdit',
+    //   });
+    //   onList.splice(16, 1, {
+    //     key: checkList[16].key,
+    //     checked: false,
+    //     menuCode: 'PM_isEdit',
+    //   });
     //     // 편집 false일시 관리도 false
     //     onList.splice(13, 1, {
     //       key: checkList[13].key,
@@ -672,8 +897,7 @@ export function Authority() {
   }, []);
 
   useEffect(() => {
-    console.log('checkList');
-    console.log(checkList);
+    console.log('checkList', checkList);
   }, [checkList, setCheckList]);
 
   const openUpdateAlert = () => {
@@ -687,7 +911,7 @@ export function Authority() {
     const hasChecked = checkList.some((item) => item.checked);
     setIsCheckNullError(!hasChecked);
 
-    if (!isCheckNullError) {
+    if (inputValue !== '' && !isCheckNullError) {
       setIsUpdateAuthority(true);
       setIsCreateNameError(false);
     }
@@ -733,8 +957,8 @@ export function Authority() {
             {isClickedName ? (
               // 수정 테이블
               <>
-                {!isPending && isSuccess ? (
-                  <table>
+                {!isFetching && isSuccess ? (
+                  <table className="authority_table">
                     <thead>
                       <tr>
                         <th colSpan={2}>권한</th>
@@ -744,7 +968,7 @@ export function Authority() {
                     </thead>
                     <tbody>
                       <tr>
-                        <td rowSpan={2}>콘텐츠 제작</td>
+                        <td rowSpan={3}>콘텐츠 제작</td>
                         {/* <td>전체</td>
                     <td>
                       <label htmlFor={'isEditCreateChecked'}>
@@ -773,6 +997,8 @@ export function Authority() {
                     </td> */}
                         {/* </tr>
                   <tr> */}
+                      </tr>
+                      <tr>
                         <td>문항</td>
                         <td>
                           <label htmlFor={'QE_isEdit'}>
@@ -829,7 +1055,7 @@ export function Authority() {
                         </td>
                       </tr>
                       <tr>
-                        <td rowSpan={2}>콘텐츠 관리</td>
+                        <td rowSpan={4}>콘텐츠 관리</td>
                         {/* <td>전체</td>
                     <td>
                       <label htmlFor={'isEditManagementChecked'}>
@@ -885,36 +1111,64 @@ export function Authority() {
                           </label>
                         </td>
                       </tr>
-                      {/* <tr>
-                    <td>문항트리</td>
-                    <td>
-                      <label htmlFor={'isEditTreeChecked'}>
-                        <input
-                          type="checkbox"
-                          name={'isEditTreeChecked'}
-                          id={'isEditTreeChecked'}
-                          value={10}
-                          onChange={(e) => handleChecked(e)}
-                          checked={checkList[10].checked}
-                        />
-                      </label>
-                    </td>
-                    <td>
-                      <label htmlFor={'isManageTreeChecked'}>
-                        <input
-                          type="checkbox"
-                          name={'isManageTreeChecked'}
-                          id={'isManageTreeChecked'}
-                          value={11}
-                          onChange={(e) => handleChecked(e)}
-                          checked={checkList[11].checked}
-                          disabled={!checkList[10].checked}
-                        />
-                      </label>
-                    </td>
-                  </tr> */}
                       <tr>
-                        <td rowSpan={2}>운영 관리</td>
+                        <td>신고문항</td>
+                        <td>
+                          <label htmlFor={'RM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'RM_isEdit'}
+                              id={'RM_isEdit'}
+                              value={10}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[10].checked}
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'RM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'RM_isManage'}
+                              id={'RM_isManage'}
+                              value={11}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[11].checked}
+                              disabled={!checkList[10].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>검수관리</td>
+                        <td>
+                          <label htmlFor={'IM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'IM_isEdit'}
+                              id={'IM_isEdit'}
+                              value={12}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[12].checked}
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'IM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'IM_isManage'}
+                              id={'IM_isManage'}
+                              value={13}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[13].checked}
+                              disabled={!checkList[12].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td rowSpan={8}>운영 관리</td>
                         {/* <td>전체</td>
                     <td>
                       <label htmlFor={'isEditOperationChecked'}>
@@ -922,9 +1176,9 @@ export function Authority() {
                           type="checkbox"
                           name={'isEditOperationChecked'}
                           id={'isEditOperationChecked'}
-                          value={12}
+                          value={14}
                           // onChange={(e) => handleChecked(e)}
-                          // checked={checkList[12].checked}
+                          // checked={checkList[14].checked}
                           disabled
                         />
                       </label>
@@ -935,15 +1189,17 @@ export function Authority() {
                           type="checkbox"
                           name={'isManageOperationChecked'}
                           id={'isManageOperationChecked'}
-                          value={13}
+                          value={15}
                           onChange={(e) => handleChecked(e)}
-                          // disabled={!checkList[12].checked}
-                          checked={checkList[13].checked}
+                          // disabled={!checkList[14].checked}
+                          checked={checkList[15].checked}
                         />
                       </label>
                     </td> */}
                         {/* </tr>
                   <tr> */}
+                      </tr>
+                      <tr>
                         <td>회원관리</td>
                         <td>
                           <label htmlFor={'AM_isEdit'}>
@@ -951,9 +1207,9 @@ export function Authority() {
                               type="checkbox"
                               name={'AM_isEdit'}
                               id={'AM_isEdit'}
-                              value={14}
+                              value={16}
                               // onChange={(e) => handleChecked(e)}
-                              // checked={checkList[14].checked}
+                              checked={checkList[16].checked}
                               disabled
                             />
                           </label>
@@ -964,10 +1220,10 @@ export function Authority() {
                               type="checkbox"
                               name={'AM_isManage'}
                               id={'AM_isManage'}
-                              value={15}
+                              value={17}
                               onChange={(e) => handleChecked(e)}
-                              // disabled={!checkList[14].checked}
-                              checked={checkList[15].checked}
+                              // disabled={!checkList[16].checked}
+                              checked={checkList[17].checked}
                             />
                           </label>
                         </td>
@@ -980,9 +1236,9 @@ export function Authority() {
                               type="checkbox"
                               name={'PM_isEdit'}
                               id={'PM_isEdit'}
-                              value={16}
+                              value={18}
                               // onChange={(e) => handleChecked(e)}
-                              // checked={checkList[16].checked}
+                              checked={checkList[18].checked}
                               disabled
                             />
                           </label>
@@ -993,10 +1249,244 @@ export function Authority() {
                               type="checkbox"
                               name={'PM_isManage'}
                               id={'PM_isManage'}
-                              value={17}
+                              value={19}
                               onChange={(e) => handleChecked(e)}
-                              // disabled={!checkList[16].checked}
-                              checked={checkList[17].checked}
+                              // disabled={!checkList[18].checked}
+                              checked={checkList[19].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>프로세스관리</td>
+                        <td>
+                          <label htmlFor={'PSM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'PSM_isEdit'}
+                              id={'PSM_isEdit'}
+                              value={20}
+                              //onChange={(e) => handleChecked(e)}
+                              checked={checkList[20].checked}
+                              disabled
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'PSM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'PSM_isManage'}
+                              id={'PSM_isManage'}
+                              value={21}
+                              onChange={(e) => handleChecked(e)}
+                              //disabled={!checkList[20].checked}
+                              checked={checkList[21].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>기업관리</td>
+                        <td>
+                          <label htmlFor={'COM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'COM_isEdit'}
+                              id={'COM_isEdit'}
+                              value={22}
+                              //onChange={(e) => handleChecked(e)}
+                              checked={checkList[22].checked}
+                              disabled
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'COM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'COM_isManage'}
+                              id={'COM_isManage'}
+                              value={23}
+                              onChange={(e) => handleChecked(e)}
+                              //disabled={!checkList[22].checked}
+                              checked={checkList[23].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>메타정보관리</td>
+                        <td>
+                          <label htmlFor={'MIM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'MIM_isEdit'}
+                              id={'MIM_isEdit'}
+                              value={24}
+                              //onChange={(e) => handleChecked(e)}
+                              checked={checkList[24].checked}
+                              disabled
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'MIM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'MIM_isManage'}
+                              id={'MIM_isManage'}
+                              value={25}
+                              onChange={(e) => handleChecked(e)}
+                              //disabled={!checkList[24].checked}
+                              checked={checkList[25].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>로그관리</td>
+                        <td>
+                          <label htmlFor={'LOM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'LOM_isEdit'}
+                              id={'LOM_isEdit'}
+                              value={26}
+                              //onChange={(e) => handleChecked(e)}
+                              checked={checkList[26].checked}
+                              disabled
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'LOM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'LOM_isManage'}
+                              id={'LOM_isManage'}
+                              value={27}
+                              onChange={(e) => handleChecked(e)}
+                              //disabled={!checkList[26].checked}
+                              checked={checkList[27].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>통계관리</td>
+                        <td>
+                          <label htmlFor={'STM_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'STM_isEdit'}
+                              id={'STM_isEdit'}
+                              value={28}
+                              //onChange={(e) => handleChecked(e)}
+                              checked={checkList[28].checked}
+                              disabled
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'STM_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'STM_isManage'}
+                              id={'STM_isManage'}
+                              value={29}
+                              onChange={(e) => handleChecked(e)}
+                              //disabled={!checkList[28].checked}
+                              checked={checkList[29].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td rowSpan={3}>메뉴 관리</td>
+                        {/* <td>전체</td>
+                    <td>
+                      <label htmlFor={'isEditMenuChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditCreateChecked'}
+                          id={'isEditCreateChecked'}
+                          value={30}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[30].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageMenuChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageCreateChecked'}
+                          id={'isManageCreateChecked'}
+                          value={31}
+                          onChange={(e) => handleChecked(e)}
+                          disabled={!checkList[30].checked}
+                          checked={checkList[31].checked}
+                        />
+                      </label>
+                    </td> */}
+                        {/* </tr>
+                  <tr> */}
+                      </tr>
+                      <tr>
+                        <td>콘텐츠 제작 설정</td>
+                        <td>
+                          <label htmlFor={'CCC_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'CCC_isEdit'}
+                              id={'CCC_isEdit'}
+                              value={32}
+                              //onChange={(e) => handleChecked(e)}
+                              checked={checkList[32].checked}
+                              disabled
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'CCC_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'CCC_isManage'}
+                              id={'CCC_isManage'}
+                              value={33}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[33].checked}
+                              //disabled={!checkList[32].checked}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>콘텐츠 관리 설정</td>
+                        <td>
+                          <label htmlFor={'CMC_isEdit'}>
+                            <input
+                              type="checkbox"
+                              name={'CMC_isEdit'}
+                              id={'CMC_isEdit'}
+                              value={34}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[34].checked}
+                              disabled
+                            />
+                          </label>
+                        </td>
+                        <td>
+                          <label htmlFor={'CMC_isManage'}>
+                            <input
+                              type="checkbox"
+                              name={'CMC_isManage'}
+                              id={'CMC_isManage'}
+                              value={35}
+                              onChange={(e) => handleChecked(e)}
+                              checked={checkList[35].checked}
+                              //disabled={!checkList[34].checked}
                             />
                           </label>
                         </td>
@@ -1021,35 +1511,37 @@ export function Authority() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td rowSpan={2}>콘텐츠 제작</td>
+                    <td rowSpan={3}>콘텐츠 제작</td>
                     {/* <td>전체</td>
-									<td>
-										<label htmlFor={'isEditCreateChecked'}>
-											<input
-												type="checkbox"
-												name={'isEditCreateChecked'}
-												id={'isEditCreateChecked'}
-												value={0}
-												onChange={(e) => handleChecked(e)}
-												checked={checkList[0].checked}
-											/>
-										</label>
-									</td>
-									<td>
-										<label htmlFor={'isManageCreateChecked'}>
-											<input
-												type="checkbox"
-												name={'isManageCreateChecked'}
-												id={'isManageCreateChecked'}
-												value={1}
-												onChange={(e) => handleChecked(e)}
-												disabled={!checkList[0].checked}
-												checked={checkList[1].checked}
-											/>
-										</label>
-									</td> */}
+                    <td>
+                      <label htmlFor={'isEditCreateChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditCreateChecked'}
+                          id={'isEditCreateChecked'}
+                          value={0}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[0].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageCreateChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageCreateChecked'}
+                          id={'isManageCreateChecked'}
+                          value={1}
+                          onChange={(e) => handleChecked(e)}
+                          disabled={!checkList[0].checked}
+                          checked={checkList[1].checked}
+                        />
+                      </label>
+                    </td> */}
                     {/* </tr>
-								<tr> */}
+                  <tr> */}
+                  </tr>
+                  <tr>
                     <td>문항</td>
                     <td>
                       <label htmlFor={'QE_isEdit'}>
@@ -1106,33 +1598,33 @@ export function Authority() {
                     </td>
                   </tr>
                   <tr>
-                    <td rowSpan={2}>콘텐츠 관리</td>
+                    <td rowSpan={4}>콘텐츠 관리</td>
                     {/* <td>전체</td>
-									<td>
-										<label htmlFor={'isEditManagementChecked'}>
-											<input
-												type="checkbox"
-												name={'isEditManagementChecked'}
-												id={'isEditManagementChecked'}
-												value={6}
-												onChange={(e) => handleChecked(e)}
-												checked={checkList[6].checked}
-											/>
-										</label>
-									</td>
-									<td>
-										<label htmlFor={'isManageManagementChecked'}>
-											<input
-												type="checkbox"
-												name={'isManageManagementChecked'}
-												id={'isManageManagementChecked'}
-												value={7}
-												onChange={(e) => handleChecked(e)}
-												disabled={!checkList[6].checked}
-												checked={checkList[7].checked}
-											/>
-										</label>
-									</td> */}
+                    <td>
+                      <label htmlFor={'isEditManagementChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditManagementChecked'}
+                          id={'isEditManagementChecked'}
+                          value={6}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[6].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageManagementChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageManagementChecked'}
+                          id={'isManageManagementChecked'}
+                          value={7}
+                          onChange={(e) => handleChecked(e)}
+                          disabled={!checkList[6].checked}
+                          checked={checkList[7].checked}
+                        />
+                      </label>
+                    </td> */}
                   </tr>
                   <tr>
                     <td>문항</td>
@@ -1162,65 +1654,95 @@ export function Authority() {
                       </label>
                     </td>
                   </tr>
-                  {/* <tr>
-									<td>문항트리</td>
-									<td>
-										<label htmlFor={'isEditTreeChecked'}>
-											<input
-												type="checkbox"
-												name={'isEditTreeChecked'}
-												id={'isEditTreeChecked'}
-												value={10}
-												onChange={(e) => handleChecked(e)}
-												checked={checkList[10].checked}
-											/>
-										</label>
-									</td>
-									<td>
-										<label htmlFor={'isManageTreeChecked'}>
-											<input
-												type="checkbox"
-												name={'isManageTreeChecked'}
-												id={'isManageTreeChecked'}
-												value={11}
-												onChange={(e) => handleChecked(e)}
-												checked={checkList[11].checked}
-												disabled={!checkList[10].checked}
-											/>
-										</label>
-									</td>
-								</tr> */}
                   <tr>
-                    <td rowSpan={2}>운영 관리</td>
+                    <td>신고문항</td>
+                    <td>
+                      <label htmlFor={'RM_isEdit'}>
+                        <input
+                          type="checkbox"
+                          name={'RM_isEdit'}
+                          id={'RM_isEdit'}
+                          value={10}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[10].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'RM_isManage'}>
+                        <input
+                          type="checkbox"
+                          name={'RM_isManage'}
+                          id={'RM_isManage'}
+                          value={11}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[11].checked}
+                          disabled={!checkList[10].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>검수관리</td>
+                    <td>
+                      <label htmlFor={'IM_isEdit'}>
+                        <input
+                          type="checkbox"
+                          name={'IM_isEdit'}
+                          id={'IM_isEdit'}
+                          value={12}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[12].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'IM_isManage'}>
+                        <input
+                          type="checkbox"
+                          name={'IM_isManage'}
+                          id={'IM_isManage'}
+                          value={13}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[13].checked}
+                          disabled={!checkList[12].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={8}>운영 관리</td>
                     {/* <td>전체</td>
-									<td>
-										<label htmlFor={'isEditOperationChecked'}>
-											<input
-												type="checkbox"
-												name={'isEditOperationChecked'}
-												id={'isEditOperationChecked'}
-												value={12}
-												// onChange={(e) => handleChecked(e)}
-												// checked={checkList[12].checked}
-												disabled
-											/>
-										</label>
-									</td>
-									<td>
-										<label htmlFor={'isManageOperationChecked'}>
-											<input
-												type="checkbox"
-												name={'isManageOperationChecked'}
-												id={'isManageOperationChecked'}
-												value={13}
-												onChange={(e) => handleChecked(e)}
-												// disabled={!checkList[12].checked}
-												checked={checkList[13].checked}
-											/>
-										</label>
-									</td> */}
+                    <td>
+                      <label htmlFor={'isEditOperationChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditOperationChecked'}
+                          id={'isEditOperationChecked'}
+                          value={14}
+                          // onChange={(e) => handleChecked(e)}
+                          // checked={checkList[14].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageOperationChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageOperationChecked'}
+                          id={'isManageOperationChecked'}
+                          value={15}
+                          onChange={(e) => handleChecked(e)}
+                          // disabled={!checkList[14].checked}
+                          checked={checkList[15].checked}
+                        />
+                      </label>
+                    </td> */}
                     {/* </tr>
-								<tr> */}
+                  <tr> */}
+                  </tr>
+                  <tr>
                     <td>회원관리</td>
                     <td>
                       <label htmlFor={'AM_isEdit'}>
@@ -1228,9 +1750,9 @@ export function Authority() {
                           type="checkbox"
                           name={'AM_isEdit'}
                           id={'AM_isEdit'}
-                          value={14}
+                          value={16}
                           // onChange={(e) => handleChecked(e)}
-                          // checked={checkList[14].checked}
+                          checked={checkList[16].checked}
                           disabled
                         />
                       </label>
@@ -1241,10 +1763,10 @@ export function Authority() {
                           type="checkbox"
                           name={'AM_isManage'}
                           id={'AM_isManage'}
-                          value={15}
+                          value={17}
                           onChange={(e) => handleChecked(e)}
-                          // disabled={!checkList[14].checked}
-                          checked={checkList[15].checked}
+                          // disabled={!checkList[16].checked}
+                          checked={checkList[17].checked}
                         />
                       </label>
                     </td>
@@ -1257,9 +1779,9 @@ export function Authority() {
                           type="checkbox"
                           name={'PM_isEdit'}
                           id={'PM_isEdit'}
-                          value={16}
+                          value={18}
                           // onChange={(e) => handleChecked(e)}
-                          // checked={checkList[16].checked}
+                          checked={checkList[18].checked}
                           disabled
                         />
                       </label>
@@ -1270,10 +1792,244 @@ export function Authority() {
                           type="checkbox"
                           name={'PM_isManage'}
                           id={'PM_isManage'}
-                          value={17}
+                          value={19}
                           onChange={(e) => handleChecked(e)}
-                          // disabled={!checkList[16].checked}
-                          checked={checkList[17].checked}
+                          // disabled={!checkList[18].checked}
+                          checked={checkList[19].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>프로세스관리</td>
+                    <td>
+                      <label htmlFor={'PSM_isEdit'}>
+                        <input
+                          type="checkbox"
+                          name={'PSM_isEdit'}
+                          id={'PSM_isEdit'}
+                          value={20}
+                          //onChange={(e) => handleChecked(e)}
+                          checked={checkList[20].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'PSM_isManage'}>
+                        <input
+                          type="checkbox"
+                          name={'PSM_isManage'}
+                          id={'PSM_isManage'}
+                          value={21}
+                          onChange={(e) => handleChecked(e)}
+                          //disabled={!checkList[20].checked}
+                          checked={checkList[21].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>기업관리</td>
+                    <td>
+                      <label htmlFor={'COM_isEdit'}>
+                        <input
+                          type="checkbox"
+                          name={'COM_isEdit'}
+                          id={'COM_isEdit'}
+                          value={22}
+                          //onChange={(e) => handleChecked(e)}
+                          checked={checkList[22].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'COM_isManage'}>
+                        <input
+                          type="checkbox"
+                          name={'COM_isManage'}
+                          id={'COM_isManage'}
+                          value={23}
+                          onChange={(e) => handleChecked(e)}
+                          //disabled={!checkList[22].checked}
+                          checked={checkList[23].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>메타정보관리</td>
+                    <td>
+                      <label htmlFor={'MIM_isEdit'}>
+                        <input
+                          type="checkbox"
+                          name={'MIM_isEdit'}
+                          id={'MIM_isEdit'}
+                          value={24}
+                          //onChange={(e) => handleChecked(e)}
+                          checked={checkList[24].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'MIM_isManage'}>
+                        <input
+                          type="checkbox"
+                          name={'MIM_isManage'}
+                          id={'MIM_isManage'}
+                          value={25}
+                          onChange={(e) => handleChecked(e)}
+                          //disabled={!checkList[24].checked}
+                          checked={checkList[25].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>로그관리</td>
+                    <td>
+                      <label htmlFor={'LOM_isEdit'}>
+                        <input
+                          type="checkbox"
+                          name={'LOM_isEdit'}
+                          id={'LOM_isEdit'}
+                          value={26}
+                          //onChange={(e) => handleChecked(e)}
+                          checked={checkList[26].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'LOM_isManage'}>
+                        <input
+                          type="checkbox"
+                          name={'LOM_isManage'}
+                          id={'LOM_isManage'}
+                          value={27}
+                          onChange={(e) => handleChecked(e)}
+                          //disabled={!checkList[26].checked}
+                          checked={checkList[27].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>통계관리</td>
+                    <td>
+                      <label htmlFor={'STM_isEdit'}>
+                        <input
+                          type="checkbox"
+                          name={'STM_isEdit'}
+                          id={'STM_isEdit'}
+                          value={28}
+                          //onChange={(e) => handleChecked(e)}
+                          checked={checkList[28].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'STM_isManage'}>
+                        <input
+                          type="checkbox"
+                          name={'STM_isManage'}
+                          id={'STM_isManage'}
+                          value={29}
+                          onChange={(e) => handleChecked(e)}
+                          //disabled={!checkList[28].checked}
+                          checked={checkList[29].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td rowSpan={3}>메뉴 관리</td>
+                    {/* <td>전체</td>
+                    <td>
+                      <label htmlFor={'isEditMenuChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isEditCreateChecked'}
+                          id={'isEditCreateChecked'}
+                          value={30}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[30].checked}
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'isManageMenuChecked'}>
+                        <input
+                          type="checkbox"
+                          name={'isManageCreateChecked'}
+                          id={'isManageCreateChecked'}
+                          value={31}
+                          onChange={(e) => handleChecked(e)}
+                          disabled={!checkList[30].checked}
+                          checked={checkList[31].checked}
+                        />
+                      </label>
+                    </td> */}
+                    {/* </tr>
+                  <tr> */}
+                  </tr>
+                  <tr>
+                    <td>콘텐츠 제작 설정</td>
+                    <td>
+                      <label htmlFor={'CCC_isEdit'}>
+                        <input
+                          type="checkbox"
+                          name={'CCC_isEdit'}
+                          id={'CCC_isEdit'}
+                          value={32}
+                          //onChange={(e) => handleChecked(e)}
+                          checked={checkList[32].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'CCC_isManage'}>
+                        <input
+                          type="checkbox"
+                          name={'CCC_isManage'}
+                          id={'CCC_isManage'}
+                          value={33}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[33].checked}
+                          //disabled={!checkList[32].checked}
+                        />
+                      </label>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>콘텐츠 관리 설정</td>
+                    <td>
+                      <label htmlFor={'CMC_isEdit'}>
+                        <input
+                          type="checkbox"
+                          name={'CMC_isEdit'}
+                          id={'CMC_isEdit'}
+                          value={34}
+                          //onChange={(e) => handleChecked(e)}
+                          checked={checkList[34].checked}
+                          disabled
+                        />
+                      </label>
+                    </td>
+                    <td>
+                      <label htmlFor={'CMC_isManage'}>
+                        <input
+                          type="checkbox"
+                          name={'CMC_isManage'}
+                          id={'CMC_isManage'}
+                          value={35}
+                          onChange={(e) => handleChecked(e)}
+                          checked={checkList[35].checked}
+                          //disabled={!checkList[34].checked}
                         />
                       </label>
                     </td>
@@ -1414,14 +2170,13 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  max-width: 1000px;
 `;
 const ListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: calc(50% - 20px);
   position: relative;
-  &::after {
+  /* &::after {
     content: '';
     display: block;
     width: 1px;
@@ -1431,7 +2186,7 @@ const ListWrapper = styled.div`
     right: -20px;
     top: 50%;
     transform: translateY(-50%);
-  }
+  } */
 `;
 const ButtonWrapper = styled.div`
   display: flex;
@@ -1504,8 +2259,8 @@ const TableWrapper = styled.div`
       text-align: center;
       border: 1px solid ${COLOR.SECONDARY};
       padding: 15px;
-      text-align: center;
       font-size: 13px;
+      font-weight: 300;
     }
     .textLeft {
       text-align: left;
@@ -1536,6 +2291,7 @@ const AuthorityWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 5px;
+  padding: 0 10px;
 `;
 const AuthorityName = styled.button`
   width: 100%;
@@ -1546,10 +2302,11 @@ const AuthorityName = styled.button`
   border-radius: 5px;
   background-color: white;
   border: none;
-  margin-right: 5px;
+  margin-right: 8px;
   cursor: pointer;
   font-weight: bold;
   position: relative;
+  font-size: 14px;
   &::after {
     content: '| 수정';
     display: flex;

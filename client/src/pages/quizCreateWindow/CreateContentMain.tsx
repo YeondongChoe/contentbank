@@ -13,6 +13,9 @@ import {
   ContentFileUpload,
   ContentHTMLUpload,
   ContentEdit,
+  ClassificationEdit,
+  ContentCopyEdit,
+  ContentInspection,
 } from '../../components/contents/createcontent';
 
 export function CreateContentMain() {
@@ -63,6 +66,13 @@ export function CreateContentMain() {
     }
   }, [tabView]);
 
+  useEffect(() => {
+    //최초 진입시 정적파일 안불러질 경우의 수 대비 리로딩
+    if (!sessionStorage.getItem('hasReloaded')) {
+      sessionStorage.setItem('hasReloaded', 'true');
+      window.location.reload(); // 최초 진입 시 1회만 리로딩
+    }
+  }, []);
   return (
     <Container>
       <ButtonWrapper>
@@ -82,27 +92,34 @@ export function CreateContentMain() {
               />
             </BackButtonWrapper>
           )}
-          {query.get('state') !== 'uploadhtml' && (
-            <TabMenu
-              length={3}
-              menu={menuList}
-              selected={tabView}
-              width={'350px'}
-              setTabVeiw={setTabView}
-              onClickTab={() => {
-                if (tabView !== 'DT & Editing') {
-                  // 페이지 진입시 에디터 라이브러리 정적파일 불러오기위한 리로딩
-                  window.location.reload();
-                }
-              }}
-            />
-          )}
+          {query.get('state') !== 'uploadhtml' ||
+            (query.get('state') === 'inspection' && (
+              <TabMenu
+                length={3}
+                menu={menuList}
+                selected={tabView}
+                width={'350px'}
+                setTabView={setTabView}
+                onClickTab={() => {
+                  if (tabView !== 'DT & Editing') {
+                    // 페이지 진입시 에디터 라이브러리 정적파일 불러오기위한 리로딩
+                    window.location.reload();
+                  }
+                }}
+              />
+            ))}
         </TapMenuWrapper>
       </ButtonWrapper>
       {tabView === 'DT & Editing' && (
         <ContentBox>
           {query.get('state') === 'edit' && (
             <ContentEdit setTabView={setTabView} type={'edit'} />
+          )}
+          {query.get('state') === 'inspection' && (
+            <ContentInspection setTabView={setTabView} type={'inspection'} />
+          )}
+          {query.get('state') === 'copyedit' && (
+            <ContentCopyEdit setTabView={setTabView} type={'copyedit'} />
           )}
           {query.get('state') === 'uploadfile' && (
             <ContentFileUpload setTabView={setTabView} type={'type1'} />
@@ -119,9 +136,18 @@ export function CreateContentMain() {
           )}
         </ContentBox>
       )}
+
       {tabView === '문항 분류' && (
         <ContentBox>
-          <Classification setTabView={setTabView} />
+          {query.get('state') === 'edit' ||
+          query.get('state') === 'copyedit' ? (
+            <ClassificationEdit
+              setTabView={setTabView}
+              type={query.get('state') as string}
+            />
+          ) : (
+            <Classification setTabView={setTabView} />
+          )}
         </ContentBox>
       )}
       {/* {tabView === '개체 라벨링' && (

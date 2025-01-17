@@ -9,7 +9,7 @@ type CheckboxProps = {
   id: string;
   name?: string;
   value: any;
-  onClick?: (value: string) => void;
+  onClick?: (event: React.MouseEvent<HTMLInputElement>) => void;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   checked?: boolean;
   $margin?: string;
@@ -26,6 +26,7 @@ type CheckboxProps = {
   width?: string;
   height?: string;
   readOnly?: boolean;
+  className?: string;
 };
 
 export const CheckBoxI = ({
@@ -48,6 +49,7 @@ export const CheckBoxI = ({
   disabled,
   width,
   height,
+  className,
   ...props
 }: CheckboxProps) => {
   return (
@@ -61,7 +63,8 @@ export const CheckBoxI = ({
       iconWidth={iconWidth}
       iconHeight={iconHeight}
       disabled={disabled}
-      onClick={() => onClick && onClick(value)}
+      className={className}
+      onClick={onClick}
       {...props}
     >
       <label htmlFor={id}>

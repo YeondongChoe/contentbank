@@ -4,4 +4,6 @@ export type ItemCategoryType = {
   name: string;
   type?: string;
   value?: number;
+  isUse?: boolean;
+  autoNum?: string;
 };

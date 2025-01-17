@@ -39,7 +39,7 @@ p {
 
 
 /* 중간 기기들 (데스크탑, 992px 이상) */
-@media (max-width: 992px) {
+@media (max-width: 1620px) {
   .tox.tox-tinymce {
     /* position: fixed; */
     top: 0;
@@ -92,7 +92,7 @@ p {
 }
 .qnai_trans_form {
   position: fixed;
-  z-index: 99;
+	z-index:9999999999;
   display: none;
   opacity: 0.8;
 }

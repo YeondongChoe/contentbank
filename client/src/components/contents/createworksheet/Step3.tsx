@@ -9,7 +9,7 @@ import { SlPicture } from 'react-icons/sl';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { makingworkbookInstance, workbookInstance } from '../../../api/axios';
+import { workbookInstance } from '../../../api/axios';
 import { QuizList, WorkbookQuotientData } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import {
@@ -47,6 +47,9 @@ export function Step3() {
     window.opener.localStorage.clear();
     window.close();
   };
+
+  //console.log('initialItems', initialItems);
+  //console.log('newInitialItems', newInitialItems);
 
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
@@ -91,13 +94,11 @@ export function Step3() {
   //로컬스토리지에서 데이타를 가져온 후 문항 번호를 넣어서 저장
   useEffect(() => {
     if (getLocalData) {
-      const itemsWithNum = getLocalData.data.map(
-        (item: QuizList, index: number) => ({
-          ...item,
-          num: index + 1,
-          height: 1,
-        }),
-      );
+      const itemsWithNum = getLocalData.data.map((item: QuizList) => ({
+        ...item,
+        height: 1,
+      }));
+      console.log('itemsWithNum', itemsWithNum);
       setInitialItems(itemsWithNum);
       setIsEditWorkbook(getLocalData.isEditWorkbook);
       setWorkSheetIdx(getLocalData.workSheetIdx);
@@ -114,17 +115,6 @@ export function Step3() {
             ? '2단'
             : '2단',
       );
-      // setContentQuantity(
-      //   getLocalData.assign === '0'
-      //     ? '최대'
-      //     : getLocalData.assign === '2'
-      //       ? '2문제'
-      //       : getLocalData.assign === '4'
-      //         ? '4문제'
-      //         : getLocalData.assign === '6'
-      //           ? '6문제'
-      //           : '최대',
-      // );
       setContentQuantity('최대');
       setIsDate(getLocalData.isDate);
       setIsContentTypeTitle(getLocalData.isQuizType);
@@ -147,7 +137,8 @@ export function Step3() {
   const [nameValue, setNameValue] = useState('');
   const [gradeValue, setGradeValue] = useState('');
   const [contentAuthor, setContentAuthor] = useState('');
-
+  //문제풀이
+  const [line, setLine] = useState<number>(0);
   const [tag, setTag] = useState<string>('');
   const selectTag = (newValue: string) => {
     setTag(newValue);
@@ -155,6 +146,7 @@ export function Step3() {
   const [answerCommentary, setAnswerCommentary] = useState<string | number>(
     '문제만',
   );
+
   const selectAnswerCommentary = (newValue: string) => {
     setAnswerCommentary(newValue);
     setNewInitialItems([]);
@@ -210,9 +202,88 @@ export function Step3() {
   };
   //workSheetIdx 관리해서 넘겨주기
   const goBackMainPopup = () => {
+    const quizList = getLocalData.data;
+
+    const mergedQuizList = (() => {
+      const groupMap = quizList.reduce(
+        (acc: Record<string, any[]>, item: any) => {
+          if (item.groupCode) {
+            acc[item.groupCode] = acc[item.groupCode] || [];
+            acc[item.groupCode].push(item);
+          }
+          return acc;
+        },
+        {},
+      );
+
+      const result = quizList.map((quiz: any) => {
+        if (quiz.groupCode && groupMap[quiz.groupCode]) {
+          const group = groupMap[quiz.groupCode];
+          const textType = group.find(
+            (groupItem: any) => groupItem.type === 'TEXT',
+          );
+
+          if (textType) {
+            let sortCounter = 2; // Sort starts from 2 for non-TEXT items.
+            group.forEach((groupItem: any) => {
+              if (groupItem !== textType) {
+                // Add items to textItem's quizItemList with appropriate sort value
+                groupItem.quizItemList.forEach((quizItem: any) => {
+                  const { score, num, ...remainingQuizItem } = quizItem; // score와 num 제거
+                  textType.quizItemList.push({
+                    ...quizItem,
+                    quizIdx: groupItem.idx,
+                    quizCode: groupItem.code,
+                    quizFavorite: groupItem.isFavorite,
+                    sort: sortCounter++,
+                  });
+                });
+                groupItem.quizItemList = []; // Clear quizItemList for merged items
+              }
+            });
+
+            // Ensure textItem's own sort is set to 1
+            textType.quizItemList = textType.quizItemList.map(
+              (quizItem: any, index: number) => {
+                const { score, num, ...remainingQuizItem } = quizItem; // score와 num 제거
+
+                return {
+                  ...quizItem,
+                  sort: index + 1,
+                  quizIdx:
+                    quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                      ? textType.idx
+                      : quizItem.quizIdx,
+                  quizCode:
+                    quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                      ? textType.code
+                      : quizItem.quizCode,
+                  quizFavorite:
+                    quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                      ? textType.isFavorite
+                      : quizItem.isFavorite,
+                };
+              },
+            );
+          }
+        }
+        // quizItemList에서 score와 num 제거
+        quiz.quizItemList = quiz.quizItemList.map(
+          ({ score, num, ...remainingQuizItem }: any) => remainingQuizItem,
+        );
+
+        // quiz 객체에서 score와 num 제거
+        const { score, num, ...remainingQuiz } = quiz;
+
+        return remainingQuiz;
+      });
+
+      return result.filter((item: any) => item.quizItemList.length > 0);
+    })();
+
     const data = {
       data: {
-        quizList: getLocalData.data,
+        quizList: mergedQuizList,
         isEditWorkbook: isEditWorkbook,
         title: nameValue,
         examiner: contentAuthor,
@@ -224,60 +295,12 @@ export function Step3() {
     window.opener.localStorage.removeItem('sendQuotientData');
 
     saveLocalData(data);
-    localStorage.setItem(
-      'sendQuotientData',
-      JSON.stringify(getQuotientLocalData),
-    );
+    // localStorage.setItem(
+    //   'sendQuotientData',
+    //   JSON.stringify(getQuotientLocalData),
+    // );
     navigate('/content-create/exam/step2');
   };
-
-  //const [fileName, setFileName] = useState('');
-  // node 서버 학습지 만들기 api
-  // const postWorkbook = async (data: any) => {
-  //   const res = await makingworkbookInstance.post(`/get-pdf`, data);
-  //   // console.log(`학습지 만들기결과값`, res);
-  //   return res;
-  // };
-
-  // const makingWorkbook = (nameValue: string) => {
-  //   const currentTime = new Date().getTime();
-  //   const data = {
-  //     title: nameValue,
-  //     content: newInitialItems,
-  //     column: 2,
-  //     uploadDir: '/usr/share/nginx/html/CB',
-  //     fileName: `${nameValue}_${currentTime}.pdf`,
-  //     //fileName: `testYD.pdf`,
-  //   };
-  //   if (
-  //     nameValue === '' ||
-  //     contentAuthor === '' ||
-  //     gradeValue === '' ||
-  //     tag === ''
-  //   ) {
-  //     openToastifyAlert({
-  //       type: 'error',
-  //       text: '필수 항목을 선택해 주세요.',
-  //     });
-  //   } else {
-  //     workbookData(data);
-  //     setFileName(data.fileName);
-  //   }
-  // };
-
-  // const { mutate: workbookData } = useMutation({
-  //   mutationFn: postWorkbook,
-  //   onError: (error) => {
-  //     //console.error('post-workbook 에러:', error);
-  //     // 에러 처리 로직 추가
-  //   },
-  //   onSuccess: (data) => {
-  //     //console.log('post-workbook 성공:', data);
-  //     postNewWorkbookData();
-  //     // 성공 처리 로직 추가
-  //     setIsComplete(true);
-  //   },
-  // });
 
   // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
@@ -287,7 +310,7 @@ export function Step3() {
       name: nameValue,
       examiner: contentAuthor,
       grade: gradeValue,
-      quizCnt: newInitialItems?.length,
+      quizCnt: newInitialItems?.map((item) => item.type === 'QUESTION').length,
       tag: tag,
       isAutoGrade: true,
       article: {
@@ -335,27 +358,28 @@ export function Step3() {
     setIsComplete(false);
   }, []);
 
-  const { mutate: postNewWorkbookData } = useMutation({
-    mutationFn: postNewWorkbook,
-    onError: (context: {
-      response: { data: { message: string; code: string } };
-    }) => {
-      openToastifyAlert({
-        type: 'error',
-        text: '잠시후 다시 시도해주세요',
-      });
-      if (context.response.data.code == 'GE-002') {
-        postRefreshToken();
-      }
-    },
-    onSuccess: (response) => {
-      //수정 값 초기화
-      setIsEditWorkbook(0);
-      //alert 열기
-      setIsSuccessAlertOpen(true);
-      setIsComplete(true);
-    },
-  });
+  const { mutate: postNewWorkbookData, isPending: postNewWorkbookIsPending } =
+    useMutation({
+      mutationFn: postNewWorkbook,
+      onError: (context: {
+        response: { data: { message: string; code: string } };
+      }) => {
+        openToastifyAlert({
+          type: 'error',
+          text: '잠시후 다시 시도해주세요',
+        });
+        if (context.response.data.code == 'GE-002') {
+          postRefreshToken();
+        }
+      },
+      onSuccess: (response) => {
+        //수정 값 초기화
+        setIsEditWorkbook(0);
+        //alert 열기
+        setIsSuccessAlertOpen(true);
+        setIsComplete(true);
+      },
+    });
 
   const submitCreateWorksheet = () => {
     if (!nameValue || !contentAuthor || !gradeValue || !tag) {
@@ -384,7 +408,6 @@ export function Step3() {
 
       return () => {
         window.removeEventListener('beforeunload', handleBeforeUnload);
-        //window.opener.localStorage.clear();
       };
     }
   }, [isComplete]);
@@ -396,6 +419,7 @@ export function Step3() {
     const linesMatch = newValue.match(/^(\d+)줄$/);
     if (linesMatch) {
       const lines = parseInt(linesMatch[1], 10); // '1줄'에서 1을 추출하여 숫자로 변환
+      setLine(lines);
       setItemHeights(
         originalHeightsRef.current.map((height) => height + 50 * lines),
       );
@@ -458,32 +482,35 @@ export function Step3() {
 
       // 0보다 큰 값만 필터링
       const filteredHeights = heights.filter((height) => height > 0);
+      const addHeight = filteredHeights.map((height) => height + 50);
+      const commentaryHeight = filteredHeights.map((height) => height + 200);
+      //console.log(commentaryHeight);
 
       if (commentary === '문제만') {
         setCommentary('문제만');
         setItemQuestionHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, addHeight];
           return newArray;
         });
       }
       if (commentary === '정답만') {
         setCommentary('정답만');
         setItemAnswerHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, addHeight];
           return newArray;
         });
       }
       if (commentary === '문제+해설별도') {
         setCommentary('문제+해설별도');
         setItemQuestionHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, addHeight];
           return newArray;
         });
       }
       if (commentary === '문제+해설같이') {
         setCommentary('문제+해설같이');
         setItemCommenteryHeight((prev) => {
-          const newArray = [...prev, filteredHeights];
+          const newArray = [...prev, commentaryHeight];
           return newArray;
         });
       }
@@ -553,11 +580,15 @@ export function Step3() {
         0,
         initialItems?.length,
       );
+      //console.log('sliceItemQuestion', sliceItemQuestion);
       const array = sliceItemQuestion.map((item) => item[0]);
+      //console.log('array', array);
       setItemCommenteryHeightArray(array);
       originalHeightsRef.current = array;
     }
   }, [itemCommenteryHeight]);
+  //console.log('itemCommenteryHeight', itemCommenteryHeight);
+  //console.log('itemCommenteryHeightArray', itemCommenteryHeightArray);
   //commentary '문제+해설같이' 높이값 넣어주기
   useEffect(() => {
     if (commentary === '문제+해설같이') {
@@ -885,7 +916,7 @@ export function Step3() {
             <FrontSpan onClick={goBackMainPopup}>STEP 2 -</FrontSpan>
             STEP 3
           </Span>
-          학습지 상세 편집
+          학습지 설정
         </Title>
       </TitleWrapper>
       <Wrapper>
@@ -953,6 +984,7 @@ export function Step3() {
                 newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
+                line={line}
               ></TypeA>
             </WorksheetTemplateTypeWrapper>
           )}
@@ -970,6 +1002,7 @@ export function Step3() {
                 newInitialItems={newInitialItems}
                 answerCommentary={answerCommentary as string}
                 multiLevel={column}
+                line={line}
               ></TypeB>
             </WorksheetTemplateTypeWrapper>
           )}
@@ -979,7 +1012,6 @@ export function Step3() {
         <Button
           buttonType="button"
           onClick={() => {
-            //measureHeights();
             submitCreateWorksheet();
           }}
           $padding="10px"
@@ -988,6 +1020,7 @@ export function Step3() {
           fontSize="13px"
           $filled
           cursor
+          disabled={postNewWorkbookIsPending}
         >
           <span>학습지 만들기</span>
         </Button>
@@ -1138,7 +1171,6 @@ const WorksheetTemplateViewSection = styled.div`
   border: 1px solid ${COLOR.BORDER_POPUP};
   border-top-left-radius: 25px;
   border-bottom-left-radius: 25px;
-
   gap: 10px;
 `;
 const WorksheetTemplateTypeWrapper = styled.div`

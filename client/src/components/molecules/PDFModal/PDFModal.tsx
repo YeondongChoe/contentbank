@@ -29,6 +29,7 @@ export function PDFModal({ list }: PDFModalProps) {
   const getQuiz = async () => {
     const idxArray = list.map((list) => list.idx);
     const idxList = idxArray.join(',');
+    console.log(idxList);
     const res = await quizService.get(`/v1/quiz/${idxList}`);
     // console.log('list data----------', res);
     return res.data.data;
@@ -106,102 +107,248 @@ export function PDFModal({ list }: PDFModalProps) {
                                   {item.code}
                                 </span>
                               )}
-                              {item.quizCategoryList[0]?.quizCategory
-                                ?.교육과정 && (
-                                <span>
-                                  <span className="title">교육과정:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.교육과정
-                                  }
-                                </span>
-                              )}
-                              {item.quizCategoryList[0]?.quizCategory?.학년 && (
-                                <span>
-                                  <span className="title">
-                                    학&nbsp;&nbsp;&nbsp; 년:
-                                  </span>
-                                  {item.quizCategoryList[0].quizCategory.학년}
-                                </span>
-                              )}
-                              {item.quizCategoryList[0]?.quizCategory?.과목 && (
-                                <span>
-                                  <span className="title">
-                                    과&nbsp;&nbsp;&nbsp; 목:
-                                  </span>
-                                  {item.quizCategoryList[0]?.quizCategory?.과목}
-                                </span>
-                              )}
-                              {item.quizCategoryList[0]?.quizCategory
-                                ?.대단원 && (
-                                <span>
-                                  <span className="title">대 분 류:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.대단원
-                                  }
-                                </span>
-                              )}
-                              {item.quizCategoryList[0]?.quizCategory
-                                ?.소단원 && (
-                                <span>
-                                  <span className="title">소 분 류:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.소단원
-                                  }
-                                </span>
-                              )}
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.교육과정,
+                                ) && (
+                                  <div>
+                                    <span className="title">교육과정:</span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course =
+                                          el.quizCategory?.교육과정;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
+
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.학년,
+                                ) && (
+                                  <div>
+                                    <span className="title">
+                                      학&nbsp;&nbsp;&nbsp; 년:
+                                    </span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course = el.quizCategory?.학년;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
+
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.과목,
+                                ) && (
+                                  <div>
+                                    <span className="title">
+                                      과&nbsp;&nbsp;&nbsp; 목:
+                                    </span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course = el.quizCategory?.과목;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
+
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.대단원,
+                                ) && (
+                                  <div>
+                                    <span className="title">대 분 류:</span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course = el.quizCategory?.대단원;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.소단원,
+                                ) && (
+                                  <div>
+                                    <span className="title">소 분 류:</span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course = el.quizCategory?.소단원;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
                             </ColumList>
                             <ColumList>
-                              {item.quizCategoryList[0]?.quizCategory
-                                ?.학교급 && (
-                                <span>
-                                  <span className="title">학 교 급:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.학교급
-                                  }
-                                </span>
-                              )}
-                              {item.quizCategoryList[0]?.quizCategory?.교과 && (
-                                <span>
-                                  <span className="title">
-                                    교&nbsp;&nbsp;&nbsp; 과:
-                                  </span>
-                                  {item.quizCategoryList[0]?.quizCategory?.교과}
-                                </span>
-                              )}
-                              {item.quizCategoryList[0]?.quizCategory?.학기 && (
-                                <span>
-                                  <span className="title">
-                                    학&nbsp;&nbsp;&nbsp; 기:
-                                  </span>
-                                  {item.quizCategoryList[0]?.quizCategory?.학기}
-                                </span>
-                              )}
-                              {item.quizCategoryList[0]?.quizCategory
-                                ?.중단원 && (
-                                <span>
-                                  <span className="title">중 분 류:</span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.중단원
-                                  }
-                                </span>
-                              )}
-                              {item.quizCategoryList[0]?.quizCategory
-                                ?.문항타입 && (
-                                <span>
-                                  <span className="title">
-                                    유&nbsp;&nbsp;&nbsp; 형:
-                                  </span>
-                                  {
-                                    item.quizCategoryList[0]?.quizCategory
-                                      ?.문항타입
-                                  }
-                                </span>
-                              )}
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.학교급,
+                                ) && (
+                                  <div>
+                                    <span className="title">학 교 급:</span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course = el.quizCategory?.학교급;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
+
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.교과,
+                                ) && (
+                                  <div>
+                                    <span className="title">
+                                      교&nbsp;&nbsp;&nbsp; 과:
+                                    </span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course = el.quizCategory?.교과;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
+
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.학기,
+                                ) && (
+                                  <div>
+                                    <span className="title">
+                                      학&nbsp;&nbsp;&nbsp; 기:
+                                    </span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course = el.quizCategory?.학기;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
+
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.중단원,
+                                ) && (
+                                  <div>
+                                    <span className="title">중 분 류:</span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course = el.quizCategory?.중단원;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
+
+                              {item.quizCategoryList.length > 0 &&
+                                // 조건에 맞는 항목 찾기
+                                item.quizCategoryList.find(
+                                  (el) => el.quizCategory?.문항타입,
+                                ) && (
+                                  <div>
+                                    <span className="title">
+                                      유&nbsp;&nbsp;&nbsp; 형:
+                                    </span>
+                                    {item.quizCategoryList
+                                      .flatMap((el) => {
+                                        const course =
+                                          el.quizCategory?.문항타입;
+                                        if (Array.isArray(course)) {
+                                          return course
+                                            .map((sub) => sub.name)
+                                            .filter(Boolean); // 배열 처리
+                                        } else if (typeof course === 'string') {
+                                          return [course]; // 문자열을 배열로 변환
+                                        }
+                                        return []; // 값이 없을 경우 빈 배열 반환
+                                      })
+                                      .join(', ')}
+                                  </div>
+                                )}
+
                               {/* {item.quizCategoryList[0]?.quizCategory?.기타 && (
                                 <span>
                                   <span className="title">
@@ -214,32 +361,74 @@ export function PDFModal({ list }: PDFModalProps) {
                           </RowList>
 
                           <ColumList>
-                            {item.quizCategoryList[0]?.quizCategory?.난이도 && (
-                              <span>
-                                <span className="title">난 이 도:</span>
-                                {item.quizCategoryList[0]?.quizCategory?.난이도}
-                              </span>
-                            )}
-                            {item.quizCategoryList[0]?.quizCategory
-                              ?.행동요소1 && (
-                              <span>
-                                <span className="title">행동요소1:</span>
-                                {
-                                  item.quizCategoryList[0]?.quizCategory
-                                    ?.행동요소1
-                                }
-                              </span>
-                            )}
-                            {item.quizCategoryList[0]?.quizCategory
-                              ?.행동요소2 && (
-                              <span>
-                                <span className="title">행동요소2:</span>
-                                {
-                                  item.quizCategoryList[0]?.quizCategory
-                                    ?.행동요소2
-                                }
-                              </span>
-                            )}
+                            {item.quizCategoryList.length > 0 &&
+                              // 조건에 맞는 항목 찾기
+                              item.quizCategoryList.find(
+                                (el) => el.quizCategory?.난이도,
+                              ) && (
+                                <span>
+                                  <span className="title">난 이 도:</span>
+                                  {item.quizCategoryList
+                                    .flatMap((el) => {
+                                      const course = el.quizCategory?.난이도;
+                                      if (Array.isArray(course)) {
+                                        return course
+                                          .map((sub) => sub.name)
+                                          .filter(Boolean); // 배열 처리
+                                      } else if (typeof course === 'string') {
+                                        return [course]; // 문자열을 배열로 변환
+                                      }
+                                      return []; // 값이 없을 경우 빈 배열 반환
+                                    })
+                                    .join(', ')}
+                                </span>
+                              )}
+
+                            {/* {item.quizCategoryList.length > 0 &&
+                              // 조건에 맞는 항목 찾기
+                              item.quizCategoryList.find(
+                                (el) => el.quizCategory?.행동요소1,
+                              ) && (
+                                <span>
+                                  <span className="title">행동요소1:</span>
+                                  {item.quizCategoryList
+                                    .flatMap((el) => {
+                                      const course = el.quizCategory?.행동요소1;
+                                      if (Array.isArray(course)) {
+                                        return course
+                                          .map((sub) => sub.name)
+                                          .filter(Boolean); // 배열 처리
+                                      } else if (typeof course === 'string') {
+                                        return [course]; // 문자열을 배열로 변환
+                                      }
+                                      return []; // 값이 없을 경우 빈 배열 반환
+                                    })
+                                    .join(', ')}
+                                </span>
+                              )}
+
+                            {item.quizCategoryList.length > 0 &&
+                              // 조건에 맞는 항목 찾기
+                              item.quizCategoryList.find(
+                                (el) => el.quizCategory?.행동요소2,
+                              ) && (
+                                <span>
+                                  <span className="title">행동요소2:</span>
+                                  {item.quizCategoryList
+                                    .flatMap((el) => {
+                                      const course = el.quizCategory?.행동요소2;
+                                      if (Array.isArray(course)) {
+                                        return course
+                                          .map((sub) => sub.name)
+                                          .filter(Boolean); // 배열 처리
+                                      } else if (typeof course === 'string') {
+                                        return [course]; // 문자열을 배열로 변환
+                                      }
+                                      return []; // 값이 없을 경우 빈 배열 반환
+                                    })
+                                    .join(', ')}
+                                </span>
+                              )} */}
                           </ColumList>
                         </ListWrap>
 
@@ -252,19 +441,34 @@ export function PDFModal({ list }: PDFModalProps) {
                                   className="row"
                                 >
                                   {[
-                                    'TITLE',
+                                    'BIG',
+                                    'TEXT',
                                     'QUESTION',
+                                    'SMALL',
                                     'EXAMPLE',
+                                    'CHOICES',
                                     'ANSWER',
-                                    'TIP',
                                     'COMMENTARY',
                                     'HINT',
+                                    'CONCEPT',
+                                    'TITLE',
+                                    'TIP',
                                   ].includes(el?.type) &&
+                                    !Array.isArray(el?.content) &&
                                     el?.content && (
                                       <MathViewer
                                         data={el.content}
                                       ></MathViewer>
                                     )}
+                                  {Array.isArray(el?.content) && (
+                                    <>
+                                      {el.content.map((item, index) => (
+                                        <MathViewer key={index}>
+                                          {item}
+                                        </MathViewer>
+                                      ))}
+                                    </>
+                                  )}
                                 </MathViewerWrapper>
                               ))}
                             </ColumList>
@@ -354,6 +558,11 @@ const ColumList = styled.div`
   flex-direction: column;
   text-align: left;
   flex-wrap: wrap;
+
+  img {
+    width: 100%;
+    height: fit-content;
+  }
 `;
 const RowList = styled.div`
   text-align: left;

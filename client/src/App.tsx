@@ -9,19 +9,34 @@ import {
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { ToastifyAlert, openToastifyAlert } from './components';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { useModal } from './hooks';
+import { deviceTypeState } from './store/utilAtom';
 import { getAuthorityCookie } from './utils/cookies';
 import { postRefreshToken } from './utils/tokenHandler';
+
+const getDeviceType = () => {
+  const userAgent = navigator.userAgent;
+
+  if (/mobile/i.test(userAgent)) {
+    return 'mobile'; // 모바일 기기
+  } else if (/tablet/i.test(userAgent)) {
+    return 'tablet'; // 태블릿 기기
+  } else {
+    return 'desktop'; // 데스크탑 기기
+  }
+};
 
 export function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const { closeModal } = useModal();
+  const [deviceType, setDeviceType] = useRecoilState(deviceTypeState);
 
   //전역 쿼리캐싱
   const queryClient = new QueryClient({
@@ -35,10 +50,10 @@ export function App() {
           error: { response: { data: { code: string } } },
         ) => {
           console.log(
-            `failureCount: ${failureCount} ${error.response.data.code}`,
+            `failureCount: ${failureCount} ${error?.response?.data?.code}`,
           );
           // 토큰만료시 리프레쉬요청 후 재요청
-          if (error.response.data.code == 'GE-002') {
+          if (error?.response?.data?.code == 'GE-002') {
             return postRefreshToken();
           }
 
@@ -53,7 +68,7 @@ export function App() {
       }) => {
         openToastifyAlert({
           type: 'error',
-          text: context.response.data.message,
+          text: context?.response?.data?.message,
         });
       },
     },
@@ -94,6 +109,24 @@ export function App() {
     }
   }, [location]);
 
+  useEffect(() => {
+    const type = getDeviceType();
+    console.log('getDeviceType ---------- ', type);
+
+    setDeviceType(type);
+  }, []);
+
+  // 편집기 종류(PC: true, tab: false);
+  if (deviceType == 'desktop') {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    window.editorType = true;
+  } else {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    window.editorType = false;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <Container>
@@ -102,24 +135,50 @@ export function App() {
           location.pathname !== '/init-change-password' &&
           location.pathname !== '/relogin' &&
           location.pathname !== '/createcontentmain' &&
-          location.pathname !== '/formula' &&
+          location.pathname !== '/change-history' &&
           location.pathname !== '/quizpreview' &&
-          location.pathname !== '/managementEditMain' &&
+          location.pathname !== '/managementeditmain' &&
+          location.pathname !== '/content-manage/tagmapping' &&
           location.pathname !== '/content-create/exam/step1' &&
           location.pathname !== '/content-create/exam/step2' &&
-          location.pathname !== '/content-create/exam/step3' && <Navigation />}
+          location.pathname !== '/content-create/exam/step3' &&
+          location.pathname !== '/contentListSetting' &&
+          location.pathname !== '/contentDtEditingSetting' &&
+          location.pathname !== '/contentClassificationSetting' &&
+          location.pathname !== '/workbookListSetting' &&
+          location.pathname !== '/workbookClassificationSetting' &&
+          location.pathname !== '/workbookSchoolReportSetting' &&
+          location.pathname !== '/workbookCSATSetting' &&
+          location.pathname !== '/contentListManagementSetting' &&
+          location.pathname !== '/contentEditingSetting' &&
+          location.pathname !== '/inspection' &&
+          location.pathname !== '/inspectionManagementSetting' &&
+          location.pathname !== '/content-preview/report' && <Navigation />}
         <MainWrapper>
           {getAuthorityCookie('accessToken') &&
             location.pathname !== '/login' &&
             location.pathname !== '/init-change-password' &&
             location.pathname !== '/relogin' &&
             location.pathname !== '/createcontentmain' &&
-            location.pathname !== '/formula' &&
+            location.pathname !== '/change-history' &&
             location.pathname !== '/quizpreview' &&
-            location.pathname !== '/managementEditMain' &&
+            location.pathname !== '/managementeditmain' &&
+            location.pathname !== '/content-manage/tagmapping' &&
             location.pathname !== '/content-create/exam/step1' &&
             location.pathname !== '/content-create/exam/step2' &&
-            location.pathname !== '/content-create/exam/step3' && <Header />}
+            location.pathname !== '/content-create/exam/step3' &&
+            location.pathname !== '/contentListSetting' &&
+            location.pathname !== '/contentDtEditingSetting' &&
+            location.pathname !== '/contentClassificationSetting' &&
+            location.pathname !== '/workbookListSetting' &&
+            location.pathname !== '/workbookClassificationSetting' &&
+            location.pathname !== '/workbookSchoolReportSetting' &&
+            location.pathname !== '/workbookCSATSetting' &&
+            location.pathname !== '/contentListManagementSetting' &&
+            location.pathname !== '/contentEditingSetting' &&
+            location.pathname !== '/inspection' &&
+            location.pathname !== '/inspectionManagementSetting' &&
+            location.pathname !== '/content-preview/report' && <Header />}
           <BodyWrapper>
             <ToastifyAlert />
             <Outlet />

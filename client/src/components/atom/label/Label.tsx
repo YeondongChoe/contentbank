@@ -16,6 +16,7 @@ type LabelProps = {
   flexEnd?: boolean;
   center?: boolean;
   bold?: boolean;
+  display?: boolean;
 };
 
 export function Label({
@@ -30,6 +31,7 @@ export function Label({
   flexEnd,
   center,
   bold,
+  display,
 }: LabelProps) {
   return (
     <Component
@@ -43,6 +45,7 @@ export function Label({
       $flexEnd={flexEnd}
       $center={center}
       $bold={bold}
+      $display={display}
     >
       <label>{value}</label>
     </Component>
@@ -59,6 +62,7 @@ type LabelStyleProps = {
   $flexEnd?: boolean;
   $center?: boolean;
   $bold?: boolean;
+  $display?: boolean;
 };
 
 const Component = styled.label<LabelStyleProps>`
@@ -79,10 +83,9 @@ const Component = styled.label<LabelStyleProps>`
   }};
   ${({ $flexEnd }) => $flexEnd && `display: flex; justify-content: flex-end;`}
   ${({ $center }) => $center && `display: flex; justify-content: center;`}
+  ${({ $display }) => $display && `display: none;`}
 
-  /* display: flex;
-  justify-content: flex-end; */
   > label {
-    cursor: ${({ $cursor }) => $cursor && 'pointer;'};
+    cursor: ${({ $cursor }) => $cursor && 'pointer'};
   }
 `;

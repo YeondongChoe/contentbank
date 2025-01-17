@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Alert } from '../../../../components/molecules';
-import { ItemCategoryType } from '../../../../types';
+import { IdxNamePair, ItemCategoryType, QuizListType } from '../../../../types';
 import { Button, Select } from '../../../atom';
 import { COLOR } from '../../../constants/COLOR';
 
@@ -18,21 +18,31 @@ type CategoryList = {
 };
 
 interface Props {
-  categoryTitles: ItemCategoryType[];
-  categoriesE: ItemCategoryType[];
-  groupsDataF: string;
-  groupsDataG: string;
-  groupsDataH: string;
+  categoriesE?: ItemCategoryType[];
+  groupsDataF: IdxNamePair[];
+  groupsDataG: IdxNamePair[];
+  groupsDataH: IdxNamePair[];
   setSelectedSource: React.Dispatch<React.SetStateAction<any[]>>;
+  quizCategory?: any[];
+  onItemClickData?: QuizListType;
+  selectedValue?: React.Dispatch<
+    React.SetStateAction<
+      {
+        [key: number]: string;
+      }[]
+    >
+  >;
 }
 
 export function OptionList({
-  categoryTitles,
   categoriesE,
   groupsDataF,
   groupsDataG,
   groupsDataH,
   setSelectedSource,
+  quizCategory,
+  onItemClickData,
+  selectedValue,
 }: Props) {
   const [sourceOptions, setSourceOptions] = useState<number[]>([0]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -48,37 +58,43 @@ export function OptionList({
     [key: number]: string;
   }>({});
 
-  const [optionsList1, setOptionsList1] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
-  const [optionsList2, setOptionsList2] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
-  const [optionsList3, setOptionsList3] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
-  const [optionsList4, setOptionsList4] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
-  const [optionsList5, setOptionsList5] = useState<CategoryList>({
-    name: '',
-    categories: [],
-  });
+  const [sourceSortedValue, setSourceSortedValue] = useState<
+    {
+      [key: number]: string;
+    }[]
+  >([]);
+
+  const [totalSource, setTotalSource] = useState<
+    {
+      [x: string]: any;
+      [key: number]: any;
+    }[]
+  >([]);
+
+  const [optionsList, setOptionsList] = useState<CategoryList[]>([
+    { name: '', categories: [] },
+    { name: '', categories: [] },
+    { name: '', categories: [] },
+    { name: '', categories: [] },
+    { name: '', categories: [] },
+  ]);
 
   const [sourceArr, setSourceArr] = useState<any[]>([]);
   const [sourceValue, setSourceValue] = useState<{
     titleIdx: string;
     name: string;
-    value: string;
+    value: string | number;
   }>({ titleIdx: '', name: '', value: '' });
 
-  const getCategoryListFromString = (data: string) => {
-    const groupsArray = data.split(',').map(Number);
-    return categoryTitles.filter((el) => groupsArray.includes(el.idx));
+  const getCategoryListFromString = (data: IdxNamePair[]) => {
+    return data.map((item) => ({
+      code: item.idx,
+      idx: Number(item.idx),
+      name: item.name,
+      type: item.inputType, // inputType을 type으로 매핑
+      value: item.searchList ? 1 : 0, // searchList가 true면 value를 1로 설정
+      isUse: item.viewList, // viewList를 isUse로 매핑
+    }));
   };
 
   const categoriesF = getCategoryListFromString(groupsDataF);
@@ -131,38 +147,6 @@ export function OptionList({
     }
   };
 
-  // 셀렉트 선택이후 셀렉트에 속한 자식 배열값 보여주기
-  const listSwitch = (value: string, index: number) => {
-    const list = lists.find((list) => list.name === value);
-    if (list) {
-      switch (index) {
-        case 0:
-          setOptionsList1(list);
-          break;
-        case 1:
-          setOptionsList2(list);
-          break;
-        case 2:
-          setOptionsList3(list);
-          break;
-        case 3:
-          setOptionsList4(list);
-          break;
-        case 4:
-          setOptionsList5(list);
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
-  useEffect(() => {
-    Object.keys(selectedValues).forEach((key) => {
-      listSwitch(selectedValues[Number(key)], Number(key));
-    });
-  }, [selectedValues]);
-
   const addSourceOptions = () => {
     // console.log('출처 카테고리 추가 API');
     setCount(count + 1);
@@ -174,7 +158,7 @@ export function OptionList({
   };
   useEffect(() => {}, [disabled]);
 
-  //얼럿
+  //출처 삭제 얼럿
   const openUpdateAlert = (
     event: React.MouseEvent<HTMLButtonElement>,
     index: number,
@@ -183,13 +167,38 @@ export function OptionList({
     setCurrentTarget(event.currentTarget);
     setIsAlertOpen(true);
   };
+
   const removeSourceOptions = (target: EventTarget, index: number) => {
     const id = (target as HTMLElement).parentElement?.parentElement?.id;
+    const titleValue = (
+      target as HTMLElement
+    ).parentElement?.parentElement?.innerText
+      ?.trim()
+      .toLowerCase();
     const arr = sourceOptions.filter((el) => el !== Number(id));
+
+    // console.log('출처 - 버튼눌러 삭제 후 배열', id);
+
     setSourceOptions(arr);
 
-    const newSelectedValues = { ...selectedValues };
-    delete newSelectedValues[index];
+    const title = titleValue
+      ?.replace('기출일시', '')
+      .replace(/[^가-힣a-zA-Z0-9]/g, '')
+      .trim() as string;
+
+    // console.log('추출된 타이틀 값:', title);
+    // selectedValues에서 title 값과 정확히 일치하는 항목을 필터링
+    const newSelectedValues = Object.fromEntries(
+      Object.entries(selectedValues).filter(([_, value]) => {
+        const normalizedValue = value.trim(); // 공백 제거한 값
+        const includesTitle = normalizedValue.includes(title); // title이 포함되어 있는지 확인
+        // console.log(
+        //   `비교 중: value='${normalizedValue}', title='${title}', includesTitle=${includesTitle}`,
+        // );
+        return !includesTitle;
+      }),
+    );
+
     setSelectedValues(newSelectedValues);
 
     setIsAlertOpen(false);
@@ -211,15 +220,34 @@ export function OptionList({
 
   const getCategoryList = (value: string): ItemCategoryType[] => {
     const list = lists.find((list) => list.name === value);
+    console.log('기존 등록 출처인덱스 리스트의 카테고리값 -----', list);
+
     return list ? list.categories : [];
   };
 
   useEffect(() => {
-    console.log('selected', selected);
+    // console.log('selected', selected);
+    if (selected && selectedValue) {
+      selectedValue((prevValues) => {
+        const isDuplicate = Object.values(prevValues).some((item) =>
+          Object.values(item).includes(selected),
+        );
+        // 중복이 아닐 경우에만 새로운 값을 추가
+        if (!isDuplicate) {
+          setSourceSortedValue([...prevValues, { [count]: selected }]);
+          return [...prevValues, { [count]: selected }];
+        }
+        return prevValues;
+      });
+    }
   }, [selected]);
 
   useEffect(() => {
-    console.log('sourceValue', sourceValue);
+    // console.log('sourceSortedValue 출처=----------', sourceSortedValue);
+  }, [selectedValue]);
+
+  useEffect(() => {
+    console.log('sourceValue 변경시 넘어온 출처값----------', sourceValue);
 
     // sourceValue의 객체 요소 중 하나라도 키값이 빈 문자열이 아닐 때
     if (
@@ -244,13 +272,14 @@ export function OptionList({
           return acc;
         }, []);
 
-        console.log('uniqueArr', uniqueArr);
+        // console.log('uniqueArr', uniqueArr);
         return uniqueArr;
       });
     }
   }, [sourceValue]);
 
   useEffect(() => {
+    // console.log('sourceArr-----담겨진 출처 배열', sourceArr);
     // 서버로 전송할 데이터 구조로 재구성
     const restructuredData = sourceArr.reduce((acc, curr) => {
       const { titleIdx, name, value } = curr;
@@ -267,80 +296,224 @@ export function OptionList({
 
       return acc;
     }, []);
+    // console.log('sourceSortedValue------', sourceSortedValue);
 
-    // console.log('restructuredData', restructuredData);
-    setSelectedSource(restructuredData);
-  }, [sourceArr]);
+    // 출처 1뎁스도 포함시키는 로직
+    const addSource = sourceSortedValue
+      .map((source) => {
+        const key = Object.keys(source)[0];
+        const value = source[Number(key)];
+
+        const isDuplicate = restructuredData.some(
+          (item: { [s: string]: unknown } | ArrayLike<unknown>) =>
+            Object.values(item).includes(value),
+        );
+
+        if (!isDuplicate) {
+          return { 출처: value };
+        }
+        return null;
+      })
+      .filter(Boolean); // null 값 제거;
+
+    // console.log(
+    //   '[...restructuredData, ...addSource]출처 1뎁스도 포함시키는 로직------',
+    //   [...restructuredData, ...addSource],
+    // );
+
+    // restructuredData와 addSource를 합친 후 출처가 undefined인 항목을 필터링
+    const finalData = [...restructuredData, ...addSource].filter(
+      (item) => item.출처 !== undefined,
+    );
+
+    // sourceSortedValue를 기준으로 다시 정렬
+    const sortedData = finalData.sort((a, b) => {
+      const indexA = sourceSortedValue.findIndex((item) =>
+        Object.values(item).includes(a['출처']),
+      );
+      const indexB = sourceSortedValue.findIndex((item) =>
+        Object.values(item).includes(b['출처']),
+      );
+      return indexA - indexB; // UI 순서에 맞춰 정렬
+    });
+
+    // console.log('UI 순서에 맞게 정렬된 데이터 --------', sortedData);
+
+    setTotalSource(sortedData);
+  }, [sourceArr, sourceSortedValue]);
+
+  // useEffect(() => {},[sourceSortedValue])
+  // console.log(
+  // '출처 - 버튼눌러 삭제 후 배열 selectedValues',
+  // selectedValues,
+  // totalSource,
+  // );
+
+  useEffect(() => {
+    // 최종적으로 서버에 전송될 출처
+    // console.log('전체적으로 변경될때 담긴값 --------', totalSource);
+    // console.log('실제 ui에 있는 출처 타이틀값 --------', selectedValues);
+    // 실제 ui에 있는 값만 보내지도록
+    // 토탈값조정
+    // selectedValues에서 값만 추출 (출처 타이틀 목록)
+    const selectedTitles = Object.values(selectedValues);
+    // console.log('selectedTitles --------', selectedTitles);
+
+    // totalSource에서 출처 값이 selectedTitles에 있는 항목만 필터링
+    const filteredTotalSource = totalSource.filter((source) => {
+      const sourceTitle = source.출처; // totalSource의 '출처' 값
+      // console.log('sourceTitle---', sourceTitle);
+
+      // selectedTitles에 sourceTitle이 포함되어 있는지 확인
+      return selectedTitles.some((selectedTitle) =>
+        sourceTitle.includes(selectedTitle),
+      );
+    });
+
+    // console.log('최종적으로 필터링후 보내질값 --------', filteredTotalSource);
+    setSelectedSource(filteredTotalSource);
+  }, [totalSource, selectedValues]);
+
+  const [titleArr, setTitleArr] = useState<string[]>([]);
+
+  // 수정 페이지에서 기존의 값 출처 배열에 넣기
+  useEffect(() => {
+    console.log('onItemClickData---기존 출처값 ', onItemClickData);
+    console.log('quizCategory---기존 출처값', quizCategory);
+    // setSourceOptions([]);
+    // 기존 출처 데이터를 초기화
+    setSourceOptions([]);
+    setTitleArr([]);
+    setOptionsList([
+      { name: '', categories: [] },
+      { name: '', categories: [] },
+      { name: '', categories: [] },
+      { name: '', categories: [] },
+      { name: '', categories: [] },
+    ]);
+    setSelectedValues({});
+
+    if (quizCategory) {
+      // `titleArr`와 `optionsList` 업데이트
+      const titleArr = quizCategory.map((el) => el.출처);
+      setTitleArr(titleArr);
+
+      const updatedOptionsList = quizCategory.map((el, index) => ({
+        name: el.출처,
+        categories: el || [],
+      }));
+
+      setOptionsList(updatedOptionsList);
+
+      // 기존 값을 유지하면서 새 값 병합
+      setSelectedValues((prev) => {
+        const newValues = Object.fromEntries(
+          quizCategory.map((el, index) => [index, el.출처]),
+        );
+        return { ...prev, ...newValues };
+      });
+    }
+  }, [onItemClickData]); // 체크된 값이 변할때
+
+  useEffect(() => {
+    console.log('들어온 옵션 리스트 값 ----- ', optionsList);
+
+    // optionsList.map((item, index) => {
+    //   if (item.name !== '') getCategoryList(item.name);
+    // });
+  }, [optionsList]);
+
+  console.log('들어온  ------ SelectedValues[index] ----- ', selectedValues);
+
+  useEffect(() => {
+    //버튼
+    setCount(count + titleArr.length);
+    if (sourceOptions.length < 5) {
+      const arr = [];
+      for (let i = 0; i < titleArr.length; i++) {
+        arr.push(i);
+      }
+      setSourceOptions([...sourceOptions, ...arr]);
+    }
+
+    if (titleArr.length > 0) {
+      setDisabled(false);
+    }
+
+    if (sourceOptions.length >= 5) {
+      //셀렉트 선택시에만 추가 가능하도록 초기화
+      setDisabled(true);
+    }
+
+    //부모 셀렉트 값이 바뀔시
+  }, [titleArr]);
 
   return (
     <Container>
-      {categoryTitles &&
-        sourceOptions.map((index) => (
-          <SelectList key={`${index}selectList el`} id={index.toString()}>
-            <li>
-              {index === 0 && optionsList1.name == '' && (
+      {sourceOptions.map((index) => (
+        <SelectList key={`${index}selectList el`} id={index.toString()}>
+          <li>
+            {/* {index === 0 && optionsList1.name == '' && (
                 <p className="info_hight">
                   <p className="info">출처는 최대 5개까지만 추가 가능</p>
                 </p>
-              )}
-              {index === 0 ? (
-                <Button
-                  width={'50px'}
+              )} */}
+            {index === 0 ? (
+              <Button
+                width={'50px'}
+                height={'30px'}
+                fontSize={'15px'}
+                $padding={'5px'}
+                $filled
+                cursor
+                disabled={disabled}
+                onClick={() => addSourceOptions()}
+              >
+                +
+              </Button>
+            ) : (
+              <Button
+                width={'50px'}
+                height={'30px'}
+                fontSize={'15px'}
+                $padding={'5px'}
+                $filled
+                cursor
+                onClick={(event) => openUpdateAlert(event, index)}
+              >
+                -
+              </Button>
+            )}
+            <SelectWrapper>
+              <SelectMapWrapper id={`${index.toString()}SelectMapWrap`}>
+                <OtionsSelect
+                  $positionTop
+                  width={'110px'}
                   height={'30px'}
-                  fontSize={'15px'}
-                  $padding={'5px'}
-                  $filled
-                  cursor
-                  disabled={disabled}
-                  onClick={() => addSourceOptions()}
-                >
-                  +
-                </Button>
-              ) : (
-                <Button
-                  width={'50px'}
-                  height={'30px'}
-                  fontSize={'15px'}
-                  $padding={'5px'}
-                  $filled
-                  cursor
-                  onClick={(event) => openUpdateAlert(event, index)}
-                >
-                  -
-                </Button>
-              )}
-              <SelectWrapper>
-                <SelectMapWrapper id={`${index.toString()}SelectMapWrap`}>
-                  <OtionsSelect
-                    $positionTop
-                    width={'110px'}
-                    height={'30px'}
-                    defaultValue={categoryTitles[16]?.name}
-                    key={categoryTitles[16]?.name}
-                    options={categoriesE}
-                    onSelect={(
-                      event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-                    ) => selectCategoryOption(event, index)}
-                    selected={selected}
-                    setSelected={setSelected}
+                  defaultValue={titleArr.length ? titleArr[index] : '출처'}
+                  key={'출처'}
+                  options={categoriesE}
+                  onSelect={(
+                    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+                  ) => selectCategoryOption(event, index)}
+                  selected={selected}
+                  setSelected={setSelected}
+                />
+              </SelectMapWrapper>
+              {selectedValues[index] &&
+                getCategoryList(selectedValues[index]).map((category, idx) => (
+                  <Options
+                    titleIdx={selectedValues[index]}
+                    listItem={category}
+                    key={`${category?.name} optionsdepth${idx}`}
+                    onOptionChange={setSourceValue}
+                    initList={quizCategory && quizCategory[index]}
                   />
-                </SelectMapWrapper>
-
-                {selectedValues[index] &&
-                  getCategoryList(selectedValues[index]).map(
-                    (category, idx) => (
-                      <Options
-                        titleIdx={selectedValues[index]}
-                        listItem={category}
-                        key={`${category?.name} optionsdepth${idx}`}
-                        onOptionChange={setSourceValue}
-                      />
-                    ),
-                  )}
-              </SelectWrapper>
-            </li>
-          </SelectList>
-        ))}
+                ))}
+            </SelectWrapper>
+          </li>
+        </SelectList>
+      ))}
 
       <Alert
         top="calc(50% - 100px)"
@@ -418,7 +591,7 @@ const SelectOptionsList = styled.ul<{
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1;
+  z-index: 9999999999;
   width: 100%;
   height: 100%;
   ${({ $positionTop }) =>

@@ -215,15 +215,17 @@ export function ContentCategoryChange() {
       setIsCategoryLoaded(true);
 
       const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/${id}`).catch((error) => {
-          // console.log(error);
-          if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
-            setRefreshTokenCalled(true);
-            postRefreshToken().then(() => {
-              setRefreshTokenCalled(false);
-            });
-          }
-        }),
+        classificationInstance
+          .get(`/v1/category/class/${id}`)
+          .catch((error) => {
+            // console.log(error);
+            if (error.response?.data?.code == 'GE-002' && !refreshTokenCalled) {
+              setRefreshTokenCalled(true);
+              postRefreshToken().then(() => {
+                setRefreshTokenCalled(false);
+              });
+            }
+          }),
       );
       const responses = await Promise.all(requests);
       const itemsList = responses.map(
@@ -322,7 +324,7 @@ export function ContentCategoryChange() {
     const pidx = radio1depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList1depth(res?.data.data.categoryClassList);
       return res.data;
@@ -347,7 +349,7 @@ export function ContentCategoryChange() {
     const pidx = radio2depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList2depth(res?.data.data.categoryClassList);
       return res.data;
@@ -372,7 +374,7 @@ export function ContentCategoryChange() {
     const pidx = radio3depthCheck.checkValue; // 선택된 체크 박스의 idx
     try {
       const res = await classificationInstance.get(
-        `/v1/category/${itemIdx}/${pidx}`,
+        `/v1/category/${itemIdx - 1}/${pidx}`,
       );
       setNextList3depth(res?.data.data.categoryClassList);
       return res.data;
@@ -488,7 +490,7 @@ export function ContentCategoryChange() {
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
   const getCategoryItemTree = async () => {
-    const radioChecks = [
+    const depthChecks = [
       radio1depthCheck,
       radio2depthCheck,
       radio3depthCheck,
@@ -498,17 +500,24 @@ export function ContentCategoryChange() {
       // radio7depthCheck,
     ];
 
-    const keyValuePairs = radioChecks.reduce<ItemTreeKeyType>((acc, curr) => {
-      if (curr.key && curr.title) {
-        acc[curr.key] = curr.title;
+    // itemTreeKeyList 객체를 빈 객체로 초기화
+    const itemTreeKeyList: ItemTreeKeyType = {};
+
+    // depthChecks 배열을 순회하여 itemTreeKeyList에 각 라디오 버튼의 code와 title 추가
+    depthChecks.forEach((depthCheck) => {
+      if (depthCheck && depthCheck.code && depthCheck.title) {
+        itemTreeKeyList[`${depthCheck.code}`] = `${depthCheck.title}`;
       }
-      return acc;
-    }, {});
+    });
 
-    const itemTreeKeyList = { itemTreeKeyList: [keyValuePairs] };
-    console.log('itemTreeKeyList 최종적으로 보내는 탭선택값:', itemTreeKeyList);
-
-    const res = await classificationInstance.post('/v1/item', itemTreeKeyList);
+    console.log(
+      '최종 카테고리 전달값 유형 조회 itemTreeKeyList:',
+      itemTreeKeyList,
+    );
+    const data = {
+      itemTreeKeyList: [itemTreeKeyList],
+    };
+    const res = await classificationInstance.post('/v1/item', data);
     // console.log('classificationInstance 응답:', res);
     return res;
   };
@@ -769,7 +778,7 @@ export function ContentCategoryChange() {
                         </div>
                       ))}
                       {/* 학교급 */}
-                      {[categoryItems[1]].map((item) => (
+                      {[categoryItems[41]].map((item) => (
                         <div
                           className={`2depth`}
                           id={`${item.name}`}
@@ -787,7 +796,7 @@ export function ContentCategoryChange() {
                         </div>
                       ))}
                       {/* 학년 */}
-                      {[categoryItems[2]].map((item) => (
+                      {[categoryItems[1]].map((item) => (
                         <div
                           className={`3depth`}
                           id={`${item.name}`}
@@ -805,7 +814,7 @@ export function ContentCategoryChange() {
                         </div>
                       ))}
                       {/* 학기 */}
-                      {[categoryItems[3]].map((item) => (
+                      {[categoryItems[2]].map((item) => (
                         <div
                           className={`4depth`}
                           id={`${item.name}`}
@@ -823,7 +832,7 @@ export function ContentCategoryChange() {
                         </div>
                       ))}
                       {/* 교과 */}
-                      {[categoryItems[6]].map((item) => (
+                      {[categoryItems[5]].map((item) => (
                         <div
                           className={`5depth`}
                           id={`${item.name}`}
@@ -841,7 +850,7 @@ export function ContentCategoryChange() {
                         </div>
                       ))}
                       {/* 과목 */}
-                      {[categoryItems[7]].map((item) => (
+                      {[categoryItems[6]].map((item) => (
                         <div
                           className={`6depth`}
                           id={`${item.name}`}

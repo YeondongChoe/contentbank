@@ -1,16 +1,30 @@
 import * as React from 'react';
 
 // eslint-disable-next-line import/order, import/default
+import { NoAuthrizedPage } from './pages/NoAuthorizedPage';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
 import { App } from './App';
 import {
+  ContentListSetting,
+  ContentDtEditingSetting,
+  ContentClassificationSetting,
+  WorkbookListSetting,
+  WorkbookClassificationSetting,
+  WorkbookSchoolReportSetting,
+  WorkbookCSATSetting,
+  ContentListManagementSetting,
+  InspectionManagementSetting,
+  ContentEditingSetting,
+  ContentPreview,
+} from './components';
+import { ContentInspection } from './components/contents/createcontent';
+import {
   AuthorityPage,
   FirstLoginPage,
   LoginPage,
-  ManagementsTreePage,
   MemberPage,
   MypagePage,
   QuizManagementListPage,
@@ -20,10 +34,18 @@ import {
   CreateWorksheetStep2,
   CreateWorksheetStep3,
   QuizCreateListPage,
+  CreatingContentSetting,
+  ManagingContentSetting,
+  CompanyPage,
+  MetaInfoPage,
+  ProcessPage,
+  TagMappingPage,
+  InspectionPage,
+  ReportPage,
 } from './pages';
 import { Guide } from './pages/Guide';
 import { ManagementEditMain } from './pages/managementWindow';
-import { Formula } from './pages/managementWindow/Formula';
+import { ChangeHistory } from './pages/managementWindow/ChangeHistory';
 import { Notfound } from './pages/Notfound';
 import { Preparing } from './pages/Preparing';
 import { CreateContentMain, QuizPreview } from './pages/quizCreateWindow';
@@ -82,10 +104,14 @@ const router = createBrowserRouter([
         path: '/createcontentmain',
         element: <CreateContentMain />,
       },
-      // {
-      //   path: '/formula',
-      //   element: <Formula />,
-      // },
+      {
+        path: '/inspection',
+        element: <ContentInspection setTabView={() => {}} type={''} />,
+      },
+      {
+        path: '/change-history',
+        element: <ChangeHistory />,
+      },
       {
         path: '/quizpreview',
         element: <QuizPreview />,
@@ -111,12 +137,37 @@ const router = createBrowserRouter([
         element: <QuizManagementListPage />,
       },
       {
-        path: '/managementEditMain',
+        path: '/managementeditmain',
         element: <ManagementEditMain />,
       },
+      //접근 권한이 없는 페이지입니다.
       {
-        path: '/content-manage/classify',
-        element: <ManagementsTreePage />,
+        path: '/no-authrized',
+        element: <NoAuthrizedPage />,
+      },
+      {
+        path: '/content-manage/report',
+        element: <ReportPage />,
+      },
+      {
+        path: '/content-preview/report',
+        element: <ContentPreview />,
+      },
+      {
+        path: '/content-manage/inspection',
+        element: <InspectionPage />,
+      },
+      {
+        path: '/content-manage/metainfo',
+        element: <MetaInfoPage />,
+      },
+      {
+        path: '/content-manage/process',
+        element: <ProcessPage />,
+      },
+      {
+        path: '/content-manage/tagmapping',
+        element: <TagMappingPage />,
       },
 
       {
@@ -127,6 +178,58 @@ const router = createBrowserRouter([
       {
         path: '/operation-manage/authority',
         element: <AuthorityPage />,
+      },
+      {
+        path: '/operation-manage/company',
+        element: <CompanyPage />,
+      },
+      {
+        path: '/creatingcontentSetting',
+        element: <CreatingContentSetting />,
+      },
+      {
+        path: '/contentListSetting',
+        element: <ContentListSetting />,
+      },
+      {
+        path: '/contentDtEditingSetting',
+        element: <ContentDtEditingSetting />,
+      },
+      {
+        path: '/contentClassificationSetting',
+        element: <ContentClassificationSetting />,
+      },
+      {
+        path: '/workbookListSetting',
+        element: <WorkbookListSetting />,
+      },
+      {
+        path: '/workbookClassificationSetting',
+        element: <WorkbookClassificationSetting />,
+      },
+      {
+        path: '/workbookSchoolReportSetting',
+        element: <WorkbookSchoolReportSetting />,
+      },
+      {
+        path: '/workbookCSATSetting',
+        element: <WorkbookCSATSetting />,
+      },
+      {
+        path: '/managingcontentSetting',
+        element: <ManagingContentSetting />,
+      },
+      {
+        path: '/contentListManagementSetting',
+        element: <ContentListManagementSetting />,
+      },
+      {
+        path: '/contentEditingSetting',
+        element: <ContentEditingSetting />,
+      },
+      {
+        path: '/inspectionManagementSetting',
+        element: <InspectionManagementSetting />,
       },
     ],
   },

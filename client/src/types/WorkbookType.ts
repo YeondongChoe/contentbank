@@ -14,6 +14,13 @@ export interface QuizItemList {
   type: string;
   content: string;
   sort: number;
+  quizCode?: string;
+  quizIdx?: number;
+  quizFavorite?: boolean;
+  num?: number;
+  order?: number;
+  groupType?: string;
+  score?: number;
 }
 
 export interface QuizCategory {
@@ -23,17 +30,21 @@ export interface QuizCategory {
   };
   난이도: string;
   문항타입: string;
-  교과: string;
+  교과: { code: string; name: string }[];
   학교급: string;
-  유형?: string;
+  유형?: { code: string; name: string }[];
 }
 
 export interface QuizCategoryList {
   quizCategory: QuizCategory;
+  quizCode?: string;
+  quizIdx?: number;
+  sort?: number;
 }
 
 export interface QuizList {
   idx: number;
+  groupCode: string;
   code: string;
   num: number;
   type: string;
@@ -50,6 +61,7 @@ export interface QuizList {
   isFavorite: boolean;
   isUse: boolean;
   isDelete: boolean;
+  isQuiz: boolean;
 }
 
 export type SimilarQuizList = {
@@ -90,6 +102,7 @@ export interface Data {
   tagClassList: TagClassList[];
   templateList: TemplateList[];
   isFavorite: boolean;
+  isQuiz: boolean;
   isUse: boolean;
   isDelete: boolean;
   isAutoGrade: boolean;
@@ -141,4 +154,14 @@ export type DifficultyDataType = {
 
 export type FavoriteQuizList = {
   quizList: QuizList[];
+};
+
+export type selectedListType = {
+  name: string;
+  idx: number;
+  view: boolean;
+  search: boolean;
+  type?: string;
+  selected?: string;
+  selectedName?: string;
 };

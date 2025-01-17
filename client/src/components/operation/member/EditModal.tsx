@@ -29,20 +29,23 @@ import { Alert } from '../../molecules/alert/Alert';
 export function EditModal({
   accountIdx,
   userKey,
+  companyIdx,
   refetch,
 }: {
   accountIdx: number;
   userKey: string;
+  companyIdx: number;
   refetch: (
-    options?: RefetchOptions | undefined,
-  ) => Promise<QueryObserverResult<AxiosResponse<any, any>, Error>>;
+    options?: RefetchOptions,
+  ) => Promise<QueryObserverResult<AxiosResponse<any, any> | null, Error>>;
 }) {
   const { closeModal } = useModal();
   const [member, setMember] = useState<{
     id: null | string;
     name: null | string;
     key: null | string;
-    authority: null | string;
+    authorityCode: null | string;
+    authorityName: null | string;
     comment: null | string;
     enabled: null | boolean;
     authCode: null | string;
@@ -50,7 +53,8 @@ export function EditModal({
     id: null,
     name: null,
     key: null,
-    authority: null,
+    authorityCode: null,
+    authorityName: null,
     comment: null,
     enabled: null,
     authCode: null,
@@ -114,12 +118,14 @@ export function EditModal({
         Comment,
         authorityCode,
         memberDatas?.isLock,
+        companyIdx,
       );
       const userInfo = {
         name: Name as string,
         authorityCode: selectedCode,
         note: Comment as string,
         isUseNot: memberDatas?.isLock ? 'Y' : 'N',
+        companyIdx: companyIdx,
       };
       mutateChangeUserInfo({ accountIdx, userInfo });
     }
@@ -159,8 +165,8 @@ export function EditModal({
 
   // 권한 셀렉트 불러오기 api
   const { data: authorityListData } = useQuery({
-    queryKey: ['get-authorityList'],
-    queryFn: getAuthorityList,
+    queryKey: ['get-authorityList', companyIdx.toString()],
+    queryFn: ({ queryKey }) => getAuthorityList(queryKey[1]),
     meta: {
       errorMessage: 'get-authorityList 에러 메세지',
     },
@@ -200,7 +206,8 @@ export function EditModal({
       id: memberDatas?.id,
       name: memberDatas?.name,
       key: memberDatas?.userKey,
-      authority: memberDatas?.authorityCode,
+      authorityCode: memberDatas?.authorityCode,
+      authorityName: memberDatas?.authorityName,
       comment: memberDatas?.note,
       enabled: memberDatas?.isUse,
       authCode: memberDatas?.roleCode,
@@ -215,8 +222,11 @@ export function EditModal({
     if (member.id) {
       setValue('id', member.id);
     }
-    if (member.authority) {
-      setValue('authority', member.authority);
+    if (member.authorityCode) {
+      setValue('authorityCode', member.authorityCode);
+    }
+    if (member.authorityName) {
+      setValue('authorityName', member.authorityName);
     }
     if (member.comment) {
       setValue('comment', member.comment);
@@ -227,7 +237,8 @@ export function EditModal({
   }, [
     member.name,
     member.id,
-    member.authority,
+    member.authorityCode,
+    member.authorityName,
     member.comment,
     member.enabled,
     setValue,
@@ -324,7 +335,6 @@ export function EditModal({
             </InputWrapper>
             <InputWrapper>
               <Label width="130px" fontSize="15px" value="* 권한" />
-
               <Controller
                 control={control}
                 name="authority"
@@ -334,10 +344,11 @@ export function EditModal({
                       width="100%"
                       heightScroll="150px"
                       padding="5px 0px 0px 0px"
-                      defaultValue={member.authority}
+                      defaultValue={member.authorityName}
                       setSelectedValue={setAuthorityCode}
                       setSelectedCode={setSelectedCode}
                       options={authorityList}
+                      isnormalizedOptions
                     />
                   </SelectWrapper>
                 )}

@@ -14,7 +14,6 @@ import { COLOR } from '../../constants';
 import { WorkbookMathViewer } from '../../mathViewer';
 
 type AccordionProps = {
-  onClick: () => void;
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
   title?: string;
@@ -32,7 +31,6 @@ type AccordionProps = {
 };
 
 function Accordion({
-  onClick,
   title,
   quizNum,
   children,
@@ -133,13 +131,18 @@ function Accordion({
 }
 
 type MathviewerCardProps = {
-  onClick: () => void;
-  reportQuizitem?: () => void;
+  onClick: (code: string, order: number, idx: number) => void;
+  reportQuizitem?: (idx: number) => void;
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
-  deleteQuizItem?: () => void;
+  deleteQuizItem?: (code: string, type: string) => void;
   clickSwapQuizItem?: () => void;
-  favoriteQuizItem?: (e: any) => void;
+  favoriteQuizItem?: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    idx: number,
+    isFavorite: boolean,
+    type: string,
+  ) => void;
   isFavorite?: boolean;
   isSimilar?: boolean;
   isBorder?: boolean;
@@ -165,6 +168,8 @@ type MathviewerCardProps = {
   code: string;
   itemIndex: number;
   quotientOption: { code: string; idx: number; name: string; value: number }[];
+  initialItems: QuizList[];
+  setInitialItems: React.Dispatch<React.SetStateAction<QuizList[]>>;
 };
 
 export function MathviewerAccordionStep2({
@@ -200,6 +205,8 @@ export function MathviewerAccordionStep2({
   code,
   itemIndex,
   quotientOption,
+  initialItems,
+  setInitialItems,
 }: MathviewerCardProps) {
   const [didMount, setDidMount] = useState(false);
   const [isRemainderContent, setIsRemainderContent] = useState(false);
@@ -207,101 +214,143 @@ export function MathviewerAccordionStep2({
   const [quotientAddOne, setQuotientAddOne] = useState<number>();
   const [contentNumQuotient, setContentNumQuotient] =
     useRecoilState<ContentWithScore[]>(contentQuotient);
-  //console.log('quizNum', quizNum);
-  //console.log('index', index);
-  //console.log('data', data);
-  //console.log('contentNumQuotient', contentNumQuotient);
-  //console.log('quotient', quotient);
 
   //문항 삭제 추가 될때마다 총점 변경
-  const totalEqualScore = useMemo(() => {
-    const total = contentNumQuotient.reduce((acc, el) => acc + el.score, 0);
-    return isNaN(total) ? 0 : total;
-  }, [contentNumQuotient, deleteQuizItem, addQuizItem, clickSwapQuizItem]);
+  // const totalEqualScore = useMemo(() => {
+  //   const total = contentNumQuotient.reduce((acc, el) => acc + el.score, 0);
+  //   return isNaN(total) ? 0 : total;
+  // }, [contentNumQuotient, deleteQuizItem, addQuizItem, clickSwapQuizItem]);
 
-  useEffect(() => {
-    if (setTotalEqualScore) {
-      setTotalEqualScore(totalEqualScore);
-    }
-  }, [contentNumQuotient, totalEqualScore]);
+  // useEffect(() => {
+  //   if (setTotalEqualScore) {
+  //     setTotalEqualScore(totalEqualScore);
+  //   }
+  // }, [contentNumQuotient, totalEqualScore]);
 
-  useEffect(() => {
-    if (quotient !== undefined) {
-      setQuotientAddOne(quotient + 1);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (quotient !== undefined) {
+  //     setQuotientAddOne(quotient + 1);
+  //   }
+  // }, []);
 
   const [selectedValue, setSelectedValue] = useState<number>();
   const [selectedQuizNum, setSelectedQuizNum] = useState<number>();
-  useEffect(() => {
-    if (selectedValue === undefined) {
-      return; // selectedValue가 undefined일 경우 아무 작업도 수행하지 않음
-    }
+  const [selectedQuizCode, setSelectedQuizCode] = useState<string>();
 
-    const updatedData = contentNumQuotient.map((item) => {
-      if (item.num === selectedQuizNum) {
-        return { ...item, score: selectedValue as number };
-      }
-      return item;
-    });
-    setContentNumQuotient(updatedData);
-  }, [selectedValue]);
+  useEffect(() => {
+    if (selectedQuizCode !== undefined && selectedValue !== undefined) {
+      // updatedItems를 순회해서 조건에 맞는 항목 수정
+      const newItems = initialItems.map((item) => ({
+        ...item,
+        quizItemList: item.quizItemList.map((el) =>
+          el.code === selectedQuizCode
+            ? { ...el, score: selectedValue } // 조건에 맞는 항목의 score 업데이트
+            : el,
+        ),
+      }));
+
+      setInitialItems(newItems); // 상태 업데이트
+      // score의 합계 계산
+      const totalScore = newItems.reduce((total, item) => {
+        const quizScoreSum = item.quizItemList.reduce((sum, el) => {
+          return sum + (Number(el.score) || 0); // score를 숫자로 변환해서 합산
+        }, 0);
+        return total + quizScoreSum;
+      }, 0);
+
+      // score 합계를 상태에 업데이트
+      setTotalEqualScore && setTotalEqualScore(totalScore);
+    }
+  }, [selectedQuizCode, selectedValue]);
+
+  // useEffect(() => {
+  //   if (selectedValue === undefined) {
+  //     return; // selectedValue가 undefined일 경우 아무 작업도 수행하지 않음
+  //   }
+
+  //   const updatedData = contentNumQuotient.map((item) => {
+  //     if (item.num === selectedQuizNum) {
+  //       return { ...item, score: selectedValue as number };
+  //     }
+  //     return item;
+  //   });
+  //   console.log('updatedData', updatedData);
+  //   setContentNumQuotient(updatedData);
+  // }, [selectedValue]);
 
   useEffect(() => {
     setDidMount(true);
   }, []);
 
-  useEffect(() => {
-    if (didMount) {
-      const isQuizNumExists = contentNumQuotient.some(
-        (item) => item.code === code,
-      );
+  //최초 문항이 추가
+  // useEffect(() => {
+  //   if (didMount) {
+  //     const isQuizNumExists = contentNumQuotient.some(
+  //       (item) => item.code === code,
+  //     );
 
-      const newData: ContentWithScore = {
-        index: index,
-        num: quizNum as number,
-        score: isRemainderContent
-          ? (quotient as number)
-          : isNextRemainderContent
-            ? (quotientAddOne as number)
-            : (quotient as number),
-        code: data.code,
-      };
+  //     const newData: ContentWithScore = {
+  //       index: index,
+  //       num: quizNum as number,
+  //       score: isRemainderContent
+  //         ? (quotient as number)
+  //         : isNextRemainderContent
+  //           ? (quotientAddOne as number)
+  //           : (quotient as number),
+  //       code: data.code,
+  //     };
 
-      if (!isQuizNumExists) {
-        // 기존에 없는 경우, 새로운 데이터 추가
-        setContentNumQuotient((prevData) => [...prevData, newData]);
-      }
-    }
-  }, [didMount]);
+  //     if (!isQuizNumExists) {
+  //       // 기존에 없는 경우, 새로운 데이터 추가
+  //       setContentNumQuotient((prevData) => [...prevData, newData]);
+  //     }
+  //   }
+  // }, [didMount]);
 
-  useEffect(() => {
-    if (
-      quizNum !== undefined &&
-      remainderContent !== undefined &&
-      nextRemainderContent !== undefined
-    ) {
-      setIsRemainderContent(quizNum <= remainderContent);
-      setIsNextRemainderContent(quizNum >= nextRemainderContent);
-    }
-  }, [quizNum, remainderContent, nextRemainderContent]);
+  // useEffect(() => {
+  //   if (
+  //     quizNum !== undefined &&
+  //     remainderContent !== undefined &&
+  //     nextRemainderContent !== undefined
+  //   ) {
+  //     setIsRemainderContent(quizNum <= remainderContent);
+  //     setIsNextRemainderContent(quizNum >= nextRemainderContent);
+  //   }
+  // }, [quizNum, remainderContent, nextRemainderContent]);
+  //console.log('contentNumQuotient', contentNumQuotient);
 
-  const getDefaultValue = () => {
-    const matchedItem = contentNumQuotient.find((item) => item.num === quizNum);
-    if (matchedItem) {
-      return `${matchedItem.score}점`;
-    } else if (isRemainderContent) {
-      return `${quotient?.toString()}점`;
-    } else if (isNextRemainderContent) {
-      return `${quotientAddOne?.toString()}점`;
-    } else {
-      return undefined;
-    }
-  };
+  // const getDefaultValue = () => {
+  //   const matchedItem = contentNumQuotient.find((item) => item.num === quizNum);
+  //   if (matchedItem) {
+  //     return `${matchedItem.score}점`;
+  //   } else if (isRemainderContent) {
+  //     return `${quotient?.toString()}점`;
+  //   } else if (isNextRemainderContent) {
+  //     return `${quotientAddOne?.toString()}점`;
+  //   } else {
+  //     return undefined;
+  //   }
+  // };
+
+  // const getDefaultValue = () => {
+  //   // initialItems 배열에서 각 항목을 순회
+  //   for (const item of initialItems) {
+  //     // quizItemList 배열에서 QUESTION 항목을 필터링하고 num 값 비교
+  //     const matchedQuiz = item.quizItemList.find(
+  //       (quiz) => quiz.type === 'QUESTION' && quiz.num === quizNum,
+  //     );
+  //     console.log('matchedQuiz', matchedQuiz);
+  //     // 조건에 맞는 항목이 존재하면 해당 score 반환
+  //     if (matchedQuiz) {
+  //       return `${matchedQuiz.score}점`;
+  //     }
+  //   }
+  //   // 조건에 맞는 항목이 없으면 undefined 반환
+  //   return undefined;
+  // };
 
   return (
     <Accordion
-      onClick={onClick}
       changeQuizitem={changeQuizitem}
       addQuizItem={addQuizItem}
       title={title}
@@ -317,7 +366,7 @@ export function MathviewerAccordionStep2({
       isNewQuiz={isNewQuiz}
     >
       <Component className={className} $componentHeight={componentHeight}>
-        <div className="leftInfomation">
+        {/* <div className="leftInfomation">
           {isFavorite ? (
             <Icon
               width={`18px`}
@@ -348,7 +397,7 @@ export function MathviewerAccordionStep2({
                 onClick={() => setSelectedQuizNum(quizNum as number)}
               ></Select>
             )}
-        </div>
+        </div> */}
         <WorkbookMathViewer
           data={data}
           width={width}
@@ -361,8 +410,29 @@ export function MathviewerAccordionStep2({
                   ? '문제+정답+해설'
                   : '문제만'
           }
+          isFavorite={isFavorite}
+          favoriteQuizItem={favoriteQuizItem}
+          category={category}
+          isSimilarQuiz={isSimilarQuiz}
+          quotient={quotient}
+          equalScore={equalScore}
+          quotientOption={quotientOption}
+          //getDefaultValue={getDefaultValue}
+          setSelectedValue={setSelectedValue}
+          setSelectedQuizNum={setSelectedQuizNum}
+          quizNum={quizNum}
+          isNewQuiz={isNewQuiz}
+          index={index}
+          selectedCardIndex={selectedCardIndex}
+          isSimilar={isSimilar}
+          onClick={onClick}
+          reportQuizitem={reportQuizitem}
+          onSelectCard={onSelectCard}
+          deleteQuizItem={deleteQuizItem}
+          code={code}
+          setSelectedQuizCode={setSelectedQuizCode}
         ></WorkbookMathViewer>
-        {isNewQuiz ? (
+        {/* {isNewQuiz ? (
           <ButtonWrapper>
             <div className="menuIcon">
               <LuSiren
@@ -428,7 +498,7 @@ export function MathviewerAccordionStep2({
               />
             </div>
           </ButtonWrapper>
-        )}
+        )} */}
       </Component>
     </Accordion>
   );

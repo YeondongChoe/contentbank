@@ -85,11 +85,16 @@ export function ChangePassword({
   // 최초 로그인 패스워드 변경 api
   const { data: passwordDataInit, mutate: changePasswordInit } = useMutation({
     mutationFn: patchPasswordInit,
-    onError: (context: { response: { data: { message: string } } }) => {
+    onError: (context: {
+      response: { data: { message: string; code: string } };
+    }) => {
       openToastifyAlert({
         type: 'error',
         text: context.response.data.message,
       });
+      if (context.response.data.code == 'GE-002') {
+        postRefreshToken();
+      }
     },
     onSuccess: (response: { data: { message: string } }) => {
       console.log('passwordDataInit', response);
@@ -105,6 +110,13 @@ export function ChangePassword({
     },
   });
 
+  // useEffect(() => {
+  //   if (passwordDataInit && getAuthorityCookie('accessToken')) {
+  //     console.log('getAuthorityCookie', getAuthorityCookie('accessToken'));
+  //     console.log('passwordDataInit', passwordDataInit);
+  //     navigate(`/content-create/quiz`);
+  //   }
+  // }, []);
   const submitPasswordInit = (password: string) => {
     const auth = { code: code, password: password, passwordConfirm: password };
     changePasswordInit(auth);

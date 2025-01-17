@@ -14,6 +14,7 @@ type AlertProps = {
   isAlertOpen: boolean;
   isWarning?: boolean;
   top?: string;
+  bold?: string;
 };
 
 export function Alert({
@@ -26,6 +27,7 @@ export function Alert({
   isAlertOpen,
   isWarning,
   top,
+  bold,
 }: AlertProps) {
   return (
     <>
@@ -48,7 +50,7 @@ export function Alert({
                 </svg>
               )}
               <DescriptionWrapper>
-                <Description>{description}</Description>
+                <Description bold={bold}>{description}</Description>
                 <Description>{subDescription}</Description>
               </DescriptionWrapper>
             </AlertWrapper>
@@ -110,7 +112,7 @@ const Overlay = styled.div<{ $top?: string }>`
   top: ${({ $top }) => ($top ? `${$top};` : '0px')};
   left: 0;
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   display: flex;
   justify-content: center;
   z-index: 2;
@@ -122,7 +124,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 450px;
-  height: 150px;
+  /* height: 150px; */
   border: 1px solid gray;
   background-color: white;
   border-radius: 10px;
@@ -140,7 +142,8 @@ const DescriptionWrapper = styled.div`
   display: flex;
   flex-direction: column;
 `;
-const Description = styled.div`
+const Description = styled.div<{ bold?: string }>`
+  font-weight: ${({ bold }) => (bold ? `${bold};` : '300')};
   display: flex;
   //justify-content: center;
   font-size: 16px;

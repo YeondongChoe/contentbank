@@ -11,13 +11,7 @@ import { styled } from 'styled-components';
 import { WorkbookMathViewer } from '../../../components/mathViewer';
 import { contentQuotient } from '../../../store/utilAtom';
 import { ItemQuestionType } from '../../../types/ItemQuestionType';
-import {
-  ContentWithScore,
-  QuizList,
-  LastArticle,
-  QuizItemList,
-  QuizCategoryList,
-} from '../../../types/WorkbookType';
+import { ContentWithScore, QuizList } from '../../../types/WorkbookType';
 import { Button, Select, CheckBoxI, Icon } from '../../atom';
 import { COLOR } from '../../constants';
 import { MathViewer } from '../../mathViewer/MathViewer';
@@ -141,11 +135,16 @@ function Accordion({
 
 type MathviewerCardProps = {
   onClick: () => void;
-  reportQuizitem?: () => void;
+  reportQuizitem?: (idx: number) => void;
   changeQuizitem?: () => void;
   addQuizItem?: () => void;
   deleteQuizItem?: () => void;
-  favoriteQuizItem?: (e: any) => void;
+  favoriteQuizItem?: (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    idx: number,
+    isFavorite: boolean,
+    type: string,
+  ) => void;
   isFavorite?: boolean;
   isSimilar?: boolean;
   isBorder?: boolean;
@@ -207,7 +206,7 @@ export function MathviewerAccordion({
       isNewQuiz={isNewQuiz}
     >
       <Component className={className} $componentHeight={componentHeight}>
-        <div className="leftInfomation">
+        {/* <div className="leftInfomation">
           {isFavorite ? (
             <Icon
               width={`18px`}
@@ -225,7 +224,7 @@ export function MathviewerAccordion({
           )}
           <div>{category?.난이도 || 'N/A'}</div>
           <div>{category?.문항타입 || 'N/A'}</div>
-        </div>
+        </div> */}
         <WorkbookMathViewer
           data={data}
           width={width}
@@ -238,8 +237,11 @@ export function MathviewerAccordion({
                   ? '문제+정답+해설'
                   : '문제만'
           }
+          isNewQuiz={isNewQuiz}
+          reportQuizitem={reportQuizitem}
+          favoriteQuizItem={favoriteQuizItem}
         ></WorkbookMathViewer>
-        {isNewQuiz ? (
+        {/* {isNewQuiz ? (
           <ButtonWrapper>
             <div className="menuIcon">
               <LuSiren
@@ -305,7 +307,7 @@ export function MathviewerAccordion({
               />
             </div>
           </ButtonWrapper>
-        )}
+        )} */}
       </Component>
     </Accordion>
   );
