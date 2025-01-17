@@ -59,7 +59,8 @@ interface ItemTreeIdxListType {
 type UnitClassificationType =
   | RadioStateType
   | ItemTreeIdxListType
-  | RadioStateType[];
+  | RadioStateType[]
+  | CategoryType;
 
 export type CategoryType = {
   category: {
@@ -591,7 +592,7 @@ export function Step1() {
   };
 
   //선택한 유형 확인
-  const [selectedItemTreeCount, setSelectedItemTreeCount] = useState<number[]>(
+  const [selectedItemTreeCount, setSelectedItemTreeCount] = useState<string[]>(
     [],
   );
 
@@ -641,7 +642,7 @@ export function Step1() {
 
   // step1 선택된 문항 불러오기 api
   const postWorkbookStep1 = async (data: any) => {
-    return await quizService.post(`/v1/search/quiz/step/1`, data);
+    return await quizService.post(`/v2/search/quiz/step/1`, data);
   };
 
   const { mutate: postStep1Data, isPending: postStep1Pending } = useMutation({
@@ -782,16 +783,13 @@ export function Step1() {
     return (item as RadioStateType).title !== undefined;
   };
 
-  // v1버전
   //useMemo를 사용하여 makingdata값을 기억하며 unitClassificationList가 변경될때 업데이트
   const makingdata = useMemo(() => {
     return unitClassificationList.map((item) => {
-      console.log('unitClassificationList', unitClassificationList);
       // itemTreeKey를 동적으로 생성
       const itemTreeKey = item.reduce(
         (acc, cur, index) => {
           if (isRadioStateType(cur)) {
-            console.log('cur', cur);
             // RadioStateType인 경우에만 code를 사용
             const code = cur.code || `key_${index}`; // `code`가 없을 경우 기본 키 사용
             acc[code] = cur.title;
@@ -800,32 +798,73 @@ export function Step1() {
         },
         {} as Record<string, string>,
       );
-      console.log('itemTreeKey', itemTreeKey);
 
-      // ItemTreeIdxListType인지 확인 후 itemTreeIdxList에 접근
+      //동적인 itemTreeKey으로 key, value로 만들기
+      const dynamicFields = Object.entries(itemTreeKey).reduce(
+        (acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
+
+      // unitClassificationList의 마지막 항목이 CategoryType인지 확인 후 접근
       const lastItem = item[item.length - 1];
-      const itemTreeIdxList =
-        (lastItem as ItemTreeIdxListType)?.itemTreeIdxList || [];
+      const category = (lastItem as CategoryType)?.category || [];
 
       return {
-        itemTreeKey,
-        itemTreeIdxList,
+        category,
+        ...dynamicFields,
       };
     });
   }, [unitClassificationList]);
 
+  // useEffect(() => {
+  //   const allItemTreeIdxList = makingdata.flatMap((data) => data.category);
+  //   //setSelectedItemTreeCount(allItemTreeIdxList);
+  // }, [makingdata]);
+
+  //선택한 유형을 한 배열로 관리해서 길이를 확인
   useEffect(() => {
-    const allItemTreeIdxList = makingdata.flatMap(
-      (data) => data.itemTreeIdxList,
-    );
+    const allItemTreeIdxList = makingdata.flatMap((data) => {
+      const categories = data.category;
+      // 모든 항목에 있는 배열을 평탄화하여 하나의 배열로 만듦
+      return [
+        ...categories['대분류'],
+        ...categories['중분류'],
+        ...categories['소분류'],
+        ...categories['유형'],
+        ...categories['세분류'],
+        ...categories['미분류'],
+      ];
+    });
+
+    //allItemTreeIdxList는 모든 string 값들이 평탄화된 배열
+    //console.log(allItemTreeIdxList);
     setSelectedItemTreeCount(allItemTreeIdxList);
   }, [makingdata]);
 
-  //v2버전
-
   const clickNextButton = () => {
     const data = {
-      itemTreeKeyList: tabView === '단원·유형별' ? makingdata : null,
+      //itemTreeList: tabView === '단원·유형별' ? makingdata : null,
+      itemTreeList: [
+        {
+          category: {
+            대분류: ['1. 자연수의 혼합 계산'],
+            중분류: ['1. 자연수의 혼합 계산'],
+            소분류: [],
+            유형: [],
+            세분류: [],
+            미분류: [],
+          },
+          교육과정: '2015 개정',
+          학교급: '초',
+          학년: '초5',
+          교과: '수학',
+          과목: 'OL_교과수학',
+          학기: '1학기',
+        },
+      ],
       count:
         tabView === '시중교재' || tabView === '기출'
           ? Number(questionNum) * Number(includeQuizList.length) ||
