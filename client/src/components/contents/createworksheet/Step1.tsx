@@ -846,25 +846,25 @@ export function Step1() {
 
   const clickNextButton = () => {
     const data = {
-      //itemTreeList: tabView === '단원·유형별' ? makingdata : null,
-      itemTreeList: [
-        {
-          category: {
-            대분류: ['1. 자연수의 혼합 계산'],
-            중분류: ['1. 자연수의 혼합 계산'],
-            소분류: [],
-            유형: [],
-            세분류: [],
-            미분류: [],
-          },
-          교육과정: '2015 개정',
-          학교급: '초',
-          학년: '초5',
-          교과: '수학',
-          과목: 'OL_교과수학',
-          학기: '1학기',
-        },
-      ],
+      itemTreeList: tabView === '단원·유형별' ? makingdata : null,
+      // itemTreeList: [
+      //   {
+      //     category: {
+      //       대분류: ['1. 자연수의 혼합 계산'],
+      //       중분류: ['1. 자연수의 혼합 계산'],
+      //       소분류: [],
+      //       유형: [],
+      //       세분류: [],
+      //       미분류: [],
+      //     },
+      //     교육과정: '2015 개정',
+      //     학교급: '초',
+      //     학년: '초5',
+      //     교과: '수학',
+      //     과목: 'OL_교과수학',
+      //     학기: '1학기',
+      //   },
+      // ],
       count:
         tabView === '시중교재' || tabView === '기출'
           ? Number(questionNum) * Number(includeQuizList.length) ||

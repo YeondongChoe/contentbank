@@ -896,9 +896,9 @@ export function Authority() {
     setCheckList([...defaultPermissions]);
   }, []);
 
-  useEffect(() => {
-    console.log('checkList', checkList);
-  }, [checkList, setCheckList]);
+  // useEffect(() => {
+  //   console.log('checkList', checkList);
+  // }, [checkList, setCheckList]);
 
   const openUpdateAlert = () => {
     setIsAlertOpen(true);
