@@ -88,6 +88,7 @@ export function ContentList({
   const [checkList, setCheckList] = useState<number[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isDeleteAlert, setIsDeleteAlert] = useState(false);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
   const [sortedList, setSortedList] = useState<QuizListType[]>([]);
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
@@ -345,10 +346,27 @@ export function ContentList({
     },
   });
 
+  const openDeleteAlert = () => {
+    setIsDeleteAlert(true);
+  };
+  const closeDeleteAlert = () => {
+    setIsDeleteAlert(false);
+  };
+
   const submitDelete = () => {
     // 선택된 리스트데이터 string값으로 변경
     const idxList = checkList.join(',');
-    mutateDeleteProcess(idxList);
+    const filterList = questionList.filter((list) =>
+      checkList.includes(list.idx),
+    );
+    const checkProcessState = filterList.some(
+      (list) => list?.process?.state === 'COMPLETE',
+    );
+    if (checkProcessState) {
+      openDeleteAlert();
+    } else {
+      mutateDeleteProcess(idxList);
+    }
   };
 
   // 프로세스 생성 요청 api
@@ -850,6 +868,16 @@ export function ContentList({
         <ValueNoneWrapper>
           <ValueNone />
         </ValueNoneWrapper>
+      )}
+      {isDeleteAlert && (
+        <Alert
+          isAlertOpen={isDeleteAlert}
+          description="검수완료된 문항이 포함되어 있습니다 취소 요청 하시겠습니까?"
+          action="확인"
+          isWarning={true}
+          onClose={closeDeleteAlert}
+          onClick={submitDelete}
+        />
       )}
 
       {usedToggle == '비활성화' && (
