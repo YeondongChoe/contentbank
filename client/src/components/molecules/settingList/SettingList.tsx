@@ -42,18 +42,14 @@ export function SettingList({
           {list
             ?.slice()
             .sort((a, b) => a.idx - b.idx)
-            .map((item: any) => {
+            .map((item: any, i) => {
               const formattedDate = item.lastModifiedAt
                 .split(' ')[0]
                 .replace(/-/g, '.');
               return (
-                <ListItem
-                  height="80px"
-                  key={`${item.tag}-${item.name}`}
-                  isChecked={false}
-                >
+                <ListItem height="80px" key={item.url} isChecked={false}>
                   <ItemLayout>
-                    <span className="width_5">{item.idx}</span>
+                    <span className="width_5">{i + 1}</span>
                     <i className="line"></i>
                     <span className="width_10">{item.name}</span>
                     <i className="line"></i>

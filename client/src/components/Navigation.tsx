@@ -57,7 +57,7 @@ export function Navigation() {
       const res = await userInstance.get(`/v1/company/access/${codeValue}`);
       return res;
     } catch (error: any) {
-      if (error.response?.data?.code === 'GE-002') {
+      if (error.data?.code === 'GE-002') {
         // 토큰 만료 에러 코드 확인 후 토큰 갱신
         await postRefreshToken();
         // 토큰 갱신 후 다시 API 호출
@@ -66,10 +66,16 @@ export function Navigation() {
         );
         return retryRes;
       } else {
+        console.log('메뉴 리프레시토큰 요청 못함');
         throw error; // 다른 에러는 그대로 throw
       }
     }
   };
+  // const getAccessMenu = async () => {
+  //   const res = await userInstance.get(`/v1/company/access/${codeValue}`);
+  //   console.log(`getAccessMenu 결과값`, res);
+  //   return res;
+  // };
 
   const { data: companyAccessMenuData, refetch: companyAccessMenuRefetch } =
     useQuery({
