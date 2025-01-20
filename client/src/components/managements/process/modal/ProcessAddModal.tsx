@@ -169,12 +169,18 @@ export function ProcessAddModal({
               });
               return process; // 원래 데이터를 그대로 반환
             }
-
+            console.log('stepName', stepName);
+            console.log('process.workers.length', process.workers.length);
+            console.log(
+              'selectedworkerAccountList.length',
+              selectedworkerAccountList.length,
+            );
             if (
-              stepName === 'EDITING' &&
-              (process.workers.length > 1 ||
-                (process.workers.length === 0 &&
-                  selectedworkerAccountList.length > 1) ||
+              (stepName === 'EDITING' &&
+                process.workers.length === 1 &&
+                selectedworkerAccountList.length >= 1) ||
+              (stepName === 'EDITING' &&
+                process.workers.length === 0 &&
                 selectedworkerAccountList.length > 1)
             ) {
               openToastifyAlert({
@@ -244,10 +250,11 @@ export function ProcessAddModal({
           }
 
           if (
-            stepName === 'EDITING' &&
-            (process.workers.length > 1 ||
-              (process.workers.length === 0 &&
-                selectedworkerAccountList.length > 1) ||
+            (stepName === 'EDITING' &&
+              process.workers.length === 1 &&
+              selectedworkerAccountList.length >= 1) ||
+            (stepName === 'EDITING' &&
+              process.workers.length === 0 &&
               selectedworkerAccountList.length > 1)
           ) {
             openToastifyAlert({
@@ -316,11 +323,12 @@ export function ProcessAddModal({
             }
 
             if (
-              stepName === 'EDITING' &&
-              (process.workers.length > 1 ||
-                (process.workers.length === 0 &&
-                  selectedworkerAuthorityList.length > 1) ||
-                selectedworkerAuthorityList.length > 1)
+              (stepName === 'EDITING' &&
+                process.workers.length === 1 &&
+                selectedworkerAccountList.length >= 1) ||
+              (stepName === 'EDITING' &&
+                process.workers.length === 0 &&
+                selectedworkerAccountList.length > 1)
             ) {
               openToastifyAlert({
                 type: 'error',
@@ -389,11 +397,12 @@ export function ProcessAddModal({
           }
 
           if (
-            stepName === 'EDITING' &&
-            (process.workers.length > 1 ||
-              (process.workers.length === 0 &&
-                selectedworkerAuthorityList.length > 1) ||
-              selectedworkerAuthorityList.length > 1)
+            (stepName === 'EDITING' &&
+              process.workers.length === 1 &&
+              selectedworkerAccountList.length >= 1) ||
+            (stepName === 'EDITING' &&
+              process.workers.length === 0 &&
+              selectedworkerAccountList.length > 1)
           ) {
             openToastifyAlert({
               type: 'error',
