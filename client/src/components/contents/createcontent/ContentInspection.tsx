@@ -167,7 +167,7 @@ export function ContentInspection({
       <ContentsWrapper>
         <ContentListWrapper>
           <Title>문항 데이터</Title>
-          {/* <ContentList>
+          <ContentList>
             {dataFetched && (
               <>
                 <InspectionList
@@ -180,7 +180,7 @@ export function ContentInspection({
               </>
             )}
             {!dataFetched && <Loader />}
-          </ContentList> */}
+          </ContentList>
         </ContentListWrapper>
 
         <ContentListWrapper>
