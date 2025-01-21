@@ -48,7 +48,6 @@ export function QuizReportList({
 }: QuizReportListProps) {
   const { openModal } = useModal();
   const [page, setPage] = useRecoilState(pageAtom);
-  console.log(list);
 
   //신고리스트 처리완료 버튼
   const openReportProcess = (idx: number) => {

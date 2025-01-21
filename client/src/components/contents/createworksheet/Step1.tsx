@@ -59,7 +59,31 @@ interface ItemTreeIdxListType {
 type UnitClassificationType =
   | RadioStateType
   | ItemTreeIdxListType
-  | RadioStateType[];
+  | RadioStateType[]
+  | CategoryType;
+
+export type CategoryType = {
+  category: {
+    대분류: string[];
+    중분류: string[];
+    소분류: string[];
+    유형: string[];
+    세분류: string[];
+    미분류: string[];
+  };
+};
+
+type NewClassificationType = {
+  itemTreeList: {
+    categoty: CategoryType[];
+    교육과정: string;
+    학기: string;
+    학교급: string;
+    과목: string;
+    교과: string;
+    학년: string;
+  }[];
+};
 
 export function Step1() {
   const menuList = [
@@ -87,6 +111,19 @@ export function Step1() {
   const [unitClassificationList, setUnitClassificationList] = useState<
     UnitClassificationType[][]
   >([]);
+  const [newClassificationList, setNewClassificationList] = useState<
+    NewClassificationType[]
+  >([]);
+  const [unitCategory, setUnitCategory] = useState<CategoryType>({
+    category: {
+      대분류: [],
+      중분류: [],
+      소분류: [],
+      유형: [],
+      세분류: [],
+      미분류: [],
+    },
+  });
   //세분류 리스트
   const [checkedDepthList, setCheckedDepthList] = useState<number[]>([]);
   //단원.유형별 세분류 검색색
@@ -555,7 +592,7 @@ export function Step1() {
   };
 
   //선택한 유형 확인
-  const [selectedItemTreeCount, setSelectedItemTreeCount] = useState<number[]>(
+  const [selectedItemTreeCount, setSelectedItemTreeCount] = useState<string[]>(
     [],
   );
 
@@ -605,7 +642,7 @@ export function Step1() {
 
   // step1 선택된 문항 불러오기 api
   const postWorkbookStep1 = async (data: any) => {
-    return await quizService.post(`/v1/search/quiz/step/1`, data);
+    return await quizService.post(`/v2/search/quiz/step/1`, data);
   };
 
   const { mutate: postStep1Data, isPending: postStep1Pending } = useMutation({
@@ -762,28 +799,72 @@ export function Step1() {
         {} as Record<string, string>,
       );
 
-      // ItemTreeIdxListType인지 확인 후 itemTreeIdxList에 접근
+      //동적인 itemTreeKey으로 key, value로 만들기
+      const dynamicFields = Object.entries(itemTreeKey).reduce(
+        (acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        },
+        {} as Record<string, string>,
+      );
+
+      // unitClassificationList의 마지막 항목이 CategoryType인지 확인 후 접근
       const lastItem = item[item.length - 1];
-      const itemTreeIdxList =
-        (lastItem as ItemTreeIdxListType)?.itemTreeIdxList || [];
+      const category = (lastItem as CategoryType)?.category || [];
 
       return {
-        itemTreeKey,
-        itemTreeIdxList,
+        category,
+        ...dynamicFields,
       };
     });
   }, [unitClassificationList]);
 
+  // useEffect(() => {
+  //   const allItemTreeIdxList = makingdata.flatMap((data) => data.category);
+  //   //setSelectedItemTreeCount(allItemTreeIdxList);
+  // }, [makingdata]);
+
+  //선택한 유형을 한 배열로 관리해서 길이를 확인
   useEffect(() => {
-    const allItemTreeIdxList = makingdata.flatMap(
-      (data) => data.itemTreeIdxList,
-    );
+    const allItemTreeIdxList = makingdata.flatMap((data) => {
+      const categories = data.category;
+      // 모든 항목에 있는 배열을 평탄화하여 하나의 배열로 만듦
+      return [
+        ...categories['대분류'],
+        ...categories['중분류'],
+        ...categories['소분류'],
+        ...categories['유형'],
+        ...categories['세분류'],
+        ...categories['미분류'],
+      ];
+    });
+
+    //allItemTreeIdxList는 모든 string 값들이 평탄화된 배열
+    //console.log(allItemTreeIdxList);
     setSelectedItemTreeCount(allItemTreeIdxList);
   }, [makingdata]);
 
   const clickNextButton = () => {
     const data = {
-      itemTreeKeyList: tabView === '단원·유형별' ? makingdata : null,
+      itemTreeList: tabView === '단원·유형별' ? makingdata : null,
+      // itemTreeList: [
+      //   {
+      //     category: {
+      //       대분류: ['1. 자연수의 혼합 계산'],
+      //       중분류: ['1. 자연수의 혼합 계산'],
+      //       소분류: [],
+      //       유형: [],
+      //       세분류: [],
+      //       미분류: [],
+      //     },
+      //     교육과정: '2015 개정',
+      //     학교급: '초',
+      //     학년: '초5',
+      //     교과: '수학',
+      //     과목: 'OL_교과수학',
+      //     학기: '1학기',
+      //   },
+      // ],
       count:
         tabView === '시중교재' || tabView === '기출'
           ? Number(questionNum) * Number(includeQuizList.length) ||
@@ -1191,6 +1272,8 @@ export function Step1() {
                 searchValue={searchValue}
                 setSearchValue={setSearchValue}
                 postPending={postStep1Pending}
+                unitCategory={unitCategory}
+                setUnitCategory={setUnitCategory}
               ></UnitTypeTab>
               <SelectSection
                 tabView={tabView}

@@ -31,6 +31,8 @@ import { selectedListType } from '../../../types/WorkbookType';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants';
 
+import { CategoryType } from './Step1';
+
 interface RadioStateType {
   title: string;
   checkValue: number;
@@ -45,7 +47,8 @@ interface ItemTreeIdxListType {
 type UnitClassificationType =
   | RadioStateType
   | ItemTreeIdxListType
-  | RadioStateType[];
+  | RadioStateType[]
+  | CategoryType;
 
 type UnitTypeTabProps = {
   menuList: {
@@ -63,6 +66,8 @@ type UnitTypeTabProps = {
   searchValue: string;
   setSearchValue: React.Dispatch<React.SetStateAction<string>>;
   postPending: boolean;
+  unitCategory: CategoryType;
+  setUnitCategory: React.Dispatch<React.SetStateAction<CategoryType>>;
 };
 
 export function UnitTypeTab({
@@ -76,6 +81,8 @@ export function UnitTypeTab({
   searchValue,
   setSearchValue,
   postPending,
+  unitCategory,
+  setUnitCategory,
 }: UnitTypeTabProps) {
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
   const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
@@ -326,7 +333,7 @@ export function UnitTypeTab({
     );
 
     if (checkedDepthList.length > 0) {
-      newClassification.splice(6, 0, { itemTreeIdxList: checkedDepthList });
+      newClassification.splice(6, 0, { ...unitCategory });
     }
 
     if (unitClassificationList.length < 6) {
@@ -337,7 +344,6 @@ export function UnitTypeTab({
         text: '교과정보는 최대 5개 까지 저장 가능합니다',
       });
     }
-
     //저장 성공 후
     onResetList();
   };
@@ -369,6 +375,16 @@ export function UnitTypeTab({
     setCategoryList(resetCategoryList);
     setSelectedList(resetSelectedList);
     setCheckedDepthList([]);
+    setUnitCategory({
+      category: {
+        대분류: [],
+        중분류: [],
+        소분류: [],
+        유형: [],
+        세분류: [],
+        미분류: [],
+      },
+    });
   };
 
   // 수정
@@ -435,12 +451,19 @@ export function UnitTypeTab({
 
   // 교과정보 추가버튼 disable 처리
   const addButtonBool = useMemo(() => {
-    if (unitClassificationList.length < 5 && checkedDepthList.length > 0) {
+    if (
+      unitClassificationList.length < 5 &&
+      (unitCategory.category.대분류.length !== 0 ||
+        unitCategory.category.중분류.length !== 0 ||
+        unitCategory.category.소분류.length !== 0 ||
+        unitCategory.category.유형.length !== 0 ||
+        unitCategory.category.세분류.length !== 0)
+    ) {
       return false;
     } else {
       return true;
     }
-  }, [unitClassificationList, checkedDepthList]);
+  }, [unitClassificationList, unitCategory]);
 
   // 검색 기능
   const filterSearchValue = (
@@ -456,14 +479,19 @@ export function UnitTypeTab({
   };
 
   // 깊이가 있는 리스트 DepthBlock 체크박스
-  const handleSingleCheck = (checked: boolean, idx: number, level: number) => {
+  const handleSingleCheck = (
+    checked: boolean,
+    name: string,
+    idx: number,
+    level: number,
+  ) => {
     setCheckedDepthList((prev) => {
       let updatedList = checked
         ? [...prev, idx]
-        : prev.filter((item) => item !== idx);
+        : prev.filter((itemIdx) => itemIdx !== idx);
 
+      // 상위 요소 체크
       if (checked) {
-        // 상위 요소를 체크
         let currentItem = findItemByIdx(idx);
         while (currentItem && currentItem.parentIdx !== 0) {
           const parentItem = findItemByIdx(currentItem.parentIdx as number);
@@ -477,7 +505,7 @@ export function UnitTypeTab({
           }
         }
       } else {
-        // 하위 요소를 모두 체크 해제
+        // 하위 요소 체크 해제
         const removeDescendants = (currentIdx: number) => {
           const childItems = findChildItems(currentIdx);
           childItems.forEach((child) => {
@@ -491,6 +519,93 @@ export function UnitTypeTab({
       }
 
       return updatedList;
+    });
+
+    //추가적으로 UnitCategory 업데이트
+    setUnitCategory((prev) => {
+      const updatedCategory = { ...prev.category }; // 기존 카테고리 복사
+
+      // 대상 카테고리를 결정
+      const categoryKey =
+        level === 2
+          ? '대분류'
+          : level === 3
+            ? '중분류'
+            : level === 4
+              ? '소분류'
+              : level === 5
+                ? '유형'
+                : level === 6
+                  ? '세분류'
+                  : '미분류';
+
+      if (checked) {
+        // name 추가 (중복 방지)
+        if (!updatedCategory[categoryKey].includes(name)) {
+          updatedCategory[categoryKey].push(name);
+        }
+
+        // 상위 요소 추가
+        let currentItem = findItemByIdx(idx);
+        while (currentItem && currentItem.parentIdx !== 0) {
+          const parentItem = findItemByIdx(currentItem.parentIdx as number);
+          if (parentItem) {
+            const parentKey =
+              parentItem.level === 2
+                ? '대분류'
+                : parentItem.level === 3
+                  ? '중분류'
+                  : parentItem.level === 4
+                    ? '소분류'
+                    : parentItem.level === 5
+                      ? '유형'
+                      : parentItem.level === 6
+                        ? '세분류'
+                        : '미분류';
+
+            if (!updatedCategory[parentKey].includes(parentItem.name)) {
+              updatedCategory[parentKey].push(parentItem.name);
+            }
+            currentItem = parentItem;
+          } else {
+            break;
+          }
+        }
+      } else {
+        // name 제거
+        updatedCategory[categoryKey] = updatedCategory[categoryKey].filter(
+          (item) => item !== name,
+        );
+
+        // 하위 요소 제거
+        const removeDescendants = (currentIdx: number) => {
+          const childItems = findChildItems(currentIdx);
+          childItems.forEach((child) => {
+            const childKey =
+              child.level === 2
+                ? '대분류'
+                : child.level === 3
+                  ? '중분류'
+                  : child.level === 4
+                    ? '소분류'
+                    : child.level === 5
+                      ? '유형'
+                      : child.level === 6
+                        ? '세분류'
+                        : '미분류';
+
+            updatedCategory[childKey] = updatedCategory[childKey].filter(
+              (item) => item !== child.name,
+            );
+            removeDescendants(child.idx);
+          });
+        };
+        removeDescendants(idx);
+      }
+
+      return {
+        category: updatedCategory, // 업데이트된 카테고리 반환
+      };
     });
   };
   const findItemByIdx = (idx: number): ItemTreeType | undefined => {
@@ -703,15 +818,14 @@ export function UnitTypeTab({
                                           onChange={(e) =>
                                             handleSingleCheck(
                                               e.target.checked,
+                                              item?.name,
                                               item?.idx,
                                               item?.level,
                                             )
                                           }
-                                          checked={
-                                            checkedDepthList.includes(item?.idx)
-                                              ? true
-                                              : false
-                                          }
+                                          checked={checkedDepthList.includes(
+                                            item?.idx,
+                                          )}
                                           searchValue={searchValue}
                                         >
                                           <span>
@@ -742,15 +856,14 @@ export function UnitTypeTab({
                                           onChange={(e) =>
                                             handleSingleCheck(
                                               e.target.checked,
+                                              item?.name,
                                               item?.idx,
                                               item?.level,
                                             )
                                           }
-                                          checked={
-                                            checkedDepthList.includes(item?.idx)
-                                              ? true
-                                              : false
-                                          }
+                                          checked={checkedDepthList.includes(
+                                            item?.idx,
+                                          )}
                                           searchValue={searchValue}
                                         >
                                           <span>{item.name}</span>

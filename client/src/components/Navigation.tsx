@@ -57,7 +57,7 @@ export function Navigation() {
       const res = await userInstance.get(`/v1/company/access/${codeValue}`);
       return res;
     } catch (error: any) {
-      if (error.response?.data?.code === 'GE-002') {
+      if (error.data?.code === 'GE-002') {
         // 토큰 만료 에러 코드 확인 후 토큰 갱신
         await postRefreshToken();
         // 토큰 갱신 후 다시 API 호출
@@ -66,10 +66,16 @@ export function Navigation() {
         );
         return retryRes;
       } else {
+        console.log('메뉴 리프레시토큰 요청 못함');
         throw error; // 다른 에러는 그대로 throw
       }
     }
   };
+  // const getAccessMenu = async () => {
+  //   const res = await userInstance.get(`/v1/company/access/${codeValue}`);
+  //   console.log(`getAccessMenu 결과값`, res);
+  //   return res;
+  // };
 
   const { data: companyAccessMenuData, refetch: companyAccessMenuRefetch } =
     useQuery({
@@ -93,6 +99,7 @@ export function Navigation() {
 
   const moveMainpage = () => {
     navigate('/content-create/quiz');
+    setpageIndexValue(['콘텐츠 제작', '문항 제작']);
   };
 
   const clickLink = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -561,7 +568,7 @@ export function Navigation() {
                   {decodingInfo?.permissionList &&
                   decodingInfo?.permissionList?.LOM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/content-manage/classify'}>
+                      <Link to={'/preparing'}>
                         <MdManageHistory
                           style={{ width: '20px', height: '20px' }}
                         ></MdManageHistory>
@@ -570,7 +577,7 @@ export function Navigation() {
                     </button>
                   ) : (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/no-authrized'}>
+                      <Link to={'/preparing'}>
                         <MdManageHistory
                           style={{ width: '20px', height: '20px' }}
                         ></MdManageHistory>
@@ -589,7 +596,7 @@ export function Navigation() {
                   {decodingInfo?.permissionList &&
                   decodingInfo?.permissionList?.STM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/content-manage/classify'}>
+                      <Link to={'/preparing'}>
                         <VscGraph
                           style={{ width: '18px', height: '18px' }}
                         ></VscGraph>
@@ -598,7 +605,7 @@ export function Navigation() {
                     </button>
                   ) : (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/no-authrized'}>
+                      <Link to={'/preparing'}>
                         <VscGraph
                           style={{ width: '18px', height: '18px' }}
                         ></VscGraph>
@@ -613,7 +620,7 @@ export function Navigation() {
               {/* {accessMenuList.filter((menu) => menu.menuCode === '??')[0]
                 ?.isUse ? (
                   <button type="button" onClick={(e) => clickLink(e)}>
-                  <Link to={'/content-manage/classify'}>
+                  <Link to={'/preparing'}>
                     <TbReportMoney
                       style={{ width: '20px', height: '20px' }}
                     ></TbReportMoney>
@@ -1184,7 +1191,7 @@ export function Navigation() {
                   {decodingInfo?.permissionList &&
                   decodingInfo?.permissionList?.LOM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/content-manage/classify'}>
+                      <Link to={'/preparing'}>
                         <MdManageHistory
                           style={{
                             width: '20px',
@@ -1220,7 +1227,7 @@ export function Navigation() {
                   {decodingInfo?.permissionList &&
                   decodingInfo?.permissionList?.STM?.isManage ? (
                     <button type="button" onClick={(e) => clickLink(e)}>
-                      <Link to={'/content-manage/classify'}>
+                      <Link to={'/preparing'}>
                         <VscGraph
                           style={{
                             width: '18px',
@@ -1250,7 +1257,7 @@ export function Navigation() {
 
               {/* 정산 관리 */}
               {/* <button type="button" onClick={(e) => clickLink(e)}>
-                <Link to={'/content-manage/classify'}>
+                <Link to={'/preparing'}>
                   <TbReportMoney
                     style={{ width: '20px', height: '20px', stroke: 'white' }}
                   ></TbReportMoney>

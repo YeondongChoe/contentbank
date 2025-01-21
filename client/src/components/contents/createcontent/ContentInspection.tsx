@@ -418,7 +418,7 @@ export function ContentInspection({
                                             </span>
                                           ) : (
                                             <span className="tag">
-                                              {/* {worker.authority.code} */}
+                                              {worker.authority.name}
                                             </span>
                                           )}
                                         </button>
@@ -479,7 +479,7 @@ export function ContentInspection({
                                                 </span>
                                               ) : (
                                                 <span className="tag">
-                                                  {/* {worker.authority.code} */}
+                                                  {worker.authority.name}
                                                 </span>
                                               )}
                                             </>

@@ -270,7 +270,7 @@ export function Report() {
     <Container>
       <>
         <TitleWrapper>
-          <Title>신고문항</Title>
+          <Title>신고 문항</Title>
           {/* <Button
             height={'35px'}
             width={'150px'}
