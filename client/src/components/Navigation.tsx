@@ -54,12 +54,16 @@ export function Navigation() {
   //접근 메뉴 리스트 불러오기 api
   const getAccessMenu = async () => {
     try {
-      if (codeValue !== null) {
-        const res = await userInstance.get(`/v1/company/access/${codeValue}`);
-        return res;
-      } else {
-        console.log('기업코드가 없습니다');
-      }
+      // if (codeValue !== null) {
+      //   const res = await userInstance.get(`/v1/company/access/${codeValue}`);
+      //   console.log('res:', res);
+      //   return res;
+      // } else {
+      //   console.log('기업코드가 없습니다');
+      // }
+      const res = await userInstance.get(`/v1/company/access/${codeValue}`);
+      //console.log('res:', res);
+      return res;
     } catch (error: any) {
       if (error.data?.code === 'GE-002') {
         // 토큰 만료 에러 코드 확인 후 토큰 갱신
