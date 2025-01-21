@@ -22,7 +22,6 @@ import {
   setAuthorityCookie,
 } from '../../utils/cookies';
 import { postRefreshToken } from '../../utils/tokenHandler';
-
 export function Login() {
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('username') ? true : false,
@@ -96,7 +95,12 @@ export function Login() {
       const decodedToken = jwtDecode(accessToken);
       const companyCode = decodedToken?.companyCode; // JWT 페이로드에 companyCode가 포함된 경우
       if (companyCode) {
-        localStorage.setItem('companyCode', companyCode);
+        //기업코드 쿠키에 저장
+        setAuthorityCookie('companyCode', companyCode, {
+          path: '/',
+          sameSite: 'strict',
+          secure: false,
+        });
       }
 
       setAuthorityCookie('accessToken', response.data.data.accessToken, {

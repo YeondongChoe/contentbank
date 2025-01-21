@@ -239,6 +239,7 @@ export function WorkbookList({
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
   };
+  console.log('list', list);
 
   return (
     <>
@@ -332,10 +333,10 @@ export function WorkbookList({
       {list?.length > 0 ? (
         <ListWrapper ref={backgroundRef}>
           <List margin={`10px 0`}>
-            {list.map((item: WorksheetListType) => (
+            {list.map((item: WorksheetListType, i) => (
               <ListItem
                 height="90px"
-                key={item.code as string}
+                key={`${item.createdAt}_${item.code}_${i}_${item.name}`}
                 isChecked={checkList.includes(item.code)}
                 onClick={(e) => handleButtonCheck(e, item.code)}
               >
