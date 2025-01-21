@@ -84,9 +84,9 @@ export function Login() {
         };
       };
     }) => {
-      console.log('accessToken ----login', response.data.data.accessToken);
-      console.log('refreshToken ----login', response.data.data.refreshToken);
-      console.log('sessionId -----login', response.data.data.sessionId);
+      //console.log('accessToken ----login', response.data.data.accessToken);
+      //console.log('refreshToken ----login', response.data.data.refreshToken);
+      //console.log('sessionId -----login', response.data.data.sessionId);
 
       // JWT 디코딩하여 companyCode 추출
       const accessToken = response.data.data.accessToken;
