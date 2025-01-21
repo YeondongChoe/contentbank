@@ -14,7 +14,7 @@ import {
 } from 'react-icons/md';
 import { VscGraph } from 'react-icons/vsc';
 import { Link, useNavigate } from 'react-router-dom';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { userInstance } from '../api/axios';
@@ -33,7 +33,8 @@ import { COLOR } from './constants';
 
 export function Navigation() {
   const token = getAuthorityCookie('accessToken');
-  const [page, setPage] = useRecoilState(pageAtom);
+  const companyCode = getAuthorityCookie('companyCode');
+  const setPage = useSetRecoilState(pageAtom);
   const decodingInfo = useJwtDecode(token);
   const isOpenNavigation = useRecoilValue(openNaviationBoolAtom);
   const setpageIndexValue = useSetRecoilState(pageIndexAtom);
@@ -45,20 +46,28 @@ export function Navigation() {
     [],
   );
 
-  //로컬스토리지에 있는 기업코드 가져오기
+  //전역변수에 저장된 기업코드 가져오기
   useEffect(() => {
-    const storedCompanyCode = localStorage.getItem('companyCode');
-    setCodeValue(storedCompanyCode);
+    setCodeValue(companyCode);
   }, []);
 
   //접근 메뉴 리스트 불러오기 api
   const getAccessMenu = async () => {
     try {
+      // if (codeValue !== null) {
+      //   const res = await userInstance.get(`/v1/company/access/${codeValue}`);
+      //   console.log('res:', res);
+      //   return res;
+      // } else {
+      //   console.log('기업코드가 없습니다');
+      // }
       const res = await userInstance.get(`/v1/company/access/${codeValue}`);
+      //console.log('res:', res);
       return res;
     } catch (error: any) {
       if (error.data?.code === 'GE-002') {
         // 토큰 만료 에러 코드 확인 후 토큰 갱신
+        console.log('error', error);
         await postRefreshToken();
         // 토큰 갱신 후 다시 API 호출
         const retryRes = await userInstance.get(
@@ -84,12 +93,12 @@ export function Navigation() {
       meta: {
         errorMessage: 'get-companyAccessMenu 에러 메세지',
       },
-      enabled: !!codeValue,
     });
 
-  useEffect(() => {
-    if (codeValue !== null) companyAccessMenuRefetch();
-  }, [codeValue]);
+  // useEffect(() => {
+  //   if (codeValue !== null) companyAccessMenuRefetch();
+  //   console.log('리페치작동');
+  // }, []);
 
   useEffect(() => {
     if (companyAccessMenuData) {

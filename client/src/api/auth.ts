@@ -6,7 +6,7 @@ export type LoginType = {
 };
 
 export const postLogin = (auth: LoginType) => {
-  console.log('postLogin', auth);
+  //console.log('postLogin', auth);
 
   return authInstance.post('/v1/auth/login', auth);
 };

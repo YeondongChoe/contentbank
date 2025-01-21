@@ -22,7 +22,6 @@ import {
   setAuthorityCookie,
 } from '../../utils/cookies';
 import { postRefreshToken } from '../../utils/tokenHandler';
-
 export function Login() {
   const [isClicked, setIsClicked] = useState(
     getAuthorityCookie('username') ? true : false,
@@ -85,9 +84,9 @@ export function Login() {
         };
       };
     }) => {
-      console.log('accessToken ----login', response.data.data.accessToken);
-      console.log('refreshToken ----login', response.data.data.refreshToken);
-      console.log('sessionId -----login', response.data.data.sessionId);
+      //console.log('accessToken ----login', response.data.data.accessToken);
+      //console.log('refreshToken ----login', response.data.data.refreshToken);
+      //console.log('sessionId -----login', response.data.data.sessionId);
 
       // JWT 디코딩하여 companyCode 추출
       const accessToken = response.data.data.accessToken;
@@ -96,7 +95,12 @@ export function Login() {
       const decodedToken = jwtDecode(accessToken);
       const companyCode = decodedToken?.companyCode; // JWT 페이로드에 companyCode가 포함된 경우
       if (companyCode) {
-        localStorage.setItem('companyCode', companyCode);
+        //기업코드 쿠키에 저장
+        setAuthorityCookie('companyCode', companyCode, {
+          path: '/',
+          sameSite: 'strict',
+          secure: false,
+        });
       }
 
       setAuthorityCookie('accessToken', response.data.data.accessToken, {
