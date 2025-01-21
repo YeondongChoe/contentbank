@@ -876,7 +876,7 @@ export function Step1() {
               : null,
       //수능/모의고사 경우 어떻게 보내야할지 나중에 수정해야함
       difficulty: questionLevel === '선택안함' ? null : questionLevel || null,
-      type: questionType,
+      typeList: questionType,
       mock: containMock,
       score: equalScore,
       //isScoreEven 안쓰는거
