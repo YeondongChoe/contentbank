@@ -168,6 +168,11 @@ export function Header() {
         sameSite: 'strict',
         secure: false,
       });
+      removeAuthorityCookie('companyCode', {
+        path: '/',
+        sameSite: 'strict',
+        secure: false,
+      });
     }
   }, [isSuccess]);
 
