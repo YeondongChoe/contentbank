@@ -129,7 +129,7 @@ export function ContentInformationChange() {
         menuSettingData,
       );
       // 셋팅값 없을시 얼럿
-      if (menuSettingData?.menuDetailList[0]?.idxList === undefined) {
+      if (menuSettingData.menuDetailList.length == 0) {
         // openToastifyAlert({
         //   type: 'error',
         //   text: '셋팅에서 우선 셀렉트값을 선택해주세요',

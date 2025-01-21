@@ -92,7 +92,6 @@ const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
   document.head.appendChild(script);
 };
 
-type SelectedValueType = string | { [key: string]: any };
 type SelectedSourceItem = Record<string, any>;
 
 export function ContentEdit({
@@ -215,16 +214,6 @@ export function ContentEdit({
         return;
       }
 
-      // 첫번째 출처 값
-      // 교재
-      // const filteredCategoriesF: any[] = [];
-      // //내신
-      // const filteredCategoriesG: any[] = [];
-      // //기출
-      // const filteredCategoriesH: any[] = [];
-      // // 두번째 추가정보
-      // const filteredCategoriesDD: any[] = [];
-
       // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
       menuSettingData?.menuDetailList.forEach(
         (
@@ -309,48 +298,6 @@ export function ContentEdit({
               return [...prev, ...uniquePairs];
             });
           }
-
-          // if (menuDetail.groupCode == 'EXAMS') {
-          //   const categories = idxList.map((idx, idxIndex) => ({
-          //     idx,
-          //     name: nameList[idxIndex],
-          //     code: nameList[idxIndex],
-          //     inputType: inputList[idxIndex] === 'true',
-          //     searchList: searchList[idxIndex] === 'true',
-          //     viewList: viewList[idxIndex] === 'true',
-          //   }));
-          //   filteredCategoriesH.push(categories);
-          // } else if (menuDetail.groupCode == 'MATERIALS') {
-          //   const categories = idxList.map((idx, idxIndex) => ({
-          //     idx,
-          //     name: nameList[idxIndex],
-          //     code: nameList[idxIndex],
-          //     inputType: inputList[idxIndex] === 'true',
-          //     searchList: searchList[idxIndex] === 'true',
-          //     viewList: viewList[idxIndex] === 'true',
-          //   }));
-          //   filteredCategoriesF.push(categories);
-          // } else if (menuDetail.groupCode == 'INTERNAL') {
-          //   const categories = idxList.map((idx, idxIndex) => ({
-          //     idx,
-          //     name: nameList[idxIndex],
-          //     code: nameList[idxIndex],
-          //     inputType: inputList[idxIndex] === 'true',
-          //     searchList: searchList[idxIndex] === 'true',
-          //     viewList: viewList[idxIndex] === 'true',
-          //   }));
-          //   filteredCategoriesG.push(categories);
-          // } else if (menuDetail.groupCode == 'MOREINFO') {
-          //   const categories = idxList.map((idx, idxIndex) => ({
-          //     idx,
-          //     name: nameList[idxIndex],
-          //     code: nameList[idxIndex],
-          //     inputType: inputList[idxIndex] === 'true',
-          //     searchList: searchList[idxIndex] === 'true',
-          //     // viewList: viewList[idxIndex] === 'true',
-          //   }));
-          //   filteredCategoriesDD.push(categories);
-          // }
         },
       );
     }
@@ -469,7 +416,6 @@ export function ContentEdit({
   }, [isMathJaxLoaded]);
 
   // 전역에서 가져온 체크된 리스트값을 수정용 문항리스트로 다시 셋팅
-  // TODO : 그룹값과 함께 대발문 지문도 문제랑 함께 들어오는지 확인
   const getQuiz = async () => {
     const idxArray = parsedStoredQuizList.map((list) => list.idx);
     const idxList = idxArray.join(',');
@@ -689,16 +635,6 @@ export function ContentEdit({
   useEffect(() => {
     console.log('quizList', quizList);
   }, [quizList]);
-
-  useEffect(() => {
-    if (onItemClickData && onItemClickData.quizItemList) {
-      setData(onItemClickData.quizItemList);
-      // 선택 데이터 바뀔시 초기화
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      window.tinymce.activeEditor.setContent('');
-    }
-  }, [onItemClickData]);
 
   useEffect(() => {
     if (onItemClickData && onItemClickData.quizItemList) {
