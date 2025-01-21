@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
@@ -55,7 +55,7 @@ export function OptionList({
   );
   const [currentTarget, setCurrentTarget] = useState<EventTarget | null>(null);
 
-  const [count, setCount] = useState(1);
+  const [count, setCount] = useState(0);
   const [selected, setSelected] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
   const [selectedValues, setSelectedValues] = useState<{
@@ -82,7 +82,7 @@ export function OptionList({
     { name: '', categories: [] },
     { name: '', categories: [] },
   ]);
-
+  const [titleArr, setTitleArr] = useState<string[]>(['출처']);
   const [sourceArr, setSourceArr] = useState<any[]>([]);
   const [sourceValue, setSourceValue] = useState<{
     titleIdx: string;
@@ -382,16 +382,14 @@ export function OptionList({
     setSelectedSource(filteredTotalSource);
   }, [totalSource, selectedValues]);
 
-  const [titleArr, setTitleArr] = useState<string[]>([]);
-
   // 수정 페이지에서 기존의 값 출처 배열에 넣기
   useEffect(() => {
     console.log('onItemClickData---기존 출처값 ', onItemClickData);
     console.log('quizCategory---기존 출처값', quizCategory);
-    // setSourceOptions([]);
+
     // 기존 출처 데이터를 초기화
     setSourceOptions([]);
-    setTitleArr([]);
+    setTitleArr(['출처']);
     setOptionsList([
       { name: '', categories: [] },
       { name: '', categories: [] },
@@ -435,13 +433,18 @@ export function OptionList({
 
   useEffect(() => {
     //버튼
-    setCount(count + titleArr.length);
-    if (sourceOptions.length < 5) {
-      const arr = [];
-      for (let i = 0; i < titleArr.length; i++) {
-        arr.push(i);
+    if (titleArr[0] !== '출처') {
+      setCount(count + titleArr.length);
+      if (sourceOptions.length < 5) {
+        const arr = [];
+        for (let i = 0; i < titleArr.length; i++) {
+          arr.push(i);
+        }
+        setSourceOptions([...sourceOptions, ...arr]);
       }
-      setSourceOptions([...sourceOptions, ...arr]);
+    } else {
+      setCount(1);
+      setSourceOptions([0]);
     }
 
     if (titleArr.length > 0) {
@@ -452,9 +455,9 @@ export function OptionList({
       //셀렉트 선택시에만 추가 가능하도록 초기화
       setDisabled(true);
     }
-
-    //부모 셀렉트 값이 바뀔시
   }, [titleArr]);
+
+  useEffect(() => {}, [sourceOptions]);
 
   return (
     <Container>
@@ -498,7 +501,9 @@ export function OptionList({
                   $positionTop
                   width={'110px'}
                   height={'30px'}
-                  defaultValue={titleArr.length ? titleArr[index] : '출처'}
+                  defaultValue={
+                    titleArr[0] !== '출처' ? titleArr[index] : '출처'
+                  }
                   key={'출처'}
                   options={categoriesE}
                   onSelect={(
