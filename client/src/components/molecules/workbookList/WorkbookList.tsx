@@ -239,7 +239,6 @@ export function WorkbookList({
     //모달 열릴시 체크리스트 초기화
     setCheckList([]);
   };
-  console.log('list', list);
 
   return (
     <>
