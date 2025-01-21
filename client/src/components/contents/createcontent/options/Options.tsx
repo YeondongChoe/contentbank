@@ -146,14 +146,14 @@ export function Options({
   });
 
   useEffect(() => {
-    // console.log('listItem --------------- 옵션 아이템', listItem);
+    console.log('listItem isUse--------------- 옵션 아이템', listItem.isUse);
     if (listItem?.type === 'SELECT' && categoryItems) categoryItemsRefetch();
   }, [listItem]);
 
   return (
     <OptionWrapper>
       <li>
-        {listItem?.type === 'INPUT' && (
+        {listItem.isUse && listItem?.type === 'INPUT' && (
           <input
             placeholder={`${listItem.name}`}
             value={inputValue}
@@ -167,7 +167,7 @@ export function Options({
         )}
       </li>
       <li>
-        {listItem?.type === 'DATEPICKER' && (
+        {listItem.isUse && listItem?.type === 'DATEPICKER' && (
           <CommonDate
             setDate={setStartDate}
             $button={
@@ -187,7 +187,7 @@ export function Options({
         )}
       </li>
       <li>
-        {listItem?.type === 'MODAL' && (
+        {listItem.isUse && listItem?.type === 'MODAL' && (
           <input
             className="modal_input"
             readOnly
@@ -198,7 +198,7 @@ export function Options({
         )}
       </li>
       <li>
-        {categoryItems && listItem?.type === 'SELECT' && (
+        {categoryItems && listItem?.type === 'SELECT' && listItem.isUse && (
           <OtionsSelect
             width={'115px'}
             height={'30px'}

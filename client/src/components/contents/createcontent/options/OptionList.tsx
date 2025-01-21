@@ -251,7 +251,7 @@ export function OptionList({
   }, [selected]);
 
   useEffect(() => {
-    // console.log('sourceSortedValue 출처=----------', sourceSortedValue);
+    console.log('sourceSortedValue 출처=----------', sourceSortedValue);
   }, [selectedValue]);
 
   useEffect(() => {
