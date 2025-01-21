@@ -19,9 +19,11 @@ type CategoryList = {
 
 interface Props {
   categoriesE?: ItemCategoryType[];
-  groupsDataF: IdxNamePair[];
-  groupsDataG: IdxNamePair[];
-  groupsDataH: IdxNamePair[];
+  groupsDataMATERIALS: IdxNamePair[];
+  groupsDataINTERNAL: IdxNamePair[];
+  groupsDataEXAMS: IdxNamePair[];
+  groupsDataETC: IdxNamePair[];
+  groupsDataSELFPRODUCED: IdxNamePair[];
   setSelectedSource: React.Dispatch<React.SetStateAction<any[]>>;
   quizCategory?: any[];
   onItemClickData?: QuizListType;
@@ -36,9 +38,11 @@ interface Props {
 
 export function OptionList({
   categoriesE,
-  groupsDataF,
-  groupsDataG,
-  groupsDataH,
+  groupsDataMATERIALS,
+  groupsDataINTERNAL,
+  groupsDataEXAMS,
+  groupsDataETC,
+  groupsDataSELFPRODUCED,
   setSelectedSource,
   quizCategory,
   onItemClickData,
@@ -97,30 +101,34 @@ export function OptionList({
     }));
   };
 
-  const categoriesF = getCategoryListFromString(groupsDataF);
-  const categoriesG = getCategoryListFromString(groupsDataG);
-  const categoriesH = getCategoryListFromString(groupsDataH);
+  const categoriesMATERIALS = getCategoryListFromString(groupsDataMATERIALS);
+  const categoriesINTERNAL = getCategoryListFromString(groupsDataINTERNAL);
+  const categoriesEXAMS = getCategoryListFromString(groupsDataEXAMS);
+  const categoriesETC = getCategoryListFromString(groupsDataETC);
+  const categoriesSELFPRODUCED = getCategoryListFromString(
+    groupsDataSELFPRODUCED,
+  );
 
   const lists = [
     {
       name: '교재',
-      categories: categoriesF,
+      categories: categoriesMATERIALS,
     },
     {
       name: '내신',
-      categories: categoriesG,
+      categories: categoriesINTERNAL,
     },
     {
       name: '기출',
-      categories: categoriesH,
+      categories: categoriesEXAMS,
     },
     {
       name: '자체제작',
-      categories: [], // 자체제작은 예시로 빈 배열
+      categories: categoriesSELFPRODUCED,
     },
     {
       name: '기타',
-      categories: [], // 기타는 예시로 빈 배열
+      categories: categoriesETC,
     },
   ];
 

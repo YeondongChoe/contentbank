@@ -58,9 +58,22 @@ export function ContentCreating({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkedList, setCheckedList] = useState<string[]>([]);
 
-  const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]); // 교재
-  const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]); // 내신
-  const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]); // 기출
+  // 출처 셋팅
+  const [idxNamePairsMATERIALS, setIdxNamePairsMATERIALS] = useState<
+    IdxNamePair[]
+  >([]);
+  const [idxNamePairsEXAMS, setIdxNamePairsEXAMS] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsINTERNAL, setIdxNamePairsINTERNAL] = useState<
+    IdxNamePair[]
+  >([]);
+  const [idxNamePairsETC, setIdxNamePairsETC] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsSELFPRODUCED, setIdxNamePairsSELFPRODUCED] = useState<
+    IdxNamePair[]
+  >([]);
+  const [idxNamePairsMOREINFO, setIdxNamePairsMOREINFO] = useState<
+    IdxNamePair[]
+  >([]);
+
   const [content, setContent] = useState<string[]>([]);
   // const [imagesSrc, setImagesSrc] = useState<string>('');
 
@@ -143,7 +156,11 @@ export function ContentCreating({
     console.log('getMenuSetting--------', res);
     return res.data.data;
   };
-  const { data: menuSettingData, refetch: menuSettingRefetch } = useQuery({
+  const {
+    data: menuSettingData,
+    isLoading: isMenuSettingLoading,
+    refetch: menuSettingRefetch,
+  } = useQuery({
     queryKey: ['get-menuSetting'],
     queryFn: getMenuSetting,
     meta: {
@@ -171,16 +188,6 @@ export function ContentCreating({
         window.close();
         return;
       }
-
-      // 첫번째 출처 값
-      // 교재
-      const filteredCategoriesF: any[] = [];
-      //내신
-      const filteredCategoriesG: any[] = [];
-      //기출
-      const filteredCategoriesH: any[] = [];
-      // 두번째 추가정보
-      const filteredCategoriesDD: any[] = [];
 
       // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
       menuSettingData?.menuDetailList.forEach(
@@ -211,7 +218,31 @@ export function ContentCreating({
           }));
 
           if (menuDetail.groupCode == 'MATERIALS') {
-            setIdxNamePairsF((prev) => {
+            setIdxNamePairsMATERIALS((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'EXAMS') {
+            setIdxNamePairsEXAMS((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'ETC') {
+            setIdxNamePairsETC((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'SELFPRODUCED') {
+            setIdxNamePairsSELFPRODUCED((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -219,7 +250,7 @@ export function ContentCreating({
             });
           }
           if (menuDetail.groupCode == 'INTERNAL') {
-            setIdxNamePairsG((prev) => {
+            setIdxNamePairsINTERNAL((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -227,62 +258,20 @@ export function ContentCreating({
             });
           }
           if (menuDetail.groupCode == 'EXAMS') {
-            setIdxNamePairsH((prev) => {
+            setIdxNamePairsEXAMS((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
               return [...prev, ...uniquePairs];
             });
           }
-          // if (menuDetail.groupCode == 'MOREINFO') {
-          //   setIdxNamePairsDD((prev) => {
-          //     const uniquePairs = pairs.filter(
-          //       (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
-          //     );
-          //     return [...prev, ...uniquePairs];
-          //   });
-          // }
-
-          if (menuDetail.groupCode == 'EXAMS') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesH.push(categories);
-          } else if (menuDetail.groupCode == 'MATERIALS') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesF.push(categories);
-          } else if (menuDetail.groupCode == 'INTERNAL') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesG.push(categories);
-          } else if (menuDetail.groupCode == 'MOREINFO') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              // viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesDD.push(categories);
+          if (menuDetail.groupCode == 'MOREINFO') {
+            setIdxNamePairsMOREINFO((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
           }
         },
       );
@@ -291,13 +280,24 @@ export function ContentCreating({
 
   useEffect(() => {
     console.log(
-      `menu idxNamePairs:`,
-      idxNamePairsH,
-      idxNamePairsF,
-      idxNamePairsG,
-      // idxNamePairsDD,
+      '출처 셀렉트 담긴 값 ----',
+      idxNamePairsMATERIALS,
+      idxNamePairsEXAMS,
+      idxNamePairsINTERNAL,
+      idxNamePairsETC,
+      idxNamePairsSELFPRODUCED,
+      idxNamePairsMOREINFO,
+      idxNamePairsETC,
     );
-  }, [idxNamePairsH, idxNamePairsF, idxNamePairsG]);
+  }, [
+    idxNamePairsMATERIALS,
+    idxNamePairsEXAMS,
+    idxNamePairsINTERNAL,
+    idxNamePairsETC,
+    idxNamePairsSELFPRODUCED,
+    idxNamePairsMOREINFO,
+    idxNamePairsETC,
+  ]);
 
   // 분류 등록
   useEffect(() => {
@@ -395,31 +395,27 @@ export function ContentCreating({
     }
   }, [postQuizData]);
 
-  // 카테고리 api 불러오기
-  // const getCategory = async () => {
-  //   const res = await classificationInstance.get(`/v1/category`);
-  //   return res;
-  // };
-  // const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
-  //   queryKey: ['get-category'],
-  //   queryFn: getCategory,
-  //   meta: {
-  //     errorMessage: 'get-category 에러 메세지',
-  //   },
-  // });
-  // useEffect(() => {
-  //   if (categoryData) {
-  //     setCategoryTitles(categoryData.data.data.categoryItemList);
-  //   }
-  // }, [categoryData]);
-
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
     setContent((prevContent) => [...prevContent, value]);
   };
 
   // 셀렉트 초기화
-  const handleDefaultSelect = (defaultValue?: string) => {};
+  const handleDefaultSelect = (defaultValue?: string) => {
+    switch (defaultValue) {
+      case '문항 타입':
+        setSelectedQuestionType('');
+        break;
+      case '난이도':
+        setSelectedDifficulty('');
+        break;
+      case '공통(시험)':
+        setSelectedDifficulty('');
+        break;
+      default:
+        break;
+    }
+  };
 
   const saveHandler = async () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -468,42 +464,50 @@ export function ContentCreating({
                 </strong>
                 <SourceOptionWrapper>
                   {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                  {idxNamePairsH && idxNamePairsF && idxNamePairsG && (
-                    <OptionList
-                      setSelectedSource={setSelectedSource}
-                      categoriesE={[
-                        {
-                          code: '교재',
-                          idx: 1,
-                          name: '교재',
-                        },
-                        {
-                          code: '내신',
-                          idx: 2,
-                          name: '내신',
-                        },
-                        {
-                          code: '기출',
-                          idx: 3,
-                          name: '기출',
-                        },
-                        {
-                          code: '자체제작',
-                          idx: 4,
-                          name: '자체제작',
-                        },
-                        {
-                          code: '기타',
-                          idx: 5,
-                          name: '기타',
-                        },
-                      ]}
-                      groupsDataF={idxNamePairsF}
-                      groupsDataG={idxNamePairsG}
-                      groupsDataH={idxNamePairsH}
-                      selectedValue={setSelectedList}
-                    />
-                  )}
+                  {idxNamePairsMATERIALS &&
+                    idxNamePairsEXAMS &&
+                    idxNamePairsINTERNAL &&
+                    idxNamePairsETC &&
+                    idxNamePairsSELFPRODUCED &&
+                    idxNamePairsMOREINFO &&
+                    idxNamePairsETC && (
+                      <OptionList
+                        setSelectedSource={setSelectedSource}
+                        selectedValue={setSelectedList}
+                        categoriesE={[
+                          {
+                            code: '교재',
+                            idx: 1,
+                            name: '교재',
+                          },
+                          {
+                            code: '내신',
+                            idx: 2,
+                            name: '내신',
+                          },
+                          {
+                            code: '기출',
+                            idx: 3,
+                            name: '기출',
+                          },
+                          {
+                            code: '자체제작',
+                            idx: 4,
+                            name: '자체제작',
+                          },
+                          {
+                            code: '기타',
+                            idx: 5,
+                            name: '기타',
+                          },
+                        ]}
+                        groupsDataMATERIALS={idxNamePairsMATERIALS}
+                        groupsDataINTERNAL={idxNamePairsINTERNAL}
+                        groupsDataEXAMS={idxNamePairsEXAMS}
+                        groupsDataETC={idxNamePairsETC}
+                        groupsDataSELFPRODUCED={idxNamePairsSELFPRODUCED}
+                      />
+                    )}
                 </SourceOptionWrapper>
               </SelectListWrapper>
             </BackgroundWrapper>
@@ -517,7 +521,7 @@ export function ContentCreating({
                     <SelectWrapper>
                       <strong className="title">문항타입</strong>
                       <Select
-                        onDefaultSelect={() => {}}
+                        onDefaultSelect={() => handleDefaultSelect('문항 타입')}
                         width={'120px'}
                         defaultValue={'문항 타입'}
                         key={'문항 타입'}
@@ -549,7 +553,9 @@ export function ContentCreating({
                     <SelectWrapper>
                       <strong className="title">난이도</strong>
                       <Select
-                        onDefaultSelect={() => {}}
+                        onDefaultSelect={() =>
+                          handleDefaultSelect('공통(시험)')
+                        }
                         width={'120px'}
                         defaultValue={'공통(시험)'}
                         key={'공통(시험)'}
@@ -581,7 +587,7 @@ export function ContentCreating({
                         height="35px"
                       />
                       <Select
-                        onDefaultSelect={() => {}}
+                        onDefaultSelect={() => handleDefaultSelect('난이도')}
                         width={'120px'}
                         defaultValue={'난이도'}
                         key={'난이도'}

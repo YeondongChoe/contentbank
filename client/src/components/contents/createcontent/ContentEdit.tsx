@@ -112,13 +112,20 @@ export function ContentEdit({
   const [checkedList, setCheckedList] = useState<string[]>([]);
 
   // 출처 셋팅
-  const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsE, setIdxNamePairsE] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsS, setIdxNamePairsS] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsM, setIdxNamePairsM] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsMATERIALS, setIdxNamePairsMATERIALS] = useState<
+    IdxNamePair[]
+  >([]);
+  const [idxNamePairsEXAMS, setIdxNamePairsEXAMS] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsINTERNAL, setIdxNamePairsINTERNAL] = useState<
+    IdxNamePair[]
+  >([]);
   const [idxNamePairsETC, setIdxNamePairsETC] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsSELFPRODUCED, setIdxNamePairsSELFPRODUCED] = useState<
+    IdxNamePair[]
+  >([]);
+  const [idxNamePairsMOREINFO, setIdxNamePairsMOREINFO] = useState<
+    IdxNamePair[]
+  >([]);
 
   const [content, setContent] = useState<string[]>([]);
   const [dataFetched, setDataFetched] = useState(false);
@@ -247,7 +254,7 @@ export function ContentEdit({
           }));
 
           if (menuDetail.groupCode == 'MATERIALS') {
-            setIdxNamePairsF((prev) => {
+            setIdxNamePairsMATERIALS((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -255,7 +262,7 @@ export function ContentEdit({
             });
           }
           if (menuDetail.groupCode == 'EXAMS') {
-            setIdxNamePairsE((prev) => {
+            setIdxNamePairsEXAMS((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -271,7 +278,7 @@ export function ContentEdit({
             });
           }
           if (menuDetail.groupCode == 'SELFPRODUCED') {
-            setIdxNamePairsS((prev) => {
+            setIdxNamePairsSELFPRODUCED((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -279,7 +286,7 @@ export function ContentEdit({
             });
           }
           if (menuDetail.groupCode == 'INTERNAL') {
-            setIdxNamePairsG((prev) => {
+            setIdxNamePairsINTERNAL((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -287,7 +294,7 @@ export function ContentEdit({
             });
           }
           if (menuDetail.groupCode == 'EXAMS') {
-            setIdxNamePairsH((prev) => {
+            setIdxNamePairsEXAMS((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -295,7 +302,7 @@ export function ContentEdit({
             });
           }
           if (menuDetail.groupCode == 'MOREINFO') {
-            setIdxNamePairsM((prev) => {
+            setIdxNamePairsMOREINFO((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -386,21 +393,21 @@ export function ContentEdit({
   useEffect(() => {
     console.log(
       '출처 셀렉트 담긴 값 ----',
-      idxNamePairsF,
-      idxNamePairsG,
-      idxNamePairsE,
-      idxNamePairsS,
-      idxNamePairsH,
-      idxNamePairsM,
+      idxNamePairsMATERIALS,
+      idxNamePairsEXAMS,
+      idxNamePairsINTERNAL,
+      idxNamePairsETC,
+      idxNamePairsSELFPRODUCED,
+      idxNamePairsMOREINFO,
       idxNamePairsETC,
     );
   }, [
-    idxNamePairsF,
-    idxNamePairsG,
-    idxNamePairsE,
-    idxNamePairsS,
-    idxNamePairsH,
-    idxNamePairsM,
+    idxNamePairsMATERIALS,
+    idxNamePairsEXAMS,
+    idxNamePairsINTERNAL,
+    idxNamePairsETC,
+    idxNamePairsSELFPRODUCED,
+    idxNamePairsMOREINFO,
     idxNamePairsETC,
   ]);
 
@@ -766,83 +773,97 @@ export function ContentEdit({
                     </strong>
                     <SourceOptionWrapper>
                       {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                      {idxNamePairsH && idxNamePairsF && idxNamePairsG && (
-                        <>
-                          {quizCategory.sources.length > 0 ? (
-                            <OptionList
-                              quizCategory={quizCategory.sources}
-                              setSelectedSource={setSelectedSource}
-                              categoriesE={[
-                                {
-                                  code: '교재',
-                                  idx: 1,
-                                  name: '교재',
-                                },
-                                {
-                                  code: '내신',
-                                  idx: 2,
-                                  name: '내신',
-                                },
-                                {
-                                  code: '기출',
-                                  idx: 3,
-                                  name: '기출',
-                                },
-                                {
-                                  code: '자체제작',
-                                  idx: 4,
-                                  name: '자체제작',
-                                },
-                                {
-                                  code: '기타',
-                                  idx: 5,
-                                  name: '기타',
-                                },
-                              ]}
-                              groupsDataF={idxNamePairsF}
-                              groupsDataG={idxNamePairsG}
-                              groupsDataH={idxNamePairsH}
-                              selectedValue={setSelectedList}
-                              onItemClickData={onItemClickData}
-                            />
-                          ) : (
-                            <OptionList
-                              setSelectedSource={setSelectedSource}
-                              categoriesE={[
-                                {
-                                  code: '교재',
-                                  idx: 1,
-                                  name: '교재',
-                                },
-                                {
-                                  code: '내신',
-                                  idx: 2,
-                                  name: '내신',
-                                },
-                                {
-                                  code: '기출',
-                                  idx: 3,
-                                  name: '기출',
-                                },
-                                {
-                                  code: '자체제작',
-                                  idx: 4,
-                                  name: '자체제작',
-                                },
-                                {
-                                  code: '기타',
-                                  idx: 5,
-                                  name: '기타',
-                                },
-                              ]}
-                              groupsDataF={idxNamePairsF}
-                              groupsDataG={idxNamePairsG}
-                              groupsDataH={idxNamePairsH}
-                              selectedValue={setSelectedList}
-                            />
-                          )}
-                        </>
-                      )}
+                      {idxNamePairsMATERIALS &&
+                        idxNamePairsEXAMS &&
+                        idxNamePairsINTERNAL &&
+                        idxNamePairsETC &&
+                        idxNamePairsSELFPRODUCED &&
+                        idxNamePairsMOREINFO &&
+                        idxNamePairsETC && (
+                          <>
+                            {quizCategory.sources.length > 0 ? (
+                              <OptionList
+                                quizCategory={quizCategory.sources}
+                                setSelectedSource={setSelectedSource}
+                                selectedValue={setSelectedList}
+                                onItemClickData={onItemClickData}
+                                categoriesE={[
+                                  {
+                                    code: '교재',
+                                    idx: 1,
+                                    name: '교재',
+                                  },
+                                  {
+                                    code: '내신',
+                                    idx: 2,
+                                    name: '내신',
+                                  },
+                                  {
+                                    code: '기출',
+                                    idx: 3,
+                                    name: '기출',
+                                  },
+                                  {
+                                    code: '자체제작',
+                                    idx: 4,
+                                    name: '자체제작',
+                                  },
+                                  {
+                                    code: '기타',
+                                    idx: 5,
+                                    name: '기타',
+                                  },
+                                ]}
+                                groupsDataMATERIALS={idxNamePairsMATERIALS}
+                                groupsDataINTERNAL={idxNamePairsINTERNAL}
+                                groupsDataEXAMS={idxNamePairsEXAMS}
+                                groupsDataETC={idxNamePairsETC}
+                                groupsDataSELFPRODUCED={
+                                  idxNamePairsSELFPRODUCED
+                                }
+                              />
+                            ) : (
+                              <OptionList
+                                setSelectedSource={setSelectedSource}
+                                selectedValue={setSelectedList}
+                                categoriesE={[
+                                  {
+                                    code: '교재',
+                                    idx: 1,
+                                    name: '교재',
+                                  },
+                                  {
+                                    code: '내신',
+                                    idx: 2,
+                                    name: '내신',
+                                  },
+                                  {
+                                    code: '기출',
+                                    idx: 3,
+                                    name: '기출',
+                                  },
+                                  {
+                                    code: '자체제작',
+                                    idx: 4,
+                                    name: '자체제작',
+                                  },
+                                  {
+                                    code: '기타',
+                                    idx: 5,
+                                    name: '기타',
+                                  },
+                                ]}
+                                groupsDataMATERIALS={idxNamePairsMATERIALS}
+                                groupsDataINTERNAL={idxNamePairsINTERNAL}
+                                groupsDataEXAMS={idxNamePairsEXAMS}
+                                groupsDataETC={idxNamePairsETC}
+                                groupsDataSELFPRODUCED={
+                                  idxNamePairsSELFPRODUCED
+                                }
+                              />
+                            )}
+                          </>
+                        )}
                     </SourceOptionWrapper>
                   </SelectListWrapper>
                 </BackgroundWrapper>

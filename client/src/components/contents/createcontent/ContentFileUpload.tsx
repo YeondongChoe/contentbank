@@ -48,11 +48,23 @@ export function ContentFileUpload({
 
   const [checkedList, setCheckedList] = useState<string[]>([]);
 
-  const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
-  const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
+  // 출처 셋팅
+  const [idxNamePairsMATERIALS, setIdxNamePairsMATERIALS] = useState<
+    IdxNamePair[]
+  >([]);
+  const [idxNamePairsEXAMS, setIdxNamePairsEXAMS] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsINTERNAL, setIdxNamePairsINTERNAL] = useState<
+    IdxNamePair[]
+  >([]);
+  const [idxNamePairsETC, setIdxNamePairsETC] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsSELFPRODUCED, setIdxNamePairsSELFPRODUCED] = useState<
+    IdxNamePair[]
+  >([]);
+  const [idxNamePairsMOREINFO, setIdxNamePairsMOREINFO] = useState<
+    IdxNamePair[]
+  >([]);
+
   const [content, setContent] = useState<string[]>([]);
-  const [imagesSrc, setImagesSrc] = useState<string>('');
 
   const [editorData, setEditorData] = useState<EditorDataType | null>(null);
   const [quizItemList, setQuizItemList] = useState<QuizItemListType>([]);
@@ -70,8 +82,6 @@ export function ContentFileUpload({
       [key: number]: string;
     }[]
   >([]);
-  // 선택된 리스트 아이템 데이터
-  // const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
 
   // 에디터에서 데이터 가져올시
   useEffect(() => {
@@ -114,102 +124,11 @@ export function ContentFileUpload({
         }
       });
 
+      // 에디터 값이 리스트에 담김
+      console.log('itemDataList 각 데이터를 배열에 담음', itemDataList);
       setQuizItemList(itemDataList);
-      console.log('editorData?.tag_group----', editorData?.tag_group);
-      const imagesSrc = extractImgSrc(`${editorData?.tag_group}`);
-      setImagesSrc(imagesSrc);
     }
   }, [editorData]);
-  // 이미지 태그 src 축출
-  const extractImgSrc = (htmlString: string) => {
-    // <img> 태그와 src 속성 값을 캡처하는 정규 표현식
-    const imgSrcRegex = /<img[^>]+src="([^">]+)"/g;
-    const srcArray = [];
-    let match;
-
-    while ((match = imgSrcRegex.exec(htmlString)) !== null) {
-      // match[1]에는 src 속성 값이 포함됩니다.
-      srcArray.push(match[1]);
-    }
-
-    // 배열 요소를 쉼표로 구분된 하나의 문자열로 결합하여 반환
-    return srcArray.join(',');
-  };
-
-  // 이미지 업로딩
-  // const uploadImages = async () => {
-  //   const blobUrls = imagesSrc.split(',');
-  //   const uploadedUrls = await Promise.all(blobUrls.map(uploadImage));
-
-  //   // blob URL을 업로드된 URL로 교체
-  //   let updatedContent = editorData && editorData.tag_group;
-
-  //   if (typeof updatedContent === 'string') {
-  //     // blobUrls.forEach((blobUrl, index) => {
-  //     //   updatedContent =
-  //     //     updatedContent &&
-  //     //     updatedContent.replace(blobUrl, uploadedUrls[index]);
-  //     // });
-
-  //     // 상태 업데이트 또는 업데이트된 콘텐츠 처리
-  //     console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
-  //   } else if (Array.isArray(updatedContent)) {
-  //     updatedContent = updatedContent.map((content) => {
-  //       if (typeof content === 'string') {
-  //         blobUrls.forEach((blobUrl, index) => {
-  //           content = content.replace(blobUrl, uploadedUrls[index]);
-  //         });
-  //       }
-  //       return content;
-  //     });
-
-  //     // 상태 업데이트 또는 업데이트된 콘텐츠 처리
-  //     console.log('업로드된 URL로 업데이트된 콘텐츠:', updatedContent);
-  //   } else {
-  //     console.error('updatedContent는 문자열 또는 문자열 배열이어야 합니다.');
-  //   }
-  // };
-
-  // const uploadImage = async (blobUrl: RequestInfo | URL) => {
-  //   const response = await fetch(blobUrl);
-  //   const blob = await response.blob();
-  //   const file = new File([blob], `${uuidv4()}.png`, { type: blob.type });
-
-  //   const formData = new FormData();
-  //   formData.append('file', file);
-  //   formData.append('img_save_type', '3'); // 1을 문자열로 변환
-
-  //   console.log('formData --------------', formData);
-  //   try {
-  //     const response = await axios.post(
-  //       'https://web-stage.olympiad.ac/file',
-  //       formData,
-  //       {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data',
-  //         },
-  //       },
-  //     );
-
-  //     const { imgUUID } = response.data;
-  //     const [year, month, day] = new Date()
-  //       .toISOString()
-  //       .split('T')[0]
-  //       .split('-');
-  //     const newUrl = `https://web-stage.olympiad.ac/file/${year}/${month}/${day}/${imgUUID}.png`;
-
-  //     return newUrl;
-  //   } catch (error) {
-  //     console.error('파일 업로드 오류:', error);
-  //     throw error;
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (imagesSrc) {
-  //     uploadImages();
-  //   }
-  // }, [imagesSrc]);
 
   // 메뉴 목록 조회 api (셋팅값)
   const getMenuSetting = async () => {
@@ -252,16 +171,6 @@ export function ContentFileUpload({
         return;
       }
 
-      // 첫번째 출처 값
-      // 교재
-      const filteredCategoriesF: any[] = [];
-      //내신
-      const filteredCategoriesG: any[] = [];
-      //기출
-      const filteredCategoriesH: any[] = [];
-      // 두번째 추가정보
-      const filteredCategoriesDD: any[] = [];
-
       // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
       menuSettingData?.menuDetailList.forEach(
         (
@@ -291,7 +200,31 @@ export function ContentFileUpload({
           }));
 
           if (menuDetail.groupCode == 'MATERIALS') {
-            setIdxNamePairsF((prev) => {
+            setIdxNamePairsMATERIALS((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'EXAMS') {
+            setIdxNamePairsEXAMS((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'ETC') {
+            setIdxNamePairsETC((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'SELFPRODUCED') {
+            setIdxNamePairsSELFPRODUCED((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -299,7 +232,7 @@ export function ContentFileUpload({
             });
           }
           if (menuDetail.groupCode == 'INTERNAL') {
-            setIdxNamePairsG((prev) => {
+            setIdxNamePairsINTERNAL((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
@@ -307,62 +240,20 @@ export function ContentFileUpload({
             });
           }
           if (menuDetail.groupCode == 'EXAMS') {
-            setIdxNamePairsH((prev) => {
+            setIdxNamePairsEXAMS((prev) => {
               const uniquePairs = pairs.filter(
                 (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
               );
               return [...prev, ...uniquePairs];
             });
           }
-          // if (menuDetail.groupCode == 'MOREINFO') {
-          //   setIdxNamePairsDD((prev) => {
-          //     const uniquePairs = pairs.filter(
-          //       (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
-          //     );
-          //     return [...prev, ...uniquePairs];
-          //   });
-          // }
-
-          if (menuDetail.groupCode == 'EXAMS') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesH.push(categories);
-          } else if (menuDetail.groupCode == 'MATERIALS') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesF.push(categories);
-          } else if (menuDetail.groupCode == 'INTERNAL') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesG.push(categories);
-          } else if (menuDetail.groupCode == 'MOREINFO') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              // viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesDD.push(categories);
+          if (menuDetail.groupCode == 'MOREINFO') {
+            setIdxNamePairsMOREINFO((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
           }
         },
       );
@@ -371,13 +262,24 @@ export function ContentFileUpload({
 
   useEffect(() => {
     console.log(
-      `menu idxNamePairs:`,
-      idxNamePairsH,
-      idxNamePairsF,
-      idxNamePairsG,
-      // idxNamePairsDD,
+      '출처 셀렉트 담긴 값 ----',
+      idxNamePairsMATERIALS,
+      idxNamePairsEXAMS,
+      idxNamePairsINTERNAL,
+      idxNamePairsETC,
+      idxNamePairsSELFPRODUCED,
+      idxNamePairsMOREINFO,
+      idxNamePairsETC,
     );
-  }, [idxNamePairsH, idxNamePairsF, idxNamePairsG]);
+  }, [
+    idxNamePairsMATERIALS,
+    idxNamePairsEXAMS,
+    idxNamePairsINTERNAL,
+    idxNamePairsETC,
+    idxNamePairsSELFPRODUCED,
+    idxNamePairsMOREINFO,
+    idxNamePairsETC,
+  ]);
 
   // 분류 등록
   useEffect(() => {
@@ -467,6 +369,14 @@ export function ContentFileUpload({
     },
   });
 
+  useEffect(() => {
+    console.log('문항 data postQuizData 값', postQuizData);
+    if (postQuizData) {
+      // 등록 이후 축출 값 초기화
+      setQuizItemList([]);
+    }
+  }, [postQuizData]);
+
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
     setContent((prevContent) => [...prevContent, value]);
@@ -535,42 +445,50 @@ export function ContentFileUpload({
                 </strong>
                 <SourceOptionWrapper>
                   {/* 옵션 리스트 셀렉트 컴포넌트 */}
-                  {idxNamePairsH && idxNamePairsF && idxNamePairsG && (
-                    <OptionList
-                      setSelectedSource={setSelectedSource}
-                      categoriesE={[
-                        {
-                          code: '교재',
-                          idx: 1,
-                          name: '교재',
-                        },
-                        {
-                          code: '내신',
-                          idx: 2,
-                          name: '내신',
-                        },
-                        {
-                          code: '기출',
-                          idx: 3,
-                          name: '기출',
-                        },
-                        {
-                          code: '자체제작',
-                          idx: 4,
-                          name: '자체제작',
-                        },
-                        {
-                          code: '기타',
-                          idx: 5,
-                          name: '기타',
-                        },
-                      ]}
-                      groupsDataF={idxNamePairsF}
-                      groupsDataG={idxNamePairsG}
-                      groupsDataH={idxNamePairsH}
-                      selectedValue={setSelectedList}
-                    />
-                  )}
+                  {idxNamePairsMATERIALS &&
+                    idxNamePairsEXAMS &&
+                    idxNamePairsINTERNAL &&
+                    idxNamePairsETC &&
+                    idxNamePairsSELFPRODUCED &&
+                    idxNamePairsMOREINFO &&
+                    idxNamePairsETC && (
+                      <OptionList
+                        setSelectedSource={setSelectedSource}
+                        selectedValue={setSelectedList}
+                        categoriesE={[
+                          {
+                            code: '교재',
+                            idx: 1,
+                            name: '교재',
+                          },
+                          {
+                            code: '내신',
+                            idx: 2,
+                            name: '내신',
+                          },
+                          {
+                            code: '기출',
+                            idx: 3,
+                            name: '기출',
+                          },
+                          {
+                            code: '자체제작',
+                            idx: 4,
+                            name: '자체제작',
+                          },
+                          {
+                            code: '기타',
+                            idx: 5,
+                            name: '기타',
+                          },
+                        ]}
+                        groupsDataMATERIALS={idxNamePairsMATERIALS}
+                        groupsDataINTERNAL={idxNamePairsINTERNAL}
+                        groupsDataEXAMS={idxNamePairsEXAMS}
+                        groupsDataETC={idxNamePairsETC}
+                        groupsDataSELFPRODUCED={idxNamePairsSELFPRODUCED}
+                      />
+                    )}
                 </SourceOptionWrapper>
               </SelectListWrapper>
             </BackgroundWrapper>
