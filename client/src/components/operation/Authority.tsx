@@ -23,6 +23,7 @@ import {
   openToastifyAlert,
 } from '../../components/atom';
 import { ItemAuthorityType } from '../../types';
+import { getAuthorityCookie } from '../../utils/cookies';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants';
 import { Alert } from '../molecules/alert/Alert';
@@ -113,6 +114,7 @@ export type PermissionOutput = {
 };
 
 export function Authority() {
+  const companyCode = getAuthorityCookie('companyCode');
   const [authorityList, setAuthorityList] = useState<ItemAuthorityType[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [isClickedName, setIsClickedName] = useState(false);
@@ -132,8 +134,7 @@ export function Authority() {
   const [companyIdxValue, setCompanyIdxValue] = useState<string>('0');
   //로컬스토리지에 있는 기업코드 가져오기
   useEffect(() => {
-    const storedCompanyCode = localStorage.getItem('companyCode');
-    setCompanyCoadValue(storedCompanyCode);
+    setCompanyCoadValue(companyCode);
   }, []);
 
   //기업코드로 기업 idx 가져오기

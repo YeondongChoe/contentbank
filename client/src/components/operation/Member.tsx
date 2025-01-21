@@ -28,14 +28,16 @@ import {
 import { useModal } from '../../hooks';
 import { pageAtom } from '../../store/utilAtom';
 import { MemberType } from '../../types';
+import { getAuthorityCookie } from '../../utils/cookies';
 import { postRefreshToken } from '../../utils/tokenHandler';
 import { COLOR } from '../constants/COLOR';
 
 import { EditModal } from './member/EditModal';
 import { RegisterModal } from './member/RegisterModal';
-
 export function Member() {
   const { openModal } = useModal();
+  const companyCode = getAuthorityCookie('companyCode');
+
   const [tabView, setTabView] = useState<string>('전체');
   const backgroundRef = useRef<HTMLDivElement>(null);
 
@@ -58,8 +60,7 @@ export function Member() {
 
   //로컬스토리지에 있는 기업코드 가져오기
   useEffect(() => {
-    const storedCompanyCode = localStorage.getItem('companyCode');
-    setCompanyCoadValue(storedCompanyCode);
+    setCompanyCoadValue(companyCode);
   }, []);
 
   // 유저 리스트 불러오기 api
