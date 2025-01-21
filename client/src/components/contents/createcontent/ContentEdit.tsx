@@ -111,9 +111,14 @@ export function ContentEdit({
   const [data, setData] = useState<QuizType[] | null>(null);
   const [checkedList, setCheckedList] = useState<string[]>([]);
 
+  // 출처 셋팅
   const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
   const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsE, setIdxNamePairsE] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsS, setIdxNamePairsS] = useState<IdxNamePair[]>([]);
   const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsM, setIdxNamePairsM] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsETC, setIdxNamePairsETC] = useState<IdxNamePair[]>([]);
 
   const [content, setContent] = useState<string[]>([]);
   const [dataFetched, setDataFetched] = useState(false);
@@ -128,24 +133,6 @@ export function ContentEdit({
   const [onItemClickData, setOnItemClickData] = useState<QuizListType>();
   const [quizIdx, setQuizIdx] = useState<number[]>([]);
 
-  // 수정시 체크리스트 값 가져오기
-  useEffect(() => {
-    const storedQuizList = window.localStorage.getItem('quizList');
-
-    // console.log(
-    //   '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
-    //   storedQuizList,
-    // );
-
-    if (storedQuizList) {
-      setParsedStoredQuizList(JSON.parse(storedQuizList));
-
-      // 로컬스토리지 값 다받은 뒤 초기화
-      window.opener.localStorage.clear();
-      return;
-    }
-  }, []);
-
   //셀렉트 값
   const [selectedQuestionType, setSelectedQuestionType] = useState<string>(''); //문항타입
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>(''); //난이도
@@ -159,6 +146,263 @@ export function ContentEdit({
       [key: number]: string;
     }[]
   >([]);
+
+  // 수정시 체크리스트 값 가져오기
+  useEffect(() => {
+    const storedQuizList = window.localStorage.getItem('quizList');
+
+    if (storedQuizList) {
+      const parsedList = JSON.parse(storedQuizList);
+      console.log(
+        '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
+        parsedList,
+      );
+
+      setParsedStoredQuizList(parsedList);
+
+      // 로컬스토리지 값이 정상적으로 읽힌 후 값이 state에 들어간 뒤 초기화
+      setTimeout(() => {
+        window.opener.localStorage.clear();
+      }, 100);
+    }
+  }, []);
+
+  // 메뉴 목록 조회 api (셋팅값)
+  const getMenuSetting = async () => {
+    const res = await resourceServiceInstance.get(
+      `/v1/menu/path?url=contentDtEditingSetting`,
+    );
+    // console.log('getMenuSetting--------', res);
+    return res.data.data;
+  };
+  const {
+    data: menuSettingData,
+    isLoading: isMenuSettingLoading,
+    refetch: menuSettingRefetch,
+  } = useQuery({
+    queryKey: ['get-menuSetting'],
+    queryFn: getMenuSetting,
+    meta: {
+      errorMessage: 'get-menuSetting 에러 메세지',
+    },
+  });
+
+  // 셋팅 데이터 바뀔때 선택 구성요소값
+  useEffect(() => {
+    if (menuSettingData) {
+      //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
+      console.log(
+        '메뉴 셋팅값 ------ ',
+        menuSettingData.menuDetailList.length,
+        menuSettingData,
+      );
+
+      // 셋팅값 없을시 얼럿
+      if (menuSettingData.menuDetailList.length == 0) {
+        // openToastifyAlert({
+        //   type: 'error',
+        //   text: '셋팅에서 우선 셀렉트값을 선택해주세요',
+        // });
+        alert('셋팅에서 우선 셀렉트값을 선택해주세요!');
+        window.close();
+        return;
+      }
+
+      // 첫번째 출처 값
+      // 교재
+      // const filteredCategoriesF: any[] = [];
+      // //내신
+      // const filteredCategoriesG: any[] = [];
+      // //기출
+      // const filteredCategoriesH: any[] = [];
+      // // 두번째 추가정보
+      // const filteredCategoriesDD: any[] = [];
+
+      // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
+      menuSettingData?.menuDetailList.forEach(
+        (
+          menuDetail: {
+            [x: string]: any;
+            idxList: string;
+            nameList: string;
+            inputList: string;
+            searchList: string;
+            viewList: string;
+          },
+          index: any,
+        ) => {
+          const idxList = menuDetail?.idxList?.split(',');
+          const nameList = menuDetail?.nameList?.split(',');
+          const inputList = menuDetail?.inputList?.split(',');
+          const searchList = menuDetail?.searchList?.split(',');
+          const viewList = menuDetail?.viewList?.split(',');
+
+          // idx와 name을 짝지어 배열로 저장
+          const pairs = idxList.map((idx, index) => ({
+            idx,
+            name: nameList[index],
+            inputType: inputList[index],
+            searchList: searchList[index] === 'true',
+            viewList: viewList[index] === 'true',
+          }));
+
+          if (menuDetail.groupCode == 'MATERIALS') {
+            setIdxNamePairsF((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'EXAMS') {
+            setIdxNamePairsE((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'ETC') {
+            setIdxNamePairsETC((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'SELFPRODUCED') {
+            setIdxNamePairsS((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'INTERNAL') {
+            setIdxNamePairsG((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'EXAMS') {
+            setIdxNamePairsH((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'MOREINFO') {
+            setIdxNamePairsM((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+
+          // if (menuDetail.groupCode == 'EXAMS') {
+          //   const categories = idxList.map((idx, idxIndex) => ({
+          //     idx,
+          //     name: nameList[idxIndex],
+          //     code: nameList[idxIndex],
+          //     inputType: inputList[idxIndex] === 'true',
+          //     searchList: searchList[idxIndex] === 'true',
+          //     viewList: viewList[idxIndex] === 'true',
+          //   }));
+          //   filteredCategoriesH.push(categories);
+          // } else if (menuDetail.groupCode == 'MATERIALS') {
+          //   const categories = idxList.map((idx, idxIndex) => ({
+          //     idx,
+          //     name: nameList[idxIndex],
+          //     code: nameList[idxIndex],
+          //     inputType: inputList[idxIndex] === 'true',
+          //     searchList: searchList[idxIndex] === 'true',
+          //     viewList: viewList[idxIndex] === 'true',
+          //   }));
+          //   filteredCategoriesF.push(categories);
+          // } else if (menuDetail.groupCode == 'INTERNAL') {
+          //   const categories = idxList.map((idx, idxIndex) => ({
+          //     idx,
+          //     name: nameList[idxIndex],
+          //     code: nameList[idxIndex],
+          //     inputType: inputList[idxIndex] === 'true',
+          //     searchList: searchList[idxIndex] === 'true',
+          //     viewList: viewList[idxIndex] === 'true',
+          //   }));
+          //   filteredCategoriesG.push(categories);
+          // } else if (menuDetail.groupCode == 'MOREINFO') {
+          //   const categories = idxList.map((idx, idxIndex) => ({
+          //     idx,
+          //     name: nameList[idxIndex],
+          //     code: nameList[idxIndex],
+          //     inputType: inputList[idxIndex] === 'true',
+          //     searchList: searchList[idxIndex] === 'true',
+          //     // viewList: viewList[idxIndex] === 'true',
+          //   }));
+          //   filteredCategoriesDD.push(categories);
+          // }
+        },
+      );
+    }
+  }, [menuSettingData]);
+
+  // 이전 idx[0] 값을 저장할 ref
+  const prevIdxRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    console.log('prevIdxRef ------', prevIdxRef);
+  }, [prevIdxRef]);
+
+  useEffect(() => {
+    if (data) {
+      const combinedContent = data.map((item) => item.content).join(' ');
+      const idx = data.map((item) => item.idx);
+
+      // 데이터 업데이트
+      console.log('onItemClickData 선택된 아이템------------', combinedContent);
+      console.log('data선택된 아이템 idx------------', idx[0]);
+
+      // 이전 값과 비교하여 업데이트 조건 확인
+      if (prevIdxRef.current !== idx[0]) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        window.usePostJsonData(combinedContent);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        window.iTeXEQ.latexrecovery();
+
+        prevIdxRef.current = idx[0];
+        console.log('prevIdxRef 업데이트됨:', prevIdxRef.current);
+      } else {
+        console.log('같은 idx[0] 값이 선택되어 업데이트하지 않음');
+      }
+    }
+  }, [data]);
+
+  useEffect(() => {
+    console.log(
+      '출처 셀렉트 담긴 값 ----',
+      idxNamePairsF,
+      idxNamePairsG,
+      idxNamePairsE,
+      idxNamePairsS,
+      idxNamePairsH,
+      idxNamePairsM,
+      idxNamePairsETC,
+    );
+  }, [
+    idxNamePairsF,
+    idxNamePairsG,
+    idxNamePairsE,
+    idxNamePairsS,
+    idxNamePairsH,
+    idxNamePairsM,
+    idxNamePairsETC,
+  ]);
 
   // 리스트 선택시 기존값 셋팅
   useEffect(() => {
@@ -292,141 +536,30 @@ export function ContentEdit({
     }
   }, [editorData]);
 
-  // 이미지 태그 src 축출
-  const extractImgSrc = (htmlString: string) => {
-    // <img> 태그와 src 속성 값을 캡처하는 정규 표현식
-    const imgSrcRegex = /<img[^>]+src="([^">]+)"/g;
-    const srcArray = [];
-    let match;
-
-    while ((match = imgSrcRegex.exec(htmlString)) !== null) {
-      // match[1]에는 src 속성 값이 포함됩니다.
-      srcArray.push(match[1]);
-    }
-
-    // 배열 요소를 쉼표로 구분된 하나의 문자열로 결합하여 반환
-    return srcArray.join(',');
-  };
-
-  // useEffect(() => {
-  //   // console.log('quizItemList', quizItemList);
-  //   //문항 리스트에 추가
-  //   if (quizItemList.length > 0) {
-  //     setQuizItemArrList((prevArrList) => [...prevArrList, quizItemList]);
-  //   }
-  // }, [quizItemList]);
-
-  // useEffect(() => {
-  //   // console.log('quizItemArrList', quizItemArrList);
-  //   // console.log('quizIdx', quizIdx);
-
-  //   // 등록될 값
-  //   const newQuestionList = quizItemArrList.map((quizItems, idx) => ({
-  //     commandCode: 1,
-  //     quizIdx: quizIdx[idx] as number, //문항 idx
-  //     articleList: [
-  //       //에디터 이미지 값
-  //     ],
-  //     quizItemList: quizItems,
-  //     quizClassList: quizClassList,
-  //   }));
-  //   setAddQuestionList(newQuestionList);
-  // }, [quizItemArrList]);
-
-  // useEffect(() => {
-  // console.log('selectedQuestionType 문항타입', selectedQuestionType);
-  // console.log('selectedDifficulty 난이도', selectedDifficulty);
-  // //출처
-  // console.log('selectedSource 출처', selectedSource);
-  // //카테고리 값
-  // console.log('onItemClickData카테고리', onItemClickData?.quizCategoryList);
-
-  // // 특정 필드를 제외하는 유틸리티 함수
-  // const omitFields = (quizCategory: QuizCategory): QuizCategory => {
-  //   const { sources, 난이도, 문항타입, ...rest } = quizCategory;
-  //   return rest; // 나머지 필드만 반환
-  // };
-
-  // 카테고리 값을 매핑하는 함수
-  // const mapQuizCategoryList = (
-  //   quizCategoryList: QuizCategoryList[] | undefined,
-  // ): { type: string; quizCategory: QuizCategory }[] => {
-  //   if (quizCategoryList && Array.isArray(quizCategoryList)) {
-  //     return quizCategoryList
-  //       .map((item) => {
-  //         if (item.quizCategory && typeof item.quizCategory === 'object') {
-  //           const newQuizCategory = omitFields(item.quizCategory);
-  //           // Return the item only if it has valid keys
-  //           if (Object.keys(newQuizCategory).length > 0) {
-  //             return {
-  //               type: 'CATEGORY',
-  //               quizCategory: newQuizCategory,
-  //             };
-  //           }
-  //         }
-  //         // Instead of returning null, return undefined
-  //         return undefined; // This will be filtered out
-  //       })
-  //       .filter(
-  //         (item): item is { type: string; quizCategory: QuizCategory } =>
-  //           item !== undefined,
-  //       ); // Filter out undefined entries
-  //   }
-  //   return []; // Return an empty array if input is not valid
-  // };
-
-  // // 카테고리 매핑
-  // const category = mapQuizCategoryList(onItemClickData?.quizCategoryList);
-  // console.log('매핑된 카테고리값 ----', category);
-
-  //   const quizClassList: QuestionClassListType = [
-  //     {
-  //       type: 'CLASS',
-  //       quizCategory: {
-  //         sources: selectedSource,
-  //         난이도: selectedDifficulty,
-  //         문항타입: selectedQuestionType,
-  //         난이도공통: selectedDifficultyCommon,
-  //       },
-  //     },
-  //     ...category.filter(
-  //       (cat) => cat.quizCategory && Object.keys(cat.quizCategory).length > 0,
-  //     ), // 추가된 카테고리도 유효한 경우에만 추가
-  //   ];
-
-  //   // 빈 객체 또는 빈 배열이 아닌 경우에만 quizClassList에 추가
-  //   const filteredQuizClassList = quizClassList.filter((item) => {
-  //     // item이 null이 아닌 경우, 객체가 비어있지 않거나 배열이 비어있지 않은 경우
-  //     if (item) {
-  //       // Type assertion to inform TypeScript of the expected types
-  //       if (typeof item === 'object') {
-  //         return Object.keys(item).length > 0; // Check if the object is not empty
-  //       }
-  //       // if (Array.isArray(item)) {
-  //       //   return item.length > 0; // Check if the array is not empty
-  //       // }
-  //     }
-  //     return false; // Return false for any other cases
-  //   });
-
-  //   console.log('최종적으로 담길 quizClassList ----', filteredQuizClassList);
-  //   // 필수 메타값 추가 및 변경
-  //   setQuizClassList(filteredQuizClassList);
-  // }, [
-  //   selectedQuestionType,
-  //   selectedSource,
-  //   selectedDifficulty,
-  //   onItemClickData,
-  //   selectedList,
-  // ]);
-  // useEffect(() => {
-  //   if (addQuestionList.length) postQuizDataMutate();
-  // }, [addQuestionList]);
-
   // 문항 등록 후 메타데이터 수정 되게
-
   const postQuiz = async () => {
+    console.log(
+      '보내질 값 ----',
+      selectedSource,
+      selectedDifficulty,
+      categories,
+    );
     if (selectedSource.length > 0) {
+      const quizClassList = {
+        sources: selectedSource,
+        ...(selectedDifficulty && { 난이도: selectedDifficulty }),
+        ...(selectedQuestionType && { 문항타입: selectedQuestionType }),
+        ...(selectedDifficultyCommon && {
+          난이도공통: selectedDifficultyCommon,
+        }),
+      };
+
+      const quizCategory = categories
+        ? {
+            type: 'CATEGORY',
+            quizCategory: categories,
+          }
+        : undefined;
       const data = {
         commandCode: 0,
         quizIdx: null,
@@ -435,17 +568,9 @@ export function ContentEdit({
         quizClassList: [
           {
             type: 'CLASS',
-            quizCategory: {
-              sources: selectedSource,
-              난이도: selectedDifficulty,
-              문항타입: selectedQuestionType,
-              난이도공통: selectedDifficultyCommon,
-            },
+            quizCategory: quizClassList,
           },
-          {
-            type: 'CATEGORY',
-            quizCategory: categories,
-          },
+          quizCategory,
         ],
       };
       console.log('최종 적으로 수정될 문항 data값', data);
@@ -514,184 +639,6 @@ export function ContentEdit({
     // 등록 호출
     if (isEditor && !isPending) postQuizDataMutate();
   }, [quizItemList]);
-  // 등록이후 값 다시 불러오기 TODO:
-
-  // 메뉴 목록 조회 api (셋팅값)
-  const getMenuSetting = async () => {
-    const res = await resourceServiceInstance.get(
-      `/v1/menu/path?url=contentDtEditingSetting`,
-    );
-    console.log('getMenuSetting--------', res);
-    return res.data.data;
-  };
-  const {
-    data: menuSettingData,
-    isLoading: isMenuSettingLoading,
-    refetch: menuSettingRefetch,
-  } = useQuery({
-    queryKey: ['get-menuSetting'],
-    queryFn: getMenuSetting,
-    meta: {
-      errorMessage: 'get-menuSetting 에러 메세지',
-    },
-  });
-
-  // 셋팅 데이터 바뀔때 선택 구성요소값
-  useEffect(() => {
-    if (menuSettingData) {
-      //   idxs : 해당 키값으로 2뎁스 셀렉트 조회
-      console.log(
-        '메뉴 셋팅값 ------ ',
-        menuSettingData.menuDetailList.length,
-        menuSettingData,
-      );
-
-      // 셋팅값 없을시 얼럿
-      if (menuSettingData.menuDetailList.length == 0) {
-        // openToastifyAlert({
-        //   type: 'error',
-        //   text: '셋팅에서 우선 셀렉트값을 선택해주세요',
-        // });
-        alert('셋팅에서 우선 셀렉트값을 선택해주세요!');
-        window.close();
-        return;
-      }
-
-      // 첫번째 출처 값
-      // 교재
-      const filteredCategoriesF: any[] = [];
-      //내신
-      const filteredCategoriesG: any[] = [];
-      //기출
-      const filteredCategoriesH: any[] = [];
-      // 두번째 추가정보
-      const filteredCategoriesDD: any[] = [];
-
-      // idx 와 names를 인덱스 순번에 맞게 짝지어 배치
-      menuSettingData?.menuDetailList.forEach(
-        (
-          menuDetail: {
-            [x: string]: any;
-            idxList: string;
-            nameList: string;
-            inputList: string;
-            searchList: string;
-            viewList: string;
-          },
-          index: any,
-        ) => {
-          const idxList = menuDetail?.idxList?.split(',');
-          const nameList = menuDetail?.nameList?.split(',');
-          const inputList = menuDetail?.inputList?.split(',');
-          const searchList = menuDetail?.searchList?.split(',');
-          const viewList = menuDetail?.viewList?.split(',');
-
-          // idx와 name을 짝지어 배열로 저장
-          const pairs = idxList.map((idx, index) => ({
-            idx,
-            name: nameList[index],
-            inputType: inputList[index],
-            searchList: searchList[index] === 'true',
-            viewList: viewList[index] === 'true',
-          }));
-
-          if (menuDetail.groupCode == 'MATERIALS') {
-            setIdxNamePairsF((prev) => {
-              const uniquePairs = pairs.filter(
-                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
-              );
-              return [...prev, ...uniquePairs];
-            });
-          }
-          if (menuDetail.groupCode == 'INTERNAL') {
-            setIdxNamePairsG((prev) => {
-              const uniquePairs = pairs.filter(
-                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
-              );
-              return [...prev, ...uniquePairs];
-            });
-          }
-          if (menuDetail.groupCode == 'EXAMS') {
-            setIdxNamePairsH((prev) => {
-              const uniquePairs = pairs.filter(
-                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
-              );
-              return [...prev, ...uniquePairs];
-            });
-          }
-          // if (menuDetail.groupCode == 'MOREINFO') {
-          //   setIdxNamePairsDD((prev) => {
-          //     const uniquePairs = pairs.filter(
-          //       (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
-          //     );
-          //     return [...prev, ...uniquePairs];
-          //   });
-          // }
-
-          if (menuDetail.groupCode == 'EXAMS') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesH.push(categories);
-          } else if (menuDetail.groupCode == 'MATERIALS') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesF.push(categories);
-          } else if (menuDetail.groupCode == 'INTERNAL') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesG.push(categories);
-          } else if (menuDetail.groupCode == 'MOREINFO') {
-            const categories = idxList.map((idx, idxIndex) => ({
-              idx,
-              name: nameList[idxIndex],
-              code: nameList[idxIndex],
-              inputType: inputList[idxIndex] === 'true',
-              searchList: searchList[idxIndex] === 'true',
-              // viewList: viewList[idxIndex] === 'true',
-            }));
-            filteredCategoriesDD.push(categories);
-          }
-        },
-      );
-    }
-  }, [menuSettingData]);
-  // 카테고리의 그룹 아이템 조회
-  const fetchCategoryItems = async (
-    typeList: string,
-    setCategory: React.Dispatch<React.SetStateAction<ItemCategoryType[][]>>,
-  ) => {
-    const typeIds = typeList.split(',');
-    try {
-      const requests = typeIds.map((id) =>
-        classificationInstance.get(`/v1/category/class/${id}`),
-      );
-      const responses = await Promise.all(requests);
-      const itemsList = responses.map(
-        (res) => res?.data?.data?.categoryClassList,
-      );
-      setCategory(itemsList);
-    } catch (error: any) {
-      if (error.response.data?.code == 'GE-002') postRefreshToken();
-    }
-  };
 
   const selectCategoryOption = (event: React.MouseEvent<HTMLButtonElement>) => {
     const value = event.currentTarget.value;
@@ -700,6 +647,7 @@ export function ContentEdit({
 
   // 셀렉트 초기화
   const handleDefaultSelect = (defaultValue?: string) => {
+    //TODO : 고정값이 아닌 셋팅값으로
     switch (defaultValue) {
       case '문항 타입':
         setSelectedQuestionType('');
@@ -723,34 +671,9 @@ export function ContentEdit({
     setEditorData(JSON.parse(data));
   };
 
-  // useEffect(() => {
-  //   if (postQuizData) {
-  //     setQuestionList([...questionList, postQuizData.data.data.quiz]);
-  //   }
-  // }, [postQuizData]);
-  // useEffect(() => {
-  //   setQuizList([...questionList]);
-  // }, [questionList]);
-
   useEffect(() => {
     console.log('quizList', quizList);
   }, [quizList]);
-
-  useEffect(() => {
-    if (data) {
-      const combinedContent = data.map((item) => item.content).join(' ');
-
-      console.log('onItemClickData 선택된 아이템------------', combinedContent);
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      window.usePostJsonData(combinedContent);
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      window.iTeXEQ.latexrecovery();
-    }
-  }, [data]);
 
   useEffect(() => {
     if (onItemClickData && onItemClickData.quizItemList) {
@@ -761,41 +684,6 @@ export function ContentEdit({
       window.tinymce.activeEditor.setContent('');
     }
   }, [onItemClickData]);
-
-  // useEffect(() => {
-  //   if (data) {
-  // const combinedContent = data.map((item) => item.content).join(' ');
-  // console.log('onItemClickData 선택된 아이템------------', combinedContent);
-  // if (data && data.quizItemList) {
-  //   const temp = data.quizItemList[0].content;
-  //   console.log('선택된 요소 퀴즈 데이터 temp----------------', temp);
-  // const parser = new DOMParser();
-  // const dom = parser.parseFromString(combinedContent, 'text/html');
-  // const nodes = dom.querySelectorAll('.itexmath');
-  // nodes.forEach((node) => {
-  //   const latex = node.getAttribute('data-latex');
-  //   while (node.firstChild) {
-  //     node.removeChild(node.firstChild);
-  //   }
-  //   if (latex) {
-  //     node.textContent = latex;
-  //   }
-  // });
-  // console.log('test: ', dom.body.innerHTML);
-  // const content_0 = dom.body.innerHTML;
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // const editor = tinymce.get('tinyeditor');
-  // if (editor) {
-  //   console.log('check!!!!!!');
-  //   editor.setContent(content_0);
-  // } else {
-  //   console.log('data read failed');
-  // }
-  // }
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // window.usePostJsonData(combinedContent);
-  //   }
-  // }, [data]);
 
   useEffect(() => {
     if (onItemClickData && onItemClickData.quizItemList) {
@@ -825,6 +713,7 @@ export function ContentEdit({
 
       // console.log('category?.sources 출처 --------', category?.sources);
 
+      //TODO: 고정값이 아닌 셋팅 값으로
       return {
         문항타입: category?.문항타입 || '',
         난이도: category?.난이도 || '',

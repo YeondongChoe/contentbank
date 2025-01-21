@@ -52,9 +52,14 @@ export function ContentCopyEdit({
   const [data, setData] = useState<QuizType[] | null>(null);
   const [checkedList, setCheckedList] = useState<string[]>([]);
 
+  // 출처 셋팅
   const [idxNamePairsF, setIdxNamePairsF] = useState<IdxNamePair[]>([]);
   const [idxNamePairsG, setIdxNamePairsG] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsE, setIdxNamePairsE] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsS, setIdxNamePairsS] = useState<IdxNamePair[]>([]);
   const [idxNamePairsH, setIdxNamePairsH] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsM, setIdxNamePairsM] = useState<IdxNamePair[]>([]);
+  const [idxNamePairsETC, setIdxNamePairsETC] = useState<IdxNamePair[]>([]);
 
   const [content, setContent] = useState<string[]>([]);
   const [dataFetched, setDataFetched] = useState(false);
@@ -76,17 +81,19 @@ export function ContentCopyEdit({
   useEffect(() => {
     const storedQuizList = window.localStorage.getItem('quizList');
 
-    // console.log(
-    //   '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
-    //   storedQuizList,
-    // );
-
     if (storedQuizList) {
-      setParsedStoredQuizList(JSON.parse(storedQuizList));
+      const parsedList = JSON.parse(storedQuizList);
+      console.log(
+        '전역에서 로컬 스토리지에서 가져온 체크된 리스트값---',
+        parsedList,
+      );
 
-      // 로컬스토리지 값 다받은 뒤 초기화
-      window.opener.localStorage.clear();
-      return;
+      setParsedStoredQuizList(parsedList);
+
+      // 로컬스토리지 초기화는 값이 정상적으로 읽힌 후에만 실행
+      setTimeout(() => {
+        window.opener.localStorage.clear();
+      }, 100);
     }
   }, []);
 
@@ -354,7 +361,7 @@ export function ContentCopyEdit({
   const postQuiz = async () => {
     const data = addQuestionList[addQuestionList.length - 1];
 
-    return await quizService.post(`/v1/quiz`, data);
+    return await quizService.post(`/v2/quiz`, data);
   };
 
   const { data: postQuizData, mutate: postQuizDataMutate } = useMutation({
@@ -468,6 +475,30 @@ export function ContentCopyEdit({
               return [...prev, ...uniquePairs];
             });
           }
+          if (menuDetail.groupCode == 'EXAMS') {
+            setIdxNamePairsE((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'ETC') {
+            setIdxNamePairsETC((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
+          if (menuDetail.groupCode == 'SELFPRODUCED') {
+            setIdxNamePairsS((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
           if (menuDetail.groupCode == 'INTERNAL') {
             setIdxNamePairsG((prev) => {
               const uniquePairs = pairs.filter(
@@ -484,14 +515,14 @@ export function ContentCopyEdit({
               return [...prev, ...uniquePairs];
             });
           }
-          // if (menuDetail.groupCode == 'MOREINFO') {
-          //   setIdxNamePairsDD((prev) => {
-          //     const uniquePairs = pairs.filter(
-          //       (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
-          //     );
-          //     return [...prev, ...uniquePairs];
-          //   });
-          // }
+          if (menuDetail.groupCode == 'MOREINFO') {
+            setIdxNamePairsM((prev) => {
+              const uniquePairs = pairs.filter(
+                (pair) => !prev.some((prevPair) => prevPair.idx === pair.idx),
+              );
+              return [...prev, ...uniquePairs];
+            });
+          }
 
           if (menuDetail.groupCode == 'EXAMS') {
             const categories = idxList.map((idx, idxIndex) => ({

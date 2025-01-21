@@ -138,7 +138,14 @@ export function ContentList({
 
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = () => {
+    console.log('로컬스토리지에 들어갈 리스트 체크값 ----- ', quizList);
+
     window.localStorage.setItem('quizList', JSON.stringify(quizList));
+
+    console.log(
+      '로컬스토리지에 저장된 값:',
+      window.localStorage.getItem('quizList'),
+    );
   };
 
   // 체크박스 설정

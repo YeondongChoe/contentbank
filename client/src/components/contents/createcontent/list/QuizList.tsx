@@ -58,7 +58,6 @@ export function QuizList({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [checkList, setCheckList] = useState<string[]>([]);
 
-  const [isPostMessage, setIsPostMessage] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [groupId, setGroupId] = useState<string | null>(null);
   const [isAllowed, setIsAllowed] = useState(false);
@@ -201,30 +200,17 @@ export function QuizList({
       });
       // 초기화
       setIsAllowed(false);
-      setIsDelete(false);
+
       queryClient.invalidateQueries({
         queryKey: ['get-quizList'],
         exact: true,
       });
     },
   });
+  const parentDivRefs = useRef<Map<string, HTMLElement>>(new Map());
+  const [pendingDiv, setPendingDiv] = useState<HTMLElement | null>(null); // 대기 중인 parentDiv
 
-  // 그룹으로 묶기
-  useEffect(() => {
-    // if (isDelete) {
-    //   putGroupData([]);
-    //   alert('그룹이 해제되었습니다.');
-    // }
-  }, [groupId]);
-  useEffect(() => {}, [isAllowed]);
-  useEffect(() => {
-    if (isDelete) {
-      putGroupData([]);
-      alert('그룹이 해제되었습니다.');
-    }
-  }, [isDelete]);
-
-  const AddGroup = () => {
+  const AddGroup = async () => {
     setIsAllowed(true);
     // 하나이상의 대발문은 그룹 불가능
     // 문제와 정답은 1:1 대응되도록 개수가 안맞으면 불가능
@@ -261,10 +247,8 @@ export function QuizList({
       return;
     }
     // 그룹화 DOM 생성
-    // 서버에 그룹 상태 전송
-    if (!isPending) putGroupData(items);
+
     const parentDiv = document.createElement('div') as HTMLElement;
-    parentDiv.id = groupId as string; // props로 전달받은 groupId를 id로 설정
     parentDiv.className = 'groupedItemsContainer';
     // 그룹 체크박스 추가
     const groupCheckbox = document.createElement('input');
@@ -283,37 +267,12 @@ export function QuizList({
     const ungroupButton = document.createElement('button');
     ungroupButton.innerText = '그룹 해제';
     ungroupButton.className = 'ungroup-button';
-    ungroupButton.onclick = (e) => {
-      if (confirm('그룹을 해제하시겠습니까?')) {
-        const button = e.currentTarget as HTMLButtonElement;
-        const parentDiv = button.parentElement as HTMLElement;
-        console.log('해제할 그룹 parentDiv', parentDiv);
-        if (parentDiv) {
-          // 원래 위치로 복원
-          const childNodes = Array.from(parentDiv.childNodes);
-          const elementsToMove = childNodes.slice(3); // 체크박스와 삭제버튼 제외
-          // console.log('Elements to move:', elementsToMove);
-
-          console.log('해제할 그룹 아이디', parentDiv.id);
-          setIsDelete(true); // 서버에 그룹 상태 전송
-          setGroupId(null);
-          // 그룹 컨테이너 제거
-          // parentDiv.remove();
-
-          // // 이동 대상 컨테이너
-          // const scrollbarContainer = document.querySelector('.list_wrapper');
-          // if (scrollbarContainer) {
-          //   elementsToMove.forEach((element) => {
-          //     if (element instanceof HTMLElement) {
-          //       scrollbarContainer.appendChild(element); // 요소를 이동
-          //     }
-          //   });
-          // }
-        }
-      }
-    };
-
+    ungroupButton.onclick = () => handleUngroup(parentDiv);
     parentDiv.appendChild(ungroupButton);
+
+    // API 호출 및 ID 설정
+    setPendingDiv(parentDiv); // 대기 중인 parentDiv 저장
+    await putGroup(items); // API 호출
 
     // 체크된 아이템 이동
     items.forEach((item) => {
@@ -338,6 +297,45 @@ export function QuizList({
     }
   };
 
+  const handleUngroup = (parentDiv: HTMLElement) => {
+    if (confirm('그룹을 해제하시겠습니까?')) {
+      const childNodes = Array.from(parentDiv.childNodes).slice(2); // 체크박스 제외
+      const scrollbarContainer = document.querySelector('.list_wrapper');
+
+      if (scrollbarContainer) {
+        childNodes.forEach((node) => {
+          if (node instanceof HTMLElement) {
+            scrollbarContainer.appendChild(node); // 원래 위치로 복원
+          }
+        });
+      }
+
+      parentDiv.remove();
+      setGroupId(null);
+      alert('그룹이 해제되었습니다.');
+    }
+  };
+
+  // 그룹으로 묶기
+  useEffect(() => {
+    if (groupId && pendingDiv) {
+      console.log('groupId ----------', groupId);
+      pendingDiv.id = groupId; // 서버에서 받은 그룹 ID를 DOM에 설정
+      parentDivRefs.current.set(groupId, pendingDiv); // ref에 저장
+      setPendingDiv(null); // 대기 상태 초기화
+      console.log(`그룹화된 parentDiv ID: ${groupId}`);
+    }
+  }, [groupId, pendingDiv]);
+  useEffect(() => {}, [isAllowed]);
+  useEffect(() => {
+    if (isDelete) {
+      putGroupData([]);
+      console.log('그룹이 해제되었습니다 ---------');
+      alert('그룹이 해제되었습니다.');
+      setGroupId(null);
+      setIsDelete(false); // 상태 초기화
+    }
+  }, [isDelete]);
   // 클릭 된 아이템의 데이터
   const handleClickItem = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -474,12 +472,6 @@ export function QuizList({
       const listWrapper = document.querySelector('.list_wrapper');
       if (!listWrapper) return;
 
-      // // 기존 그룹화된 부모 요소 초기화
-      // const existingGroups = document.querySelectorAll(
-      //   '.groupedItemsContainer',
-      // );
-      // existingGroups.forEach((group) => group.remove());
-
       const groupMap: Record<string, HTMLElement> = {};
       const itemsToSend: QuizListType[] = [];
       // 그룹 ID로 부모 요소 생성
@@ -487,57 +479,59 @@ export function QuizList({
         if (item.groupCode) {
           if (!groupMap[item.groupCode]) {
             const parentDiv = document.createElement('div') as HTMLElement;
-            parentDiv.id = item.groupCode;
-            parentDiv.className = 'groupedItemsContainer';
+            if (parentDiv) {
+              parentDiv.id = item.groupCode;
+              parentDiv.className = 'groupedItemsContainer';
 
-            const groupCheckbox = document.createElement('input');
-            groupCheckbox.type = 'checkbox';
-            groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
-            groupCheckbox.className = 'group-checkbox';
+              const groupCheckbox = document.createElement('input');
+              groupCheckbox.type = 'checkbox';
+              groupCheckbox.id = `groupCheckbox_${item.groupCode}`;
+              groupCheckbox.className = 'group-checkbox';
 
-            const groupCheckboxLabel = document.createElement('label');
-            groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
-            groupCheckboxLabel.innerText = '그룹 선택';
+              const groupCheckboxLabel = document.createElement('label');
+              groupCheckboxLabel.htmlFor = `groupCheckbox_${item.groupCode}`;
+              groupCheckboxLabel.innerText = '그룹 선택';
 
-            const ungroupButton = document.createElement('button');
-            ungroupButton.innerText = '그룹 해제';
-            ungroupButton.className = 'ungroup-button';
-            ungroupButton.onclick = (e) => {
-              if (confirm('그룹을 해제하시겠습니까?')) {
-                const button = e.currentTarget as HTMLButtonElement;
-                const parentDiv = button.parentElement as HTMLElement;
+              const ungroupButton = document.createElement('button');
+              ungroupButton.innerText = '그룹 해제';
+              ungroupButton.className = 'ungroup-button';
+              ungroupButton.onclick = (e) => {
+                if (confirm('그룹을 해제하시겠습니까?')) {
+                  const button = e.currentTarget as HTMLButtonElement;
+                  const parentDiv = button.parentElement as HTMLElement;
 
-                if (parentDiv) {
-                  // 원래 위치로 복원
-                  const childNodes = Array.from(parentDiv.childNodes);
-                  const elementsToMove = childNodes.slice(3); // 체크박스와 삭제버튼 제외
-                  console.log('Elements to move:', elementsToMove);
+                  if (parentDiv) {
+                    // 원래 위치로 복원
+                    const childNodes = Array.from(parentDiv.childNodes);
+                    const elementsToMove = childNodes.slice(3); // 체크박스와 삭제버튼 제외
+                    console.log('Elements to move:', elementsToMove);
 
-                  // 이동 대상 컨테이너
-                  const scrollbarContainer =
-                    document.querySelector('.list_wrapper');
-                  if (scrollbarContainer) {
-                    elementsToMove.forEach((element) => {
-                      if (element instanceof HTMLElement) {
-                        scrollbarContainer.appendChild(element); // 요소를 이동
-                      }
-                    });
+                    // 이동 대상 컨테이너
+                    const scrollbarContainer =
+                      document.querySelector('.list_wrapper');
+                    if (scrollbarContainer) {
+                      elementsToMove.forEach((element) => {
+                        if (element instanceof HTMLElement) {
+                          scrollbarContainer.appendChild(element); // 요소를 이동
+                        }
+                      });
+                    }
                   }
+                  // 그룹 컨테이너 제거
+                  setGroupId(parentDiv.id);
+                  parentDiv.remove();
+                  setIsDelete(true);
+                  setIsAllowed(true);
                 }
-                // 그룹 컨테이너 제거
-                setGroupId(null);
-                parentDiv.remove();
+              };
 
-                alert('그룹이 해제되었습니다.');
-              }
-            };
+              parentDiv.appendChild(groupCheckbox);
+              parentDiv.appendChild(groupCheckboxLabel);
+              parentDiv.appendChild(ungroupButton);
 
-            parentDiv.appendChild(groupCheckbox);
-            parentDiv.appendChild(groupCheckboxLabel);
-            parentDiv.appendChild(ungroupButton);
-
-            groupMap[item.groupCode] = parentDiv;
-            listWrapper.appendChild(parentDiv);
+              groupMap[item.groupCode] = parentDiv;
+              listWrapper.appendChild(parentDiv);
+            }
           }
         }
       });
