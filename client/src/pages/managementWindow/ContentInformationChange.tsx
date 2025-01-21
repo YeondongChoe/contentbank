@@ -129,14 +129,14 @@ export function ContentInformationChange() {
         menuSettingData,
       );
       // 셋팅값 없을시 얼럿
-      // if (menuSettingData?.menuDetailList[0]?.idxs == undefined) {
-      //   // openToastifyAlert({
-      //   //   type: 'error',
-      //   //   text: '셋팅에서 우선 셀렉트값을 선택해주세요',
-      //   // });
-      //   alert('셋팅에서 우선 셀렉트값을 선택해주세요!');
-      //   window.close();
-      // }
+      if (menuSettingData?.menuDetailList[0]?.idxs == undefined) {
+        // openToastifyAlert({
+        //   type: 'error',
+        //   text: '셋팅에서 우선 셀렉트값을 선택해주세요',
+        // });
+        alert('셋팅에서 우선 셀렉트값을 선택해주세요!');
+        window.close();
+      }
       fetchCategoryItems(
         menuSettingData?.menuDetailList[0]?.idxList,
         setCategoriesE,
@@ -146,7 +146,7 @@ export function ContentInformationChange() {
       const menuDetail = menuSettingData?.menuDetailList[0];
       const idxs = menuDetail?.idxList?.split(',');
       const names = menuDetail?.nameList?.split(',');
-      const pairs = idxs.map((idx: any, index: string | number) => ({
+      const pairs = idxs?.map((idx: any, index: string | number) => ({
         idx,
         name: names[index],
       }));

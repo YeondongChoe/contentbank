@@ -543,6 +543,10 @@ export function ContentEdit({
     }
   }, [editorData]);
 
+  useEffect(() => {
+    console.log('변경 될 체크된 아이템들  ----', checkedList);
+  }, [checkedList]);
+
   // 문항 등록 후 메타데이터 수정 되게
   const postQuiz = async () => {
     console.log(
@@ -551,6 +555,11 @@ export function ContentEdit({
       selectedDifficulty,
       categories,
     );
+    const filteredQuizList = quizList.filter((quiz) =>
+      checkedList.includes(quiz.code),
+    );
+    const idxList = filteredQuizList.map((quiz) => quiz.idx);
+
     if (selectedSource.length > 0) {
       const quizClassList = {
         sources: selectedSource,
@@ -568,16 +577,15 @@ export function ContentEdit({
           }
         : undefined;
       const data = {
-        commandCode: 0,
-        quizIdx: null,
-        articleList: [],
+        commandCode: 1,
+        quizIdx: idxList,
         quizItemList: quizItemList,
         quizClassList: [
           {
             type: 'CLASS',
             quizCategory: quizClassList,
           },
-          quizCategory,
+          ...(quizCategory ? [quizCategory] : []),
         ],
       };
       console.log('최종 적으로 수정될 문항 data값', data);
