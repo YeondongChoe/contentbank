@@ -15,20 +15,11 @@ import {
   Select,
   ValueNone,
 } from '../..';
-import {
-  classificationInstance,
-  quizService,
-  resourceServiceInstance,
-} from '../../../api/axios';
+import { quizService, resourceServiceInstance } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
-  AddQuestionListType,
   EditorDataType,
   IdxNamePair,
-  ItemCategoryType,
-  QuestionClassListType,
-  QuizCategory,
-  QuizCategoryList,
   QuizItemListType,
   QuizListType,
   QuizType,
@@ -38,7 +29,6 @@ import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
-import Type4 from './editer/components/Type4';
 import { QuizList } from './list';
 import { InputOptions } from './options/InputOptions';
 import { OptionList } from './options/OptionList';
@@ -501,10 +491,12 @@ export function ContentEdit({
       selectedDifficulty,
       categories,
     );
-    const filteredQuizList = quizList.filter((quiz) =>
-      checkedList.includes(quiz.code),
-    );
-    const idxList = filteredQuizList.map((quiz) => quiz.idx);
+    // const filteredQuizList = quizList.filter((quiz) =>
+    //   checkedList.includes(quiz.code),
+    // );
+    // const idxList = filteredQuizList.map((quiz) => quiz.idx);
+    console.log('onItemClickData 클릭된 아이템 ----', onItemClickData);
+    const idx = onItemClickData?.idx;
 
     if (selectedSource.length > 0) {
       const quizClassList = {
@@ -524,7 +516,7 @@ export function ContentEdit({
         : undefined;
       const data = {
         commandCode: 1,
-        quizIdx: idxList,
+        quizIdx: idx,
         quizItemList: quizItemList,
         quizClassList: [
           {

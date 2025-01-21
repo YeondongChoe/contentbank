@@ -7,7 +7,6 @@ import { GrPlan } from 'react-icons/gr';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   Button,

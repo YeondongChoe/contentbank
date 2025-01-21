@@ -270,8 +270,8 @@ export function ClassificationEdit({
     ) {
       console.log('idxNamePairsDD ----- ', idxNamePairsDD);
       console.log('idxNamePairsDD[0].idx ----- ', idxNamePairsDD[0][0].idx);
-      fetchCategoryItems(idxNamePairsDD[0][0].idx, setCategoriesDD1);
-      fetchCategoryItems(idxNamePairsDD[0][1].idx, setCategoriesDD2);
+      fetchCategoryItems(idxNamePairsDD[0][0]?.idx, setCategoriesDD1);
+      fetchCategoryItems(idxNamePairsDD[0]?.[1]?.idx, setCategoriesDD2);
     }
   }, [idxNamePairsA, idxNamePairsDD]);
 

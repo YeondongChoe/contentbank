@@ -7,20 +7,11 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import { Button, Loader, Modal, openToastifyAlert, Select } from '../..';
-import {
-  classificationInstance,
-  quizService,
-  resourceServiceInstance,
-} from '../../../api/axios';
+import { quizService, resourceServiceInstance } from '../../../api/axios';
 import { quizListAtom } from '../../../store/quizListAtom';
 import {
-  AddQuestionListType,
   EditorDataType,
   IdxNamePair,
-  ItemCategoryType,
-  QuestionClassListType,
-  QuizCategory,
-  QuizCategoryList,
   QuizItemListType,
   QuizListType,
   QuizType,
@@ -31,7 +22,6 @@ import { COLOR } from '../../constants/COLOR';
 
 import { EditerOneFile } from './editer';
 import { QuizList } from './list';
-import { InputOptions } from './options/InputOptions';
 import { OptionList } from './options/OptionList';
 
 const loadMathJax = (setLoaded: (arg0: boolean) => void) => {
