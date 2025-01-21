@@ -491,11 +491,8 @@ export function ContentEdit({
       selectedDifficulty,
       categories,
     );
-    // const filteredQuizList = quizList.filter((quiz) =>
-    //   checkedList.includes(quiz.code),
-    // );
-    // const idxList = filteredQuizList.map((quiz) => quiz.idx);
-    console.log('onItemClickData 클릭된 아이템 ----', onItemClickData);
+
+    // console.log('onItemClickData 클릭된 아이템 idx----', onItemClickData?.idx);
     const idx = onItemClickData?.idx;
 
     if (selectedSource.length > 0) {
