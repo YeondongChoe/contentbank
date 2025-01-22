@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useQuery } from '@tanstack/react-query';
+import { MathJax, MathJax3Object, MathJaxContext } from 'better-react-mathjax';
 import { SlOptionsVertical, SlPrinter } from 'react-icons/sl';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import ReactToPrint from 'react-to-print';
@@ -17,6 +18,23 @@ import { makePdf } from './makePDF';
 
 type PDFModalProps = {
   list: any[];
+};
+
+const config = {
+  loader: {
+    load: ['[tex]/html'],
+  },
+  tex: {
+    packages: { '[+]': ['html'] },
+    inlineMath: [
+      ['$', '$'],
+      ['\\(', '\\)'],
+    ],
+    displayMath: [
+      ['$$', '$$'],
+      ['\\[', '\\]'],
+    ],
+  },
 };
 
 export function PDFModal({ list }: PDFModalProps) {
@@ -54,10 +72,19 @@ export function PDFModal({ list }: PDFModalProps) {
   // const printPDF = async () => {
   //   await pdf.viewWithPdf();
   // };
+  const [display, setDisplay] = useState('none');
+
+  const offLoader = () => {
+    setDisplay('block');
+  };
 
   useEffect(() => {
     console.log('sortedList', sortedList);
   }, [sortedList]);
+
+  const createMarkup = (data: string) => {
+    return { __html: data || '' };
+  };
 
   return (
     <>
@@ -435,6 +462,18 @@ export function PDFModal({ list }: PDFModalProps) {
                         <ListWrap>
                           <RowList>
                             <ColumList>
+                              {/* <MathJax
+                                inline
+                                dynamic
+                                onInitTypeset={() => {
+                                  offLoader();
+                                }}
+                              >
+                                <MathJaxContext
+                                  version={3}
+                                  config={config}
+                                  //onStartup={(mathJax) => setMathJax(mathJax)}
+                                > */}
                               {item.quizItemList.map((el) => (
                                 <MathViewerWrapper
                                   key={`${el?.code} quizItemList sortedList`}
@@ -456,21 +495,37 @@ export function PDFModal({ list }: PDFModalProps) {
                                   ].includes(el?.type) &&
                                     !Array.isArray(el?.content) &&
                                     el?.content && (
+                                      // <ContentQuestion
+                                      //   key={el.idx}
+                                      //   dangerouslySetInnerHTML={createMarkup(
+                                      //     el.content,
+                                      //   )}
+                                      // ></ContentQuestion>
                                       <MathViewer
                                         data={el.content}
                                       ></MathViewer>
                                     )}
                                   {Array.isArray(el?.content) && (
                                     <>
-                                      {el.content.map((item, index) => (
-                                        <MathViewer key={index}>
-                                          {item}
-                                        </MathViewer>
-                                      ))}
+                                      {el.content.map((item, index) => {
+                                        return (
+                                          // <ContentQuestion
+                                          //   key={index}
+                                          //   dangerouslySetInnerHTML={createMarkup(
+                                          //     item,
+                                          //   )}
+                                          // ></ContentQuestion>
+                                          <MathViewer key={index} data={item}>
+                                            {/* {item} */}
+                                          </MathViewer>
+                                        );
+                                      })}
                                     </>
                                   )}
                                 </MathViewerWrapper>
                               ))}
+                              {/* </MathJaxContext>
+                              </MathJax> */}
                             </ColumList>
                           </RowList>
                         </ListWrap>
@@ -629,3 +684,12 @@ const MathViewerList = styled.div`
   }
 `;
 const ValueNoneWrapper = styled.div``;
+const ContentQuestion = styled.div`
+  //padding-bottom: 10px;
+  div {
+    background-color: white;
+  }
+  p {
+    background-color: white;
+  }
+`;
