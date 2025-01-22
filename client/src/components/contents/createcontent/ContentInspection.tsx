@@ -21,10 +21,11 @@ import { quizService } from '../../../api/axios';
 import { getMyInfo } from '../../../api/user';
 import { useModal } from '../../../hooks';
 import { quizListAtom } from '../../../store/quizListAtom';
-import { QuizListType, QuizType } from '../../../types';
+import { EditorDataType, QuizListType, QuizType } from '../../../types';
 import { postRefreshToken } from '../../../utils/tokenHandler';
 import { COLOR } from '../../constants/COLOR';
 
+import { EditerOneFile } from './editer';
 import { InspectionList, QuizList } from './list';
 import { InspectionModal } from './modal';
 
@@ -159,6 +160,20 @@ export function ContentInspection({
   // useEffect(() => {
   //   console.log('onItemClickData------------', onItemClickData);
   // }, [checkedList]);
+  const [editorData, setEditorData] = useState<EditorDataType | null>(null);
+  const [isEditor, setIsEditor] = useState<boolean>(false);
+  const saveHandler = async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const data = await window.saveExamData();
+    console.log('에디터 데이터 ----------------', data);
+    setEditorData(JSON.parse(data));
+  };
+  const submitSave = () => {
+    setIsEditor(true);
+    // 버튼 누를 시 에디터 값 축출
+    saveHandler();
+  };
 
   useEffect(() => {}, [inspectionArea, inspectionReason]);
 
@@ -177,6 +192,12 @@ export function ContentInspection({
                   onItemClick={setOnItemClickData}
                   setCheckedList={setCheckedList}
                 />
+                {/* <EditerOneFile
+                  type={type}
+                  setEditorData={setEditorData}
+                  saveHandler={saveHandler}
+                  onItemClickData={quizList[0]}
+                /> */}
               </>
             )}
             {!dataFetched && <Loader />}

@@ -83,7 +83,6 @@ export function Classification({
   const [questionList, setQuestionList] = useState<QuizListType[]>([]);
   const [sortedList, setSortedList] = useState<QuizListType[]>([]);
   const [sortedQuizList, setSortedQuizList] = useState<QuizListType[]>([]);
-
   const [radioEtc1Check, setRadioEtc1Check] = useState<RadioStateType[]>([]);
   const [radioEtc2Check, setRadioEtc2Check] = useState<RadioStateType[]>([]);
 

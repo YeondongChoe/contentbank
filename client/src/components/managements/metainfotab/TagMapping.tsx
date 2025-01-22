@@ -95,7 +95,7 @@ export function TagMapping() {
       const res = await classificationInstance.get(
         `/v1/category/group/${queryValue.split('/')[0]}`,
       );
-      console.log(res.data.data);
+      console.log('카테고리 그룹 리스트 ----', res.data.data);
       return res.data.data;
     }
   };
