@@ -212,7 +212,7 @@ export function MockExamTab({
     const res = await quizService.get(
       `/v1/previous/class/search?searchCondition=기출&searchKeyword=기출년도`,
     );
-    console.log('res:', res);
+    //console.log('res:', res);
     return res.data.data.dataList;
   };
   const {
@@ -243,7 +243,6 @@ export function MockExamTab({
       setAttributeYearList(processedData);
     }
   }, [perviousAttributeYearListData]);
-  console.log('attributeYearList', attributeYearList);
 
   //수능모의고사 속성 호출 api
   const getCategoryExamGroups = async () => {
