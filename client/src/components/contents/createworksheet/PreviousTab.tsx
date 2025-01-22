@@ -399,7 +399,7 @@ export function PreviousTab({
   //학교내신/전국시험 출제년도 리스트 불러오는 api
   const getPreviousAttributeYearList = async () => {
     const res = await quizService.get(
-      `/v1/previous/class/search?searchCondition=${previousExamMenu === 0 ? '내신' : '기출'}&searchKeyword=${previousExamMenu === 0 ? '출제년도' : '기출일시'}`,
+      `/v1/previous/class/search?searchCondition=${previousExamMenu === 0 ? '내신' : '기출'}&searchKeyword=${previousExamMenu === 0 ? '출제년도' : '기출년도'}`,
     );
     return res.data.data.dataList;
   };

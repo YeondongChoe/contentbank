@@ -29,13 +29,12 @@ export function WorkbookCSATSetting() {
     },
   ];
   const [dummyData, setDummyData] = useState<MenuDataListProps[]>(DummyData);
-
   const [isStartDnD, setIsStartDnd] = useState(false);
   const [selectedValue, setSelectedValue] = useState<string>('더미'); //태그
   const [menuIdx, setMenuIdx] = useState<number | null>(null);
   const [menuDataList, setMenuDataList] = useState<MenuDataListProps[]>([]);
   const [detailIdx, setDetailIdx] = useState<string | null>(null);
-
+  console.log('menuIdx:', menuIdx);
   // 로컬 스토리지에서 데이터 가져오기
   useEffect(() => {
     const fetchDataFromStorage = () => {
