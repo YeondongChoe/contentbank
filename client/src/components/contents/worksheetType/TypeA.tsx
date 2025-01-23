@@ -46,6 +46,7 @@ export const TypeA = ({
   //console.log('newInitialItems', newInitialItems);
   //console.log('quizItemList:', quizItemList);
   //console.log(answerCommentary);
+  console.log('pages:', pages);
 
   useEffect(() => {
     if (newInitialItems.length > 0) {
