@@ -1444,9 +1444,9 @@ const MathViewerWrapperA = styled.div<{ padding: string }>`
   margin-bottom: -40px;
   margin-top: -80px;
   font-size: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  //display: flex;
+  //flex-direction: column;
+  //justify-content: center;
   height: 100%;
 `;
 //비율

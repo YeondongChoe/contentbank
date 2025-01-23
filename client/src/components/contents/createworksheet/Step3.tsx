@@ -48,8 +48,8 @@ export function Step3() {
     window.close();
   };
 
-  //console.log('initialItems', initialItems);
-  //console.log('newInitialItems', newInitialItems);
+  console.log('initialItems', initialItems);
+  console.log('newInitialItems', newInitialItems);
 
   //학습지 수정 상태관리
   const [isEditWorkbook, setIsEditWorkbook] = useState<number>();
@@ -76,7 +76,7 @@ export function Step3() {
       if (data) {
         try {
           const parsedData = JSON.parse(data);
-          //console.log('parsedData', parsedData);
+          console.log('parsedData', parsedData);
           const parsedquotientData = JSON.parse(quotientData as string);
           setGetLocalData(parsedData);
           setGetQuotientLocalData(parsedquotientData);
@@ -304,6 +304,13 @@ export function Step3() {
 
   // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
+    const processData = newInitialItems.map((item) => ({
+      num: item.num,
+      idx: item.idx,
+      type: item.type,
+      score: item.score,
+      height: item.height,
+    }));
     const data: any = {
       commandCode: isEditWorkbook === 1 ? isEditWorkbook : 0,
       workSheetIdx: isEditWorkbook === 1 ? workSheetIdx : null,
@@ -346,7 +353,7 @@ export function Step3() {
                   ? 3
                   : 0,
       },
-      quizList: newInitialItems,
+      quizList: processData,
     };
 
     //백엔드 서버로 생성 요청
@@ -390,6 +397,15 @@ export function Step3() {
     } else {
       postNewWorkbookData();
     }
+  };
+  const [isWorkbookPending, setIsWorkbookPending] = useState(false);
+  //학습지 생성 요청중일때 alertBar
+  useEffect(() => {
+    if (postNewWorkbookIsPending) setIsWorkbookPending(true);
+  }, [postNewWorkbookIsPending]);
+
+  const closePendingAlert = () => {
+    setIsWorkbookPending(false);
   };
 
   //단원분류 입력 도중 해당 화면을 벗어나는 경우, '저장하지 않고 나가시겠습니까?' 얼럿
@@ -902,7 +918,7 @@ export function Step3() {
         type="success"
         isAlertOpen={isSuccessAlertOpen}
         closeAlert={closeSuccessAlert}
-        message={'학습지만들기가 완료되었습니다'}
+        message={'학습지 만들기가 완료되었습니다'}
       ></AlertBar>
       <TitleWrapper>
         <IconWrapper>
@@ -1025,6 +1041,15 @@ export function Step3() {
           <span>학습지 만들기</span>
         </Button>
       </CreateButtonWrapper>
+      {isWorkbookPending && (
+        <AlertBar
+          isCloseKor
+          type="warning"
+          isAlertOpen={isWorkbookPending}
+          closeAlert={closePendingAlert}
+          message={'잠시만 기다려주세요 학습지를 만들고 있습니다.'}
+        ></AlertBar>
+      )}
     </Container>
   );
 }

@@ -151,9 +151,6 @@ export function Step2() {
 
   const [categoryTypeList, setCategoryTypeList] = useState<string>('');
 
-  //수정에서 들어왔을때 로컬스토리지 값 다 받은 후
-  const [isDone, setIsDone] = useState<boolean>(false);
-
   const [selectedList, setSelectedList] = useState<selectedListType[]>([]);
   //탭 값
   const [tabView, setTabView] = useState<string>('학습지 요약');
@@ -342,7 +339,7 @@ export function Step2() {
   // 학습지 상세 정보 불러오기 api
   const getWorkbookData = async (idx: number) => {
     const res = await workbookInstance.get(`/v1/workbook/detail/${idx}`);
-    // console.log(`getWorkbook 결과값`, res);
+    console.log(`getWorkbook 결과값`, res);
     return res;
   };
 
@@ -383,7 +380,9 @@ export function Step2() {
       //setRemainderContent(workbookData?.data.data.quizList.length);
       //setNextRemainderContent(workbookData?.data.data.quizList.length + 1);
       //setEqualScore(2);
-      setInitialItems(workbookData?.data.data.quizList);
+      //그룹코드로 묶는 함수
+      processData(workbookData?.data.data.quizList);
+      //setInitialItems(workbookData?.data.data.quizList);
       setNameValue(workbookData?.data.data.name);
       setGradeValue(workbookData?.data.data.grade);
       setContentAuthor(workbookData?.data.data.examiner);
@@ -396,7 +395,6 @@ export function Step2() {
       setIsDate(workbookData?.data.data.templateList[0].isDate);
       setIsQuizType(workbookData?.data.data.templateList[0].isQuizType);
       setItemType(workbookData?.data.data.templateList[0].itemType);
-      setIsDone(true);
       //window.opener.localStorage.clear();
     }
   }, [workbookData]);
@@ -1500,63 +1498,63 @@ export function Step2() {
     }
   };
   //리스트 문항 전체 추가
-  const clickAddAllQuizItem = () => {
-    //새문항 전체추가
-    if (newQuizItems && getItemCountData) {
-      const allNewQuizItems = newQuizItems.quizList;
-      if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
-        setInitialItems((prevItems) => {
-          const updatedQuizItem = allNewQuizItems.map((item, index) => ({
-            ...item,
-          }));
-          const filteredQuizItem = updatedQuizItem.filter(
-            (updatedItem) =>
-              !initialItems.some(
-                (initialItem) => initialItem.code === updatedItem.code,
-              ),
-          );
-          return [...prevItems, ...filteredQuizItem];
-        });
-        setNewQuizItems((prevItems) => {
-          if (prevItems) {
-            return {
-              ...prevItems,
-              quizList: [],
-            };
-          }
-          return prevItems;
-        });
-      } else {
-        openToastifyAlert({
-          type: 'error',
-          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
-        });
-      }
-    }
-    //즐겨찾기 전체추가
-    else if (favoriteQuestionList && getItemCountData) {
-      const allNewQuizItems = favoriteQuestionList.quizList;
-      if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
-        setInitialItems((prevItems) => {
-          const updatedQuizItem = allNewQuizItems.map((item, index) => ({
-            ...item,
-          }));
-          const filteredQuizItem = updatedQuizItem.filter(
-            (updatedItem) =>
-              !initialItems.some(
-                (initialItem) => initialItem.code === updatedItem.code,
-              ),
-          );
-          return [...prevItems, ...filteredQuizItem];
-        });
-      } else {
-        openToastifyAlert({
-          type: 'error',
-          text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
-        });
-      }
-    }
-  };
+  // const clickAddAllQuizItem = () => {
+  //   //새문항 전체추가
+  //   if (newQuizItems && getItemCountData) {
+  //     const allNewQuizItems = newQuizItems.quizList;
+  //     if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
+  //       setInitialItems((prevItems) => {
+  //         const updatedQuizItem = allNewQuizItems.map((item, index) => ({
+  //           ...item,
+  //         }));
+  //         const filteredQuizItem = updatedQuizItem.filter(
+  //           (updatedItem) =>
+  //             !initialItems.some(
+  //               (initialItem) => initialItem.code === updatedItem.code,
+  //             ),
+  //         );
+  //         return [...prevItems, ...filteredQuizItem];
+  //       });
+  //       setNewQuizItems((prevItems) => {
+  //         if (prevItems) {
+  //           return {
+  //             ...prevItems,
+  //             quizList: [],
+  //           };
+  //         }
+  //         return prevItems;
+  //       });
+  //     } else {
+  //       openToastifyAlert({
+  //         type: 'error',
+  //         text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+  //       });
+  //     }
+  //   }
+  //   //즐겨찾기 전체추가
+  //   else if (favoriteQuestionList && getItemCountData) {
+  //     const allNewQuizItems = favoriteQuestionList.quizList;
+  //     if (initialItems.length + allNewQuizItems.length <= getItemCountData) {
+  //       setInitialItems((prevItems) => {
+  //         const updatedQuizItem = allNewQuizItems.map((item, index) => ({
+  //           ...item,
+  //         }));
+  //         const filteredQuizItem = updatedQuizItem.filter(
+  //           (updatedItem) =>
+  //             !initialItems.some(
+  //               (initialItem) => initialItem.code === updatedItem.code,
+  //             ),
+  //         );
+  //         return [...prevItems, ...filteredQuizItem];
+  //       });
+  //     } else {
+  //       openToastifyAlert({
+  //         type: 'error',
+  //         text: `총 문항수 ${getItemCountData}개를 초과합니다.`,
+  //       });
+  //     }
+  //   }
+  // };
 
   // 리스트에 문항 추가하기(객체인 경우)
   const clickAddSimilarQuizItem = (code: string) => {
@@ -1806,11 +1804,9 @@ export function Step2() {
     setInitialItems(processedItems); // 중복 제거된 데이터로 상태 갱신
   }, [similarItems, newQuizItems, isAdded]);
 
-  //수정, 복제 후 수정으로 들어왔을때 그룹끼리 묶기기
-  useEffect(() => {
-    if (!initialItems || initialItems.length === 0) return; // 데이터 없을 때 방어 코드
-
-    const groupedItems = initialItems.reduce(
+  //수정, 복제 후 수정으로 들어왔을때 그룹끼리 묶는 함수수
+  const processData = (data: QuizList[]) => {
+    const groupedItems = data.reduce(
       (acc, item) => {
         if (!acc[item.groupCode]) {
           acc[item.groupCode] = [];
@@ -1869,9 +1865,8 @@ export function Step2() {
       // textItem이 없으면 기존 group 반환
       return group;
     });
-
-    setInitialItems(processedItems); // 중복 제거된 데이터로 상태 갱신
-  }, [isDone]);
+    setInitialItems(processedItems);
+  };
 
   //console.log('similarItems', similarItems);
   //console.log('initialItems', initialItems);
@@ -1995,14 +1990,16 @@ export function Step2() {
     onResetList();
   }, [tabView]);
 
+  function createEditingItems(initialItems: QuizList[]) {
+    console.log('editedItems:', initialItems);
+  }
+
   //그룹이였던 문항을 각각 풀어서 가공
   function createNewItems(initialItems: QuizList[]) {
     let numCounter = 1; // 'QUESTION' 타입의 항목에 대한 순차 번호
     const divideItems = initialItems.filter((item) => item.type === 'TEXT');
     const asidedItems = initialItems.filter((item) => item.type !== 'TEXT');
-
-    //('asidedItems', asidedItems);
-
+    console.log('divideItems:', divideItems);
     // quizCategoryList를 quizCode별로 그룹화
     const groupedCategoryItems = divideItems.reduce(
       (acc, list) => {
@@ -2050,25 +2047,39 @@ export function Step2() {
       >,
     );
 
+    console.log('groupedItems:', groupedItems);
     const newQuizListItems = Object.keys(groupedItems).map((quizCode, idx) => {
       const groupedItem = groupedItems[quizCode];
+      console.log('groupedItem:', groupedItem);
       const groupedCategory = groupedCategoryItems[quizCode] || [];
-      //console.log('groupedItem', groupedItem);
       // 각 quizCode별로 QuizList 객체 생성
       const newQuizList: QuizList = {
         groupCode: groupedItem[0].groupCode, // groupCode는 첫 번째 항목에서 가져옴
         code: quizCode,
-        idx: idx + 1, // idx는 1부터 시작 (예시로 순차적인 인덱스)
-        num:
-          groupedItem
-            .filter((quiz) => quiz.type === 'QUESTION')
-            .map((quiz) => quiz.num)
-            .find((num) => num !== undefined && num !== null) ?? 0,
-        score:
-          groupedItem
-            .filter((item) => item.type === 'QUESTION')
-            .map((quiz) => quiz.score)
-            .find((score) => score !== undefined && score !== null) ?? 0,
+        idx: isEditWorkbook
+          ? groupedItem
+              .map((quiz) => quiz.idx)
+              .find((idx) => idx !== undefined && idx !== null) ?? 0
+          : groupedItem
+              .map((quiz) => quiz.quizIdx)
+              .find((quizIdx) => quizIdx !== undefined && quizIdx !== null) ??
+            0,
+        num: isEditWorkbook
+          ? groupedItem
+              .map((quiz) => quiz.num)
+              .find((num) => num !== undefined && num !== null) ?? 0
+          : groupedItem
+              .filter((quiz) => quiz.type === 'QUESTION')
+              .map((quiz) => quiz.num)
+              .find((num) => num !== undefined && num !== null) ?? 0,
+        score: isEditWorkbook
+          ? groupedItem
+              .map((quiz) => quiz.score)
+              .find((score) => score !== undefined && score !== null) ?? 0
+          : groupedItem
+              .filter((item) => item.type === 'QUESTION')
+              .map((quiz) => quiz.score)
+              .find((score) => score !== undefined && score !== null) ?? 0,
         isQuiz: true,
         height: 0,
         createdAt: '',
@@ -2093,7 +2104,6 @@ export function Step2() {
             : 'QUESTION',
         userKey: '', // userKey는 추가적인 데이터가 필요하면 지정
       };
-
       return newQuizList;
     });
 
@@ -2408,11 +2418,16 @@ export function Step2() {
     ));
   };
 
-  //Step3로 이동하는 함수수
+  console.log('initialItems:', initialItems);
+  //Step3로 이동하는 함수
   const moveStep3 = () => {
+    console.log('initialItems:', initialItems);
     const createdItems = createNewItems(initialItems);
+    const editedItems = createEditingItems(initialItems);
+    console.log('createdItems:', createdItems);
+    console.log('editedItems:', editedItems);
     const data = {
-      data: createdItems,
+      data: isEditWorkbook ? initialItems : createdItems,
       isEditWorkbook: isEditWorkbook,
       workSheetIdx: workbookIdx,
       title: nameValue,
