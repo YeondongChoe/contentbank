@@ -812,8 +812,19 @@ export function Step1() {
       const lastItem = item[item.length - 1];
       const category = (lastItem as CategoryType)?.category || [];
 
+      // 빈 배열인 항목은 제거
+      const filteredCategory = Object.entries(category).reduce(
+        (acc, [key, value]) => {
+          if (Array.isArray(value) && value.length > 0) {
+            acc[key] = value; // 빈 배열이 아닌 경우만 추가
+          }
+          return acc;
+        },
+        {} as Record<string, string[]>,
+      );
+
       return {
-        category,
+        category: filteredCategory,
         ...dynamicFields,
       };
     });
@@ -828,43 +839,23 @@ export function Step1() {
   useEffect(() => {
     const allItemTreeIdxList = makingdata.flatMap((data) => {
       const categories = data.category;
-      // 모든 항목에 있는 배열을 평탄화하여 하나의 배열로 만듦
-      return [
-        ...categories['대분류'],
-        ...categories['중분류'],
-        ...categories['소분류'],
-        ...categories['유형'],
-        ...categories['세분류'],
-        ...categories['미분류'],
-      ];
+
+      // category 객체의 모든 키를 순회하며 배열을 평탄화
+      const flattenedCategories = Object.keys(categories).flatMap((key) => {
+        const values = categories[key];
+        // 배열인지 확인 후 배열만 추가
+        return Array.isArray(values) ? values : [];
+      });
+      return flattenedCategories;
     });
 
     //allItemTreeIdxList는 모든 string 값들이 평탄화된 배열
-    //console.log(allItemTreeIdxList);
     setSelectedItemTreeCount(allItemTreeIdxList);
   }, [makingdata]);
 
   const clickNextButton = () => {
     const data = {
       itemTreeList: tabView === '단원·유형별' ? makingdata : null,
-      // itemTreeList: [
-      //   {
-      //     category: {
-      //       대분류: ['1. 자연수의 혼합 계산'],
-      //       중분류: ['1. 자연수의 혼합 계산'],
-      //       소분류: [],
-      //       유형: [],
-      //       세분류: [],
-      //       미분류: [],
-      //     },
-      //     교육과정: '2015 개정',
-      //     학교급: '초',
-      //     학년: '초5',
-      //     교과: '수학',
-      //     과목: 'OL_교과수학',
-      //     학기: '1학기',
-      //   },
-      // ],
       count:
         tabView === '시중교재' || tabView === '기출'
           ? Number(questionNum) * Number(includeQuizList.length) ||
@@ -920,6 +911,7 @@ export function Step1() {
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
     const quizList = data.quizList;
+    //console.log('quizList:', quizList);
 
     const mergedQuizList = (() => {
       const groupMap = quizList.reduce(
@@ -932,6 +924,7 @@ export function Step1() {
         },
         {},
       );
+      //console.log('groupMap:', groupMap);
 
       let orderCounter = 1;
       const result = quizList.map((quiz: any) => {
@@ -1020,9 +1013,11 @@ export function Step1() {
 
         return quiz;
       });
+      //console.log('result:', result);
 
       return result.filter((item: any) => item.quizItemList.length > 0);
     })();
+    //console.log('mergedQuizList:', mergedQuizList);
 
     const sendData = { data: { ...data, quizList: mergedQuizList } };
     const categoryData = makingdata;

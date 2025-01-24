@@ -210,8 +210,9 @@ export function MockExamTab({
   //출제년도 리스트 불러오는 api
   const getPreviousAttributeYearList = async () => {
     const res = await quizService.get(
-      `/v1/previous/class/search?searchCondition=기출&searchKeyword=기출일시`,
+      `/v1/previous/class/search?searchCondition=기출&searchKeyword=기출년도`,
     );
+    //console.log('res:', res);
     return res.data.data.dataList;
   };
   const {
@@ -242,7 +243,6 @@ export function MockExamTab({
       setAttributeYearList(processedData);
     }
   }, [perviousAttributeYearListData]);
-  console.log('attributeYearList', attributeYearList);
 
   //수능모의고사 속성 호출 api
   const getCategoryExamGroups = async () => {
@@ -978,12 +978,9 @@ export function MockExamTab({
     );
   };
   const renderMockExamYearButtons = () => {
-    const isAllSelectedExamYear =
-      examYear.includes('2024') &&
-      examYear.includes('2023') &&
-      examYear.includes('2022') &&
-      examYear.includes('2021') &&
-      examYear.includes('2020');
+    const isAllSelectedExamYear = attributeYearList.every((year) =>
+      examYear.includes(year.label),
+    );
 
     return (
       <>
@@ -993,7 +990,7 @@ export function MockExamTab({
             if (isAllSelectedExamYear) {
               setExamYear([]);
             } else {
-              setExamYear(['2024', '2023', '2022', '2021', '2020']);
+              setExamYear(attributeYearList.map((year) => year.label));
             }
           }}
           $padding="10px"
@@ -1006,19 +1003,22 @@ export function MockExamTab({
         >
           <span>전체</span>
         </Button>
-        {categoryList[2]?.map((el) => (
+        {attributeYearList.map((button) => (
           <Button
-            key={el.idx}
-            onClick={() => selectExamYear(el.name)}
+            key={button.value}
+            buttonType="button"
+            onClick={() => {
+              selectExamYear(button.label);
+            }}
             $padding="10px"
             height={'35px'}
             width={'80px'}
             fontSize="13px"
-            $normal={!examYear.includes(el.name)}
-            $filled={examYear.includes(el.name)}
+            $normal={!examYear.includes(button.label)}
+            $filled={examYear.includes(button.label)}
             cursor
           >
-            <span>{el.name}년</span>
+            <span>{button.label}년</span>
           </Button>
         ))}
       </>

@@ -1715,9 +1715,13 @@ const Component = styled.div<MathViewerStyleProps>`
 `;
 const MathJaxWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  //flex-direction: column;
   gap: 10px;
   //overflow-x: hidden;
+
+  strong {
+    margin-top: 7px;
+  }
 `;
 const MathJaxContentWrapper = styled.div`
   width: 100%;

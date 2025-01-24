@@ -43,12 +43,17 @@ export function Step3MathViewer({
   answerCommentary,
 }: WorkbookMathViewerProps) {
   const [display, setDisplay] = useState('none');
+  const [itemDate, setItemData] = useState<QuizList>();
   const [mathJax, setMathJax] = useState<MathJax3Object | null>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [commentary, setCommentary] = useState<string>(
     answerCommentary as string,
   );
   //console.log('data', data);
+  console.log('itemDate', itemDate);
+  useEffect(() => {
+    if (data) setItemData(data);
+  }, [data]);
   useEffect(() => {
     if (answerCommentary) {
       setCommentary(answerCommentary as string);
