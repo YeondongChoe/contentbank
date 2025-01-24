@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Children } from 'react';
 
 import { styled } from 'styled-components';
 
@@ -50,7 +49,6 @@ type TooltiptStyleProps = {
 };
 
 const Component = styled.div<TooltiptStyleProps>`
-  display: none;
   width: ${({ width }) => (width ? ` ${width}` : '100%')};
   height: ${({ height }) => (height ? ` ${height}` : '100%')};
   margin: ${({ $margin }) => ($margin ? `${$margin}` : '0')};
@@ -60,9 +58,7 @@ const Component = styled.div<TooltiptStyleProps>`
   left: auto;
   right: auto;
   z-index: 5;
-  &.on {
-    display: inline-block;
-  }
+
   &::before {
     content: '';
     position: absolute;

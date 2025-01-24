@@ -146,6 +146,7 @@ export function Classification({
       { title: string; checkValue: number; code: string; key: string }[]
     >
   >({});
+  const [queryParams, setQueryParams] = useState('');
 
   //리스트 솔팅 정렬
   const [columnsCount, setColumnsCount] = useState<number>(2);
@@ -335,8 +336,11 @@ export function Classification({
     // 선택된 값의 뎁스 추출
     const currentDepthIndex = parseInt(depth.replace('depth', ''), 10);
 
-    // 4뎁스 선택이후 아이템트리 api 호출
-    if (currentDepthIndex > 3 && !isPending) {
+    // 유형의 순번에서 아이템트리 api 호출
+    const num = titleA.findIndex(
+      (item) => item.includes('분류') || item.includes('유형'),
+    );
+    if (currentDepthIndex > num - 1 && !isPending) {
       categoryItemTreeDataMutate();
     }
 
@@ -472,7 +476,29 @@ export function Classification({
 
     // 현재 선택 상태를 이전 선택 상태로 업데이트
     setPrevSelectedDepth([...currentSelectedDepthValues]);
+
+    // 뎁스 선택값 변할때 쿼리스트링 데이터도 업데이트
+    const generateQueryString = (
+      selectedDepth: Record<string, string>,
+      titles: string[],
+    ) => {
+      return Object.entries(selectedDepth)
+        .map(([key, value]) => {
+          const depthIndex = parseInt(key.replace('depth', ''), 10) - 1;
+          const title = titles[depthIndex];
+          return title ? `${title}=${value}` : null;
+        })
+        .filter(Boolean)
+        .join('&');
+    };
+
+    const queryString = generateQueryString(selectedDepth, titleA);
+    setQueryParams(queryString);
   }, [selectedDepth]);
+
+  useEffect(() => {
+    console.log('유형 조회시 보내질 queryParams --------- ', queryParams);
+  }, [queryParams]);
 
   useEffect(() => {
     setItemTree([]);
@@ -562,37 +588,7 @@ export function Classification({
   // 카테고리 선택후 아이템트리
   // 아이템 트리 불러오기 api
   const postCategoryItemTree = async () => {
-    const queryParams = Object.keys(nextLists).reduce<Record<string, string>>(
-      (acc, depthKey) => {
-        const list = nextLists[depthKey]; // 각 depth의 배열 가져오기
-        const code = list?.[0]?.code || depthKey; // 배열의 첫 번째 아이템의 code 사용
-        const value = selectedDepth[depthKey] || ''; // selectedDepth에서 해당 depth의 값 가져오기
-        if (code && value) {
-          acc[code] = value; // 값이 존재할 경우 쿼리 파라미터에 추가
-        }
-        return acc;
-      },
-      {},
-    );
-
-    console.log('Generated Query Params:', queryParams);
-
-    // 모든 라디오가 선택되지 않은 경우 처리
-    // const allSelected = Object.values(queryParams).length === nextLists.length;
-    // if (!allSelected) {
-    // 	console.warn('모든 라디오 버튼이 선택되지 않았습니다.');
-    // 	throw new Error('모든 라디오 버튼이 선택되지 않았습니다.');
-    // }
-
-    // 쿼리 스트링 생성
-    const queryString = Object.entries(queryParams)
-      .map(
-        ([key, value]) =>
-          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-      )
-      .join('&');
-
-    const url = `/v2/item?${queryString}`;
+    const url = `/v2/item?${queryParams}`;
 
     const res = await classificationInstance.get(url);
     console.log('반환된 아이템 트리 ---- ', res);

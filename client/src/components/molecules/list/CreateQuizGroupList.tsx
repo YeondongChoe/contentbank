@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { memo, useMemo, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { styled } from 'styled-components';
@@ -183,46 +183,41 @@ const QuizItem: React.FC<QuizItemProps> = ({
   // console.log('Rendering:', quiz.code);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
+  const [isOnTooltip, setIsOnTooltip] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isOnTooltip) {
+      showTooltip();
+    }
+  }, [isOnTooltip]);
 
   // 툴팁 토글
-  const calculateTextWidth = (nodes: NodeList) => {
+  const showTooltip = () => {
+    if (!textRef.current) return;
+    const textNodes = Array.from(textRef.current.childNodes);
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    if (context && textRef.current) {
-      const style = window.getComputedStyle(textRef.current);
-      context.font = `${style.fontSize} ${style.fontFamily}`;
+    const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+    const computedStyle = window.getComputedStyle(textRef.current);
+    context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
 
-      let totalWidth = 0;
-      nodes.forEach((node) => {
-        if (node.nodeType === Node.TEXT_NODE) {
-          totalWidth += context.measureText(node.textContent || '').width;
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          totalWidth += context.measureText(
-            (node as HTMLElement).innerText,
-          ).width;
-        }
-      });
-      return totalWidth;
-    }
-    return 0;
-  };
+    // 텍스트 너비 계산
+    const totalWidth = textNodes.reduce((width, node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return width + context.measureText(node.textContent || '').width;
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        return (
+          width +
+          context.measureText((node as HTMLElement).innerText || '').width
+        );
+      }
+      return width;
+    }, 0);
 
-  const showTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-    const textNodes = e.currentTarget.children[0].childNodes; // 말줄임 요소
-    const target = e.currentTarget.children[1]; // 숨겨진 툴팁박스
-    const textWidth = calculateTextWidth(textNodes);
-    const containerWidth = textRef.current?.clientWidth || 0;
+    // 컨테이너 너비 가져오기
+    const containerWidth = textRef.current.clientWidth || 0;
 
-    // console.log(textWidth, containerWidth);
-    if (textWidth > containerWidth) {
-      target.classList.add('on');
-    }
-  };
-
-  const hideTooltip = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
-    const target = e.currentTarget.children[1];
-    // console.log(target.classList);
-    target.classList.remove('on');
+    // 조건에 따라 상태 변경
+    setIsOnTooltip(totalWidth > containerWidth);
   };
 
   // 전체보기 버튼 누를시
@@ -357,8 +352,8 @@ const QuizItem: React.FC<QuizItemProps> = ({
           </button>
         )}
         <MetaGroup
-          onMouseOver={(e) => showTooltip(e)}
-          onMouseLeave={(e) => hideTooltip(e)}
+          onMouseEnter={() => setIsOnTooltip(true)}
+          onMouseLeave={() => setIsOnTooltip(false)}
         >
           <span className="sub_title ellipsis" ref={textRef}>
             {quiz.quizCategoryList.length > 0 &&
@@ -588,241 +583,244 @@ const QuizItem: React.FC<QuizItemProps> = ({
               },
             )}
           </span>
+          {isOnTooltip && (
+            <Tooltip
+              arrowPosition={`left: calc(50% - 25px)`}
+              width={'100%'}
+              ref={tooltipRef}
+            >
+              <>
+                {quiz.quizCategoryList.length > 0 &&
+                quiz.quizCategoryList.find((el) => el.quizCategory?.교과) ? (
+                  <span>
+                    {quiz.quizCategoryList
+                      .flatMap((el) => {
+                        const course = el.quizCategory?.교과;
+                        if (Array.isArray(course)) {
+                          return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
+                        } else if (typeof course === 'string') {
+                          return [course]; // 문자열을 배열로 변환
+                        }
+                        return []; // 값이 없을 경우 빈 배열 반환
+                      })
+                      .join(', ')}
+                    ,
+                  </span>
+                ) : (
+                  <></>
+                )}
 
-          <Tooltip
-            arrowPosition={`left: calc(50% - 25px)`}
-            width={'100%'}
-            ref={tooltipRef}
-          >
-            <>
-              {quiz.quizCategoryList.length > 0 &&
-              quiz.quizCategoryList.find((el) => el.quizCategory?.교과) ? (
-                <span>
-                  {quiz.quizCategoryList
-                    .flatMap((el) => {
-                      const course = el.quizCategory?.교과;
-                      if (Array.isArray(course)) {
-                        return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
-                      } else if (typeof course === 'string') {
-                        return [course]; // 문자열을 배열로 변환
-                      }
-                      return []; // 값이 없을 경우 빈 배열 반환
-                    })
-                    .join(', ')}
-                  ,
-                </span>
-              ) : (
-                <></>
-              )}
+                {quiz.quizCategoryList.length > 0 &&
+                quiz.quizCategoryList.find((el) => el.quizCategory?.과목) ? (
+                  <span>
+                    {quiz.quizCategoryList
+                      .flatMap((el) => {
+                        const course = el.quizCategory?.과목;
+                        if (Array.isArray(course)) {
+                          return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
+                        } else if (typeof course === 'string') {
+                          return [course]; // 문자열을 배열로 변환
+                        }
+                        return []; // 값이 없을 경우 빈 배열 반환
+                      })
+                      .join(', ')}
+                    ,
+                  </span>
+                ) : (
+                  <></>
+                )}
 
-              {quiz.quizCategoryList.length > 0 &&
-              quiz.quizCategoryList.find((el) => el.quizCategory?.과목) ? (
-                <span>
-                  {quiz.quizCategoryList
-                    .flatMap((el) => {
-                      const course = el.quizCategory?.과목;
-                      if (Array.isArray(course)) {
-                        return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
-                      } else if (typeof course === 'string') {
-                        return [course]; // 문자열을 배열로 변환
-                      }
-                      return []; // 값이 없을 경우 빈 배열 반환
-                    })
-                    .join(', ')}
-                  ,
-                </span>
-              ) : (
-                <></>
-              )}
+                {quiz.quizCategoryList.length > 0 &&
+                quiz.quizCategoryList.find((el) => el.quizCategory?.학년) ? (
+                  <span>
+                    {quiz.quizCategoryList
+                      .flatMap((el) => {
+                        const course = el.quizCategory?.학년;
+                        if (Array.isArray(course)) {
+                          return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
+                        } else if (typeof course === 'string') {
+                          return [course]; // 문자열을 배열로 변환
+                        }
+                        return []; // 값이 없을 경우 빈 배열 반환
+                      })
+                      .join(', ')}
+                    학년,
+                  </span>
+                ) : (
+                  <></>
+                )}
 
-              {quiz.quizCategoryList.length > 0 &&
-              quiz.quizCategoryList.find((el) => el.quizCategory?.학년) ? (
-                <span>
-                  {quiz.quizCategoryList
-                    .flatMap((el) => {
-                      const course = el.quizCategory?.학년;
-                      if (Array.isArray(course)) {
-                        return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
-                      } else if (typeof course === 'string') {
-                        return [course]; // 문자열을 배열로 변환
-                      }
-                      return []; // 값이 없을 경우 빈 배열 반환
-                    })
-                    .join(', ')}
-                  학년,
-                </span>
-              ) : (
-                <></>
-              )}
+                {quiz.quizCategoryList.length > 0 &&
+                quiz.quizCategoryList.find((el) => el.quizCategory?.난이도) ? (
+                  <span>
+                    {quiz.quizCategoryList
+                      .flatMap((el) => {
+                        const course = el.quizCategory?.난이도;
+                        if (Array.isArray(course)) {
+                          return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
+                        } else if (typeof course === 'string') {
+                          return [course]; // 문자열을 배열로 변환
+                        }
+                        return []; // 값이 없을 경우 빈 배열 반환
+                      })
+                      .join(', ')}
+                    ,
+                  </span>
+                ) : (
+                  <></>
+                )}
 
-              {quiz.quizCategoryList.length > 0 &&
-              quiz.quizCategoryList.find((el) => el.quizCategory?.난이도) ? (
-                <span>
-                  {quiz.quizCategoryList
-                    .flatMap((el) => {
-                      const course = el.quizCategory?.난이도;
-                      if (Array.isArray(course)) {
-                        return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
-                      } else if (typeof course === 'string') {
-                        return [course]; // 문자열을 배열로 변환
-                      }
-                      return []; // 값이 없을 경우 빈 배열 반환
-                    })
-                    .join(', ')}
-                  ,
-                </span>
-              ) : (
-                <></>
-              )}
+                {quiz.quizCategoryList.length > 0 &&
+                quiz.quizCategoryList.find((el) => el.quizCategory?.학교급) ? (
+                  <span>
+                    {quiz.quizCategoryList
+                      .flatMap((el) => {
+                        const course = el.quizCategory?.학교급;
+                        if (Array.isArray(course)) {
+                          return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
+                        } else if (typeof course === 'string') {
+                          return [course]; // 문자열을 배열로 변환
+                        }
+                        return []; // 값이 없을 경우 빈 배열 반환
+                      })
+                      .join(', ')}
+                    ,
+                  </span>
+                ) : (
+                  <></>
+                )}
 
-              {quiz.quizCategoryList.length > 0 &&
-              quiz.quizCategoryList.find((el) => el.quizCategory?.학교급) ? (
-                <span>
-                  {quiz.quizCategoryList
-                    .flatMap((el) => {
-                      const course = el.quizCategory?.학교급;
-                      if (Array.isArray(course)) {
-                        return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
-                      } else if (typeof course === 'string') {
-                        return [course]; // 문자열을 배열로 변환
-                      }
-                      return []; // 값이 없을 경우 빈 배열 반환
-                    })
-                    .join(', ')}
-                  ,
-                </span>
-              ) : (
-                <></>
-              )}
+                {quiz.quizCategoryList.length > 0 &&
+                quiz.quizCategoryList.find(
+                  (el) => el.quizCategory?.문항타입,
+                ) ? (
+                  <span>
+                    {quiz.quizCategoryList
+                      .flatMap((el) => {
+                        const course = el.quizCategory?.문항타입;
+                        if (Array.isArray(course)) {
+                          return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
+                        } else if (typeof course === 'string') {
+                          return [course]; // 문자열을 배열로 변환
+                        }
+                        return []; // 값이 없을 경우 빈 배열 반환
+                      })
+                      .join(', ')}
+                    ,
+                  </span>
+                ) : (
+                  <></>
+                )}
 
-              {quiz.quizCategoryList.length > 0 &&
-              quiz.quizCategoryList.find((el) => el.quizCategory?.문항타입) ? (
-                <span>
-                  {quiz.quizCategoryList
-                    .flatMap((el) => {
-                      const course = el.quizCategory?.문항타입;
-                      if (Array.isArray(course)) {
-                        return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
-                      } else if (typeof course === 'string') {
-                        return [course]; // 문자열을 배열로 변환
-                      }
-                      return []; // 값이 없을 경우 빈 배열 반환
-                    })
-                    .join(', ')}
-                  ,
-                </span>
-              ) : (
-                <></>
-              )}
+                {quiz.quizCategoryList.length > 0 &&
+                quiz.quizCategoryList.find((el) => el.quizCategory?.대단원) ? (
+                  <span>
+                    {quiz.quizCategoryList
+                      .flatMap((el) => {
+                        const course = el.quizCategory?.대단원;
+                        if (Array.isArray(course)) {
+                          return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
+                        } else if (typeof course === 'string') {
+                          return [course]; // 문자열을 배열로 변환
+                        }
+                        return []; // 값이 없을 경우 빈 배열 반환
+                      })
+                      .join(', ')}
+                    ,
+                  </span>
+                ) : (
+                  <></>
+                )}
 
-              {quiz.quizCategoryList.length > 0 &&
-              quiz.quizCategoryList.find((el) => el.quizCategory?.대단원) ? (
-                <span>
-                  {quiz.quizCategoryList
-                    .flatMap((el) => {
-                      const course = el.quizCategory?.대단원;
-                      if (Array.isArray(course)) {
-                        return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
-                      } else if (typeof course === 'string') {
-                        return [course]; // 문자열을 배열로 변환
-                      }
-                      return []; // 값이 없을 경우 빈 배열 반환
-                    })
-                    .join(', ')}
-                  ,
-                </span>
-              ) : (
-                <></>
-              )}
+                {quiz.quizCategoryList.length > 0 &&
+                quiz.quizCategoryList.find((el) => el.quizCategory?.중단원) ? (
+                  <span>
+                    {quiz.quizCategoryList
+                      .flatMap((el) => {
+                        const course = el.quizCategory?.중단원;
+                        if (Array.isArray(course)) {
+                          return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
+                        } else if (typeof course === 'string') {
+                          return [course]; // 문자열을 배열로 변환
+                        }
+                        return []; // 값이 없을 경우 빈 배열 반환
+                      })
+                      .join(', ')}
+                    ,
+                  </span>
+                ) : (
+                  <></>
+                )}
 
-              {quiz.quizCategoryList.length > 0 &&
-              quiz.quizCategoryList.find((el) => el.quizCategory?.중단원) ? (
-                <span>
-                  {quiz.quizCategoryList
-                    .flatMap((el) => {
-                      const course = el.quizCategory?.중단원;
-                      if (Array.isArray(course)) {
-                        return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
-                      } else if (typeof course === 'string') {
-                        return [course]; // 문자열을 배열로 변환
-                      }
-                      return []; // 값이 없을 경우 빈 배열 반환
-                    })
-                    .join(', ')}
-                  ,
-                </span>
-              ) : (
-                <></>
-              )}
+                {quiz.quizCategoryList.length > 0 &&
+                quiz.quizCategoryList.find((el) => el.quizCategory?.소단원) ? (
+                  <span>
+                    {quiz.quizCategoryList
+                      .flatMap((el) => {
+                        const course = el.quizCategory?.소단원;
+                        if (Array.isArray(course)) {
+                          return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
+                        } else if (typeof course === 'string') {
+                          return [course]; // 문자열을 배열로 변환
+                        }
+                        return []; // 값이 없을 경우 빈 배열 반환
+                      })
+                      .join(', ')}
+                    ,
+                  </span>
+                ) : (
+                  <></>
+                )}
 
-              {quiz.quizCategoryList.length > 0 &&
-              quiz.quizCategoryList.find((el) => el.quizCategory?.소단원) ? (
-                <span>
-                  {quiz.quizCategoryList
-                    .flatMap((el) => {
-                      const course = el.quizCategory?.소단원;
-                      if (Array.isArray(course)) {
-                        return course.map((sub) => sub.name).filter(Boolean); // 배열 처리
-                      } else if (typeof course === 'string') {
-                        return [course]; // 문자열을 배열로 변환
-                      }
-                      return []; // 값이 없을 경우 빈 배열 반환
-                    })
-                    .join(', ')}
-                  ,
-                </span>
-              ) : (
-                <></>
-              )}
+                {quiz.quizCategoryList[0]?.quizCategory?.sources?.map(
+                  (item: Record<string, any>, idx) => {
+                    // 렌더링할 속성 이름 배열
+                    const attributes = [
+                      '출처',
+                      '기출명',
+                      '문항번호',
+                      '출제년도',
+                      '교재속성',
+                      '출판사',
+                      '시리즈',
+                      '교재명',
+                      '교재페이지',
+                      '교재번호',
+                      '출판년도',
+                      '내신형식',
+                      '학교명',
+                      '학사일정',
+                      '내신페이지',
+                      '내신배점',
+                      '기출속성',
+                      '주관사',
+                      '시행학제',
+                      '시행학년',
+                      '시험지타입',
+                      '기출배점',
+                      '기출일시',
+                    ];
 
-              {quiz.quizCategoryList[0]?.quizCategory?.sources?.map(
-                (item: Record<string, any>, idx) => {
-                  // 렌더링할 속성 이름 배열
-                  const attributes = [
-                    '출처',
-                    '기출명',
-                    '문항번호',
-                    '출제년도',
-                    '교재속성',
-                    '출판사',
-                    '시리즈',
-                    '교재명',
-                    '교재페이지',
-                    '교재번호',
-                    '출판년도',
-                    '내신형식',
-                    '학교명',
-                    '학사일정',
-                    '내신페이지',
-                    '내신배점',
-                    '기출속성',
-                    '주관사',
-                    '시행학제',
-                    '시행학년',
-                    '시험지타입',
-                    '기출배점',
-                    '기출일시',
-                  ];
+                    // 값이 있는 속성만 필터링하여 렌더링
+                    const renderedAttributes = attributes
+                      .map((attr) => {
+                        const value = item[attr];
+                        if (Array.isArray(value)) {
+                          return value.join(', '); // 배열 값을 문자열로 결합
+                        }
+                        return value ? String(value) : ''; // 값을 문자열로 변환
+                      })
+                      .filter(Boolean) // 빈 값 제거
+                      .join(', '); // 원하는 구분자 사용 (여기서는 ', ')
 
-                  // 값이 있는 속성만 필터링하여 렌더링
-                  const renderedAttributes = attributes
-                    .map((attr) => {
-                      const value = item[attr];
-                      if (Array.isArray(value)) {
-                        return value.join(', '); // 배열 값을 문자열로 결합
-                      }
-                      return value ? String(value) : ''; // 값을 문자열로 변환
-                    })
-                    .filter(Boolean) // 빈 값 제거
-                    .join(', '); // 원하는 구분자 사용 (여기서는 ', ')
-
-                  return (
-                    <span key={`출처 배열 ${idx}`}>{renderedAttributes}</span>
-                  );
-                },
-              )}
-            </>
-          </Tooltip>
+                    return (
+                      <span key={`출처 배열 ${idx}`}>{renderedAttributes}</span>
+                    );
+                  },
+                )}
+              </>
+            </Tooltip>
+          )}
         </MetaGroup>
         {showViewAllButton && (
           <ViewAllButton>

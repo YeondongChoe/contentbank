@@ -192,6 +192,7 @@ export function MappingList({
           }
           toggleExpanded={toggleExpanded}
           isExpanded={expandedItems[idx]}
+          nextIsExpanded={expandedItems[idx + 1]}
           isSwitchOn={selectedSwitchState[el.idx] || false}
           toggleSwitch={toggleSwitchState}
           isCheckBoxChecked={selectedCheckBoxState[el.idx] || false}
@@ -205,7 +206,7 @@ export function MappingList({
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <TagsWrapper className="height">
+      <TagsWrapper className={`height`}>
         {renderMappingList(mappingList)}
       </TagsWrapper>
     </DndProvider>
@@ -247,6 +248,7 @@ interface DraggableMappingItemProps {
   moveTag: (dragIndex: number, hoverIndex: number, isFinished: boolean) => void;
   toggleExpanded: (item: any) => void;
   isExpanded: { id: string; show: boolean; depth: number };
+  nextIsExpanded: { id: string; show: boolean; depth: number };
   depth: number;
   isSwitchOn: boolean;
   toggleSwitch: (itemIdx: number, isUse: boolean) => void;
@@ -264,6 +266,7 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
   moveTag,
   toggleExpanded,
   isExpanded,
+  nextIsExpanded,
   depth,
   isSwitchOn,
   toggleSwitch,
@@ -289,6 +292,11 @@ const DraggableMappingItem: React.FC<DraggableMappingItemProps> = ({
         }}
         style={{ opacity: isDragging ? 0.5 : 1 }}
       >
+        {/* {index + 1 < mappingList.length && ( */}
+        <span
+          className={`${nextIsExpanded?.show ? 'up' : 'down'} arrow`}
+        ></span>
+        {/*  )} */}
         <span className="icon_wrap">
           <Icon width="18px" src={`/images/icon/icon-move.svg`} />
         </span>
@@ -388,6 +396,23 @@ const TagsWrapper = styled.div`
     height: 650px;
     padding: 15px;
     /* gap: 10px; */
+  }
+  .arrow {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #000;
+    margin-right: 8px;
+    display: inline-block;
+  }
+  .up {
+    transform: rotate(0deg);
+    transition: transform 0.3s ease;
+  }
+  .down {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
   }
 `;
 const InfoButtonWrapper = styled.div`
