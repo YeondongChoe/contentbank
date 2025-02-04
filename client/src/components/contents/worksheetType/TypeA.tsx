@@ -286,111 +286,155 @@ export const TypeA = ({
           {isNewInitialItems === false && <Loader height="50px" size="100px" />}
           <WorksheetBody $isNewInitialItems={isNewInitialItems}>
             <WorksheetBodyLeft>
-              {pages[0]?.leftArray?.map((quizItemList) =>
-                quizItemList.quizItemList
-                  .filter(
-                    (quizItem) =>
-                      quizItem.type === 'QUESTION' ||
-                      quizItem.type === 'BIG' ||
-                      quizItem.type === 'TEXT',
-                  )
-                  .map((quizItem, i) => {
-                    const quizCategory = quizItemList.quizCategoryList.find(
-                      (quizCategoryItem: any) =>
-                        quizCategoryItem.quizCategory.유형,
-                    )?.quizCategory;
+              {pages[0]?.leftArray?.map((quizItemList) => {
+                //QUESTION이 있는지 확인
+                const hasQuestion = quizItemList.quizItemList.some(
+                  (quizItem) => quizItem.type === 'QUESTION',
+                );
 
-                    return (
-                      <MathViewerWrapper
-                        key={i}
-                        height={quizItemList.height as number}
-                        $padding={
-                          multiLevel === '2' && assign === '4'
-                            ? '0 0 600px 0'
-                            : multiLevel === '2' && assign === '6'
-                              ? '0 0 100px 0'
-                              : ''
-                        }
-                      >
-                        {isContentTypeTitle && quizCategory?.유형 && (
-                          <ContentTitle>
-                            |{quizCategory?.유형[0].name}|
-                          </ContentTitle>
-                        )}
-                        <EachMathViewer>
-                          <MathJaxWrapper>
-                            <Step3MathViewer
-                              data={quizItemList}
-                              isSetp3
-                              answerCommentary={answerCommentary}
-                            ></Step3MathViewer>
-                            {quizItemList.score && quizItemList.score !== 0 ? (
-                              <ScoreWrapper>
-                                [{quizItemList.score}점]
-                              </ScoreWrapper>
-                            ) : (
-                              <></>
-                            )}
-                          </MathJaxWrapper>
-                        </EachMathViewer>
-                      </MathViewerWrapper>
+                //QUESTION이 있으면 QUESTION만 보내기
+                let filteredQuizItems = hasQuestion
+                  ? quizItemList.quizItemList.filter(
+                      (quizItem) => quizItem.type === 'QUESTION',
+                    )
+                  : quizItemList.quizItemList.filter(
+                      (quizItem) =>
+                        quizItem.type === 'BIG' || quizItem.type === 'TEXT',
                     );
-                  }),
-              )}
+
+                //TEXT 중복 제거
+                if (!hasQuestion) {
+                  const seenText = new Set(); // 중복 체크용 Set
+                  filteredQuizItems = filteredQuizItems.filter((quizItem) => {
+                    if (quizItem.type === 'TEXT') {
+                      if (seenText.has(quizItem.type)) return false;
+                      seenText.add(quizItem.type);
+                    }
+                    return true;
+                  });
+                }
+
+                return filteredQuizItems.map((quizItem, i) => {
+                  const quizCategory = quizItemList.quizCategoryList.find(
+                    (quizCategoryItem: any) =>
+                      quizCategoryItem.quizCategory.유형,
+                  )?.quizCategory;
+
+                  return (
+                    <MathViewerWrapper
+                      key={i}
+                      height={quizItemList.height as number}
+                      $padding={
+                        multiLevel === '2' && assign === '4'
+                          ? '0 0 600px 0'
+                          : multiLevel === '2' && assign === '6'
+                            ? '0 0 100px 0'
+                            : ''
+                      }
+                    >
+                      {isContentTypeTitle && quizCategory?.유형 && (
+                        <ContentTitle>
+                          |{quizCategory?.유형[0].name}|
+                        </ContentTitle>
+                      )}
+                      <EachMathViewer>
+                        <MathJaxWrapper>
+                          <Step3MathViewer
+                            data={quizItemList}
+                            isSetp3
+                            answerCommentary={answerCommentary}
+                          />
+                          {quizItemList.quizItemList
+                            .filter((quizItem) => quizItem.type === 'QUESTION')
+                            .map((quiz, i) =>
+                              quiz.score && quiz.score !== 0 ? (
+                                <ScoreWrapper key={i}>
+                                  [{quiz.score}점]
+                                </ScoreWrapper>
+                              ) : null,
+                            )}
+                        </MathJaxWrapper>
+                      </EachMathViewer>
+                    </MathViewerWrapper>
+                  );
+                });
+              })}
             </WorksheetBodyLeft>
             <Divider />
             <WorksheetBodyRight>
-              {pages[0]?.rightArray?.map((quizItemList) =>
-                quizItemList.quizItemList
-                  .filter(
-                    (quizItem) =>
-                      quizItem.type === 'QUESTION' ||
-                      quizItem.type === 'BIG' ||
-                      quizItem.type === 'TEXT',
-                  )
-                  .map((quizItem, i) => {
-                    const quizCategory = quizItemList.quizCategoryList.find(
-                      (quizCategoryItem: any) =>
-                        quizCategoryItem.quizCategory.유형,
-                    )?.quizCategory;
-                    return (
-                      <MathViewerWrapper
-                        key={i}
-                        height={quizItemList.height as number}
-                        $padding={
-                          multiLevel === '2' && assign === '4'
-                            ? '0 0 600px 0'
-                            : multiLevel === '2' && assign === '6'
-                              ? '0 0 100px 0'
-                              : ''
-                        }
-                      >
-                        {isContentTypeTitle && quizCategory?.유형 && (
-                          <ContentTitle>
-                            |{quizCategory?.유형[0].name}|
-                          </ContentTitle>
-                        )}
-                        <EachMathViewer>
-                          <MathJaxWrapper>
-                            <Step3MathViewer
-                              data={quizItemList}
-                              //height={quizItemList.height.toString()}
-                              isSetp3
-                              answerCommentary={answerCommentary}
-                            ></Step3MathViewer>
-                            {quizItemList.score && quizItemList.score !== 0 ? (
-                              <ScoreWrapper>
-                                [{quizItemList.score}점]
-                              </ScoreWrapper>
-                            ) : (
-                              <></>
-                            )}
-                          </MathJaxWrapper>
-                        </EachMathViewer>
-                      </MathViewerWrapper>
+              {pages[0]?.rightArray?.map((quizItemList) => {
+                //QUESTION이 있는지 확인
+                const hasQuestion = quizItemList.quizItemList.some(
+                  (quizItem) => quizItem.type === 'QUESTION',
+                );
+
+                //QUESTION이 있으면 QUESTION만 보내기
+                let filteredQuizItems = hasQuestion
+                  ? quizItemList.quizItemList.filter(
+                      (quizItem) => quizItem.type === 'QUESTION',
+                    )
+                  : quizItemList.quizItemList.filter(
+                      (quizItem) =>
+                        quizItem.type === 'BIG' || quizItem.type === 'TEXT',
                     );
-                  }),
-              )}
+
+                //TEXT 중복 제거
+                if (!hasQuestion) {
+                  const seenText = new Set(); // 중복 체크용 Set
+                  filteredQuizItems = filteredQuizItems.filter((quizItem) => {
+                    if (quizItem.type === 'TEXT') {
+                      if (seenText.has(quizItem.type)) return false;
+                      seenText.add(quizItem.type);
+                    }
+                    return true;
+                  });
+                }
+
+                return filteredQuizItems.map((quizItem, i) => {
+                  const quizCategory = quizItemList.quizCategoryList.find(
+                    (quizCategoryItem: any) =>
+                      quizCategoryItem.quizCategory.유형,
+                  )?.quizCategory;
+
+                  return (
+                    <MathViewerWrapper
+                      key={i}
+                      height={quizItemList.height as number}
+                      $padding={
+                        multiLevel === '2' && assign === '4'
+                          ? '0 0 600px 0'
+                          : multiLevel === '2' && assign === '6'
+                            ? '0 0 100px 0'
+                            : ''
+                      }
+                    >
+                      {isContentTypeTitle && quizCategory?.유형 && (
+                        <ContentTitle>
+                          |{quizCategory?.유형[0].name}|
+                        </ContentTitle>
+                      )}
+                      <EachMathViewer>
+                        <MathJaxWrapper>
+                          <Step3MathViewer
+                            data={quizItemList}
+                            isSetp3
+                            answerCommentary={answerCommentary}
+                          />
+                          {quizItemList.quizItemList
+                            .filter((quizItem) => quizItem.type === 'QUESTION')
+                            .map((quiz, i) =>
+                              quiz.score && quiz.score !== 0 ? (
+                                <ScoreWrapper key={i}>
+                                  [{quiz.score}점]
+                                </ScoreWrapper>
+                              ) : null,
+                            )}
+                        </MathJaxWrapper>
+                      </EachMathViewer>
+                    </MathViewerWrapper>
+                  );
+                });
+              })}
             </WorksheetBodyRight>
           </WorksheetBody>
         </ThemeProvider>

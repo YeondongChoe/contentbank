@@ -50,10 +50,35 @@ export function Step3MathViewer({
     answerCommentary as string,
   );
   //console.log('data', data);
-  console.log('itemDate', itemDate);
+  //console.log('itemDate', itemDate);
+  // useEffect(() => {
+  //   if (data) setItemData(data);
+  // }, [data]);
   useEffect(() => {
-    if (data) setItemData(data);
+    if (data) {
+      // 중복 제거 로직 추가
+      const uniqueQuizItemList = data.quizItemList.filter(
+        (quiz, index, self) =>
+          index === self.findIndex((q) => q.idx === quiz.idx),
+      );
+
+      const uniqueQuizCategoryList = data.quizCategoryList.filter(
+        (quizCategory, index, self) =>
+          index ===
+          self.findIndex(
+            (q) =>
+              q.quizCategory.문항타입 === quizCategory.quizCategory.문항타입,
+          ),
+      );
+
+      setItemData({
+        ...data,
+        quizItemList: uniqueQuizItemList,
+        quizCategoryList: uniqueQuizCategoryList,
+      });
+    }
   }, [data]);
+
   useEffect(() => {
     if (answerCommentary) {
       setCommentary(answerCommentary as string);
@@ -121,8 +146,20 @@ export function Step3MathViewer({
           <MathJaxWrapper>
             {isSetp3 && (
               <strong>
-                {data && data.type === 'QUESTION' ? (
-                  <>{data && data.num < 10 ? `0${data.num}` : `${data?.num}`}</>
+                {itemDate && itemDate.type === 'QUESTION' ? (
+                  <>
+                    {itemDate &&
+                      (() => {
+                        const questionItem = itemDate.quizItemList.find(
+                          (el) => el.type === 'QUESTION',
+                        );
+                        return questionItem && questionItem.num !== undefined
+                          ? questionItem.num < 10
+                            ? `0${questionItem.num}`
+                            : `${questionItem.num}`
+                          : null;
+                      })()}
+                  </>
                 ) : (
                   <></>
                 )}
@@ -137,7 +174,7 @@ export function Step3MathViewer({
             >
               {commentary === '문제만' && (
                 <>
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'BIG')
                     .map((quiz) => (
                       <ContentQuestion
@@ -145,7 +182,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'TEXT')
                     .map((quiz) => (
                       <ContentQuestion
@@ -153,7 +190,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
                     .map((quiz) => (
                       <ContentQuestion
@@ -161,13 +198,13 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizCategoryList
+                  {itemDate?.quizCategoryList
                     .filter(
                       (quizCategory) =>
                         quizCategory.quizCategory.문항타입 === '객관식',
                     )
                     .map((filteredCategory) =>
-                      data?.quizItemList
+                      itemDate?.quizItemList
                         .filter((quizItem) => quizItem.type === 'CHOICES')
                         .map((quiz) => (
                           <ContentQuestion
@@ -180,7 +217,7 @@ export function Step3MathViewer({
               )}
               {commentary === '정답만' && (
                 <>
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'ANSWER')
                     .map((quiz) => (
                       <ContentQuestion
@@ -192,7 +229,7 @@ export function Step3MathViewer({
               )}
               {commentary === '문제+해설별도' && (
                 <>
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'BIG')
                     .map((quiz) => (
                       <ContentQuestion
@@ -200,7 +237,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'TEXT')
                     .map((quiz) => (
                       <ContentQuestion
@@ -208,7 +245,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
                     .map((quiz) => (
                       <ContentQuestion
@@ -216,13 +253,13 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizCategoryList
+                  {itemDate?.quizCategoryList
                     .filter(
                       (quizCategory) =>
                         quizCategory.quizCategory.문항타입 === '객관식',
                     )
                     .map((filteredCategory) =>
-                      data?.quizItemList
+                      itemDate?.quizItemList
                         .filter((quizItem) => quizItem.type === 'CHOICES')
                         .map((quiz) => (
                           <ContentQuestion
@@ -235,7 +272,7 @@ export function Step3MathViewer({
               )}
               {commentary === '해설별도' && (
                 <>
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'COMMENTARY')
                     .map((quiz) => (
                       <ContentQuestion
@@ -243,7 +280,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'ANSWER')
                     .map((quiz) => (
                       <ContentQuestion
@@ -256,7 +293,7 @@ export function Step3MathViewer({
               {(commentary === '문제+해설같이' ||
                 commentary === '문제+정답+해설') && (
                 <>
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'BIG')
                     .map((quiz) => (
                       <ContentQuestion
@@ -264,7 +301,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'TEXT')
                     .map((quiz) => (
                       <ContentQuestion
@@ -272,7 +309,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
                     .map((quiz) => (
                       <ContentQuestion
@@ -280,13 +317,13 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizCategoryList
+                  {itemDate?.quizCategoryList
                     .filter(
                       (quizCategory) =>
                         quizCategory.quizCategory.문항타입 === '객관식',
                     )
                     .map((filteredCategory) =>
-                      data?.quizItemList
+                      itemDate?.quizItemList
                         .filter((quizItem) => quizItem.type === 'CHOICES')
                         .map((quiz) => (
                           <ContentQuestion
@@ -295,7 +332,7 @@ export function Step3MathViewer({
                           ></ContentQuestion>
                         )),
                     )}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'COMMENTARY')
                     .map((quiz) => (
                       <ContentQuestion
@@ -303,7 +340,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'ANSWER')
                     .map((quiz) => (
                       <ContentQuestion
@@ -315,7 +352,7 @@ export function Step3MathViewer({
               )}
               {commentary === '문제+정답' && (
                 <>
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'BIG')
                     .map((quiz) => (
                       <ContentQuestion
@@ -323,7 +360,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'TEXT')
                     .map((quiz) => (
                       <ContentQuestion
@@ -331,7 +368,7 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'QUESTION')
                     .map((quiz) => (
                       <ContentQuestion
@@ -339,13 +376,13 @@ export function Step3MathViewer({
                         dangerouslySetInnerHTML={createMarkup(quiz.content)}
                       ></ContentQuestion>
                     ))}
-                  {data?.quizCategoryList
+                  {itemDate?.quizCategoryList
                     .filter(
                       (quizCategory) =>
                         quizCategory.quizCategory.문항타입 === '객관식',
                     )
                     .map((filteredCategory) =>
-                      data?.quizItemList
+                      itemDate?.quizItemList
                         .filter((quizItem) => quizItem.type === 'CHOICES')
                         .map((quiz) => (
                           <ContentQuestion
@@ -354,7 +391,7 @@ export function Step3MathViewer({
                           ></ContentQuestion>
                         )),
                     )}
-                  {data?.quizItemList
+                  {itemDate?.quizItemList
                     .filter((quiz) => quiz.type === 'ANSWER')
                     .map((quiz) => (
                       <ContentQuestion
