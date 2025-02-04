@@ -1179,6 +1179,11 @@ export function Step2() {
           const types = item.quizItemList.map((el) => el.type); // quizItemList의 모든 type을 가져옴
           const uniqueTypes = [...new Set(types)]; // 중복을 제거하여 고유한 type만 가져옴
 
+          // "QUESTION" 타입이 포함되지 않으면 제외
+          if (!uniqueTypes.includes('QUESTION')) {
+            return false;
+          }
+
           // 'BIG'과 'TEXT'만 있는 경우 제외 (길이가 1이거나 2인 경우)
           if (uniqueTypes.length <= 2 && uniqueTypes.includes('BIG')) {
             return false; // 제외
@@ -1995,138 +2000,209 @@ export function Step2() {
   }
 
   //그룹이였던 문항을 각각 풀어서 가공
-  function createNewItems(initialItems: QuizList[]) {
-    let numCounter = 1; // 'QUESTION' 타입의 항목에 대한 순차 번호
-    const divideItems = initialItems.filter((item) => item.type === 'TEXT');
-    const asidedItems = initialItems.filter((item) => item.type !== 'TEXT');
-    console.log('divideItems:', divideItems);
-    // quizCategoryList를 quizCode별로 그룹화
-    const groupedCategoryItems = divideItems.reduce(
-      (acc, list) => {
-        list.quizCategoryList.forEach((category) => {
-          if (category.quizCode) {
-            if (!acc[category.quizCode]) {
-              acc[category.quizCode] = [];
-            }
-            acc[category.quizCode].push({
-              ...category,
-              groupCode: list.groupCode, // groupCode 추가
-              num: list.num,
-            });
-          }
-        });
-        return acc;
-      },
-      {} as Record<string, any[]>,
-    );
+  function createNewItems(processedItems: QuizList[]) {
+    const restoredItems: QuizList[] = [];
 
-    // quizItemList를 quizCode별로 그룹화
-    const groupedItems = divideItems.reduce(
-      (acc, list) => {
-        list.quizItemList.forEach((item) => {
-          if (item.quizCode) {
-            // 그룹화할 때 quizCode를 키로 사용
-            if (!acc[item.quizCode]) {
-              acc[item.quizCode] = [];
-            }
-
-            // 각 quizCode별로 groupCode와 함께 항목을 저장
-            acc[item.quizCode].push({
-              groupCode: list.groupCode,
-              groupType: item.type,
-              num: item.num,
-              ...item,
-            });
-          }
-        });
-        return acc;
-      },
-      {} as Record<
-        string,
-        (QuizItemList & { groupCode: string; groupType: string })[]
-      >,
-    );
-
-    console.log('groupedItems:', groupedItems);
-    const newQuizListItems = Object.keys(groupedItems).map((quizCode, idx) => {
-      const groupedItem = groupedItems[quizCode];
-      console.log('groupedItem:', groupedItem);
-      const groupedCategory = groupedCategoryItems[quizCode] || [];
-      // 각 quizCode별로 QuizList 객체 생성
-      const newQuizList: QuizList = {
-        groupCode: groupedItem[0].groupCode, // groupCode는 첫 번째 항목에서 가져옴
-        code: quizCode,
-        idx: isEditWorkbook
-          ? groupedItem
-              .map((quiz) => quiz.idx)
-              .find((idx) => idx !== undefined && idx !== null) ?? 0
-          : groupedItem
-              .map((quiz) => quiz.quizIdx)
-              .find((quizIdx) => quizIdx !== undefined && quizIdx !== null) ??
-            0,
-        num: isEditWorkbook
-          ? groupedItem
-              .map((quiz) => quiz.num)
-              .find((num) => num !== undefined && num !== null) ?? 0
-          : groupedItem
-              .filter((quiz) => quiz.type === 'QUESTION')
-              .map((quiz) => quiz.num)
-              .find((num) => num !== undefined && num !== null) ?? 0,
-        score: isEditWorkbook
-          ? groupedItem
-              .map((quiz) => quiz.score)
-              .find((score) => score !== undefined && score !== null) ?? 0
-          : groupedItem
-              .filter((item) => item.type === 'QUESTION')
-              .map((quiz) => quiz.score)
-              .find((score) => score !== undefined && score !== null) ?? 0,
-        isQuiz: true,
-        height: 0,
-        createdAt: '',
-        createdBy: '',
-        isDelete: false,
-        isFavorite: false,
-        isUse: true,
-        lastArticle: null,
-        lastModifiedAt: '',
-        lastModifiedBy: '',
-        quizCategoryList: groupedCategory,
-        quizItemList: groupedItem.map((item) => {
-          return {
-            ...item,
-          };
-        }),
-        // item.type이 TEXT나 BIG이면 'TEXT'로 설정, 그렇지 않으면 'QUESTION'으로 설정
-        type:
-          groupedItem[0].groupType === 'BIG' ||
-          groupedItem[0].groupType === 'TEXT'
-            ? 'TEXT'
-            : 'QUESTION',
-        userKey: '', // userKey는 추가적인 데이터가 필요하면 지정
-      };
-      return newQuizList;
-    });
-
-    // `newQuizListItems`와 `asidedItems`를 합쳐서 새로운 배열로 반환
-    const combinedItems = [...newQuizListItems, ...asidedItems].map((item) => {
-      const score =
-        item.quizItemList
-          .filter((quiz) => quiz.type === 'QUESTION')
-          .map((quiz) => quiz.score)
-          .find((score) => score !== undefined && score !== null) ?? 0;
-      if (item.type === 'QUESTION') {
-        return {
-          ...item,
-          num: numCounter++,
-          score: score,
-        };
+    processedItems.forEach((item) => {
+      // groupCode가 없는 경우 -> 원본 그대로 유지
+      if (!item.groupCode) {
+        restoredItems.push(item);
+        return;
       }
 
-      return item;
+      // groupCode가 있는 경우 -> quizCode를 기준으로 분리
+      const quizCodeMap = new Map<string, QuizList>();
+
+      item.quizItemList.forEach((quizItem) => {
+        if (!quizItem.quizCode) return; // quizCode가 없는 경우 무시
+
+        if (!quizCodeMap.has(quizItem.quizCode)) {
+          quizCodeMap.set(quizItem.quizCode, {
+            ...item,
+            idx: quizItem.quizIdx as number,
+            type: 'TEXT', // 기본값을 TEXT로 설정
+            quizItemList: [],
+            quizCategoryList: [],
+          });
+        }
+
+        const existingItem = quizCodeMap.get(quizItem.quizCode)!;
+
+        // quizItemList에 추가
+        existingItem.quizItemList.push(quizItem);
+
+        // QUESTION이 하나라도 있으면 type을 "QUESTION"으로 변경
+        if (quizItem.type === 'QUESTION') {
+          existingItem.type = 'QUESTION';
+        }
+      });
+
+      item.quizCategoryList.forEach((quizCategory) => {
+        if (!quizCategory.quizCode) return; // quizCode가 없는 경우 무시
+        if (!quizCodeMap.has(quizCategory.quizCode)) {
+          quizCodeMap.set(quizCategory.quizCode, {
+            ...item,
+            idx: quizCategory.quizIdx as number,
+            quizItemList: [],
+            quizCategoryList: [],
+          });
+        }
+        quizCodeMap
+          .get(quizCategory.quizCode)!
+          .quizCategoryList.push(quizCategory);
+      });
+      console.log('quizCodeMap:', quizCodeMap);
+
+      // quizCode 기준으로 분리된 데이터 중 TEXT 또는 QUESTION이 있는 경우만 추가
+      quizCodeMap.forEach((quizItem) => {
+        const hasValidType = quizItem.quizItemList.some(
+          (qi) => qi.type === 'TEXT' || qi.type === 'QUESTION',
+        );
+
+        if (hasValidType) {
+          restoredItems.push(quizItem);
+        }
+      });
+      // quizCode 기준으로 분리된 데이터 추가
+      //restoredItems.push(...quizCodeMap.values());
     });
-    //console.log('combinedItems', combinedItems);
-    return combinedItems; // 합쳐진 배열을 반환
+    console.log('restoredItems:', restoredItems);
+
+    return restoredItems;
   }
+
+  // function createNewItems(initialItems: QuizList[]) {
+  //   let numCounter = 1; // 'QUESTION' 타입의 항목에 대한 순차 번호
+  //   const divideItems = initialItems.filter((item) => item.type === 'TEXT');
+  //   const asidedItems = initialItems.filter((item) => item.type !== 'TEXT');
+  //   console.log('divideItems:', divideItems);
+  //   // quizCategoryList를 quizCode별로 그룹화
+  //   const groupedCategoryItems = divideItems.reduce(
+  //     (acc, list) => {
+  //       list.quizCategoryList.forEach((category) => {
+  //         if (category.quizCode) {
+  //           if (!acc[category.quizCode]) {
+  //             acc[category.quizCode] = [];
+  //           }
+  //           acc[category.quizCode].push({
+  //             ...category,
+  //             groupCode: list.groupCode, // groupCode 추가
+  //             num: list.num,
+  //           });
+  //         }
+  //       });
+  //       return acc;
+  //     },
+  //     {} as Record<string, any[]>,
+  //   );
+
+  //   // quizItemList를 quizCode별로 그룹화
+  //   const groupedItems = divideItems.reduce(
+  //     (acc, list) => {
+  //       list.quizItemList.forEach((item) => {
+  //         if (item.quizCode) {
+  //           // 그룹화할 때 quizCode를 키로 사용
+  //           if (!acc[item.quizCode]) {
+  //             acc[item.quizCode] = [];
+  //           }
+
+  //           // 각 quizCode별로 groupCode와 함께 항목을 저장
+  //           acc[item.quizCode].push({
+  //             groupCode: list.groupCode,
+  //             groupType: item.type,
+  //             num: item.num,
+  //             ...item,
+  //           });
+  //         }
+  //       });
+  //       return acc;
+  //     },
+  //     {} as Record<
+  //       string,
+  //       (QuizItemList & { groupCode: string; groupType: string })[]
+  //     >,
+  //   );
+
+  //   console.log('groupedItems:', groupedItems);
+  //   const newQuizListItems = Object.keys(groupedItems).map((quizCode, idx) => {
+  //     const groupedItem = groupedItems[quizCode];
+  //     console.log('groupedItem:', groupedItem);
+  //     const groupedCategory = groupedCategoryItems[quizCode] || [];
+  //     // 각 quizCode별로 QuizList 객체 생성
+  //     const newQuizList: QuizList = {
+  //       groupCode: groupedItem[0].groupCode, // groupCode는 첫 번째 항목에서 가져옴
+  //       code: quizCode,
+  //       idx: isEditWorkbook
+  //         ? groupedItem
+  //             .map((quiz) => quiz.idx)
+  //             .find((idx) => idx !== undefined && idx !== null) ?? 0
+  //         : groupedItem
+  //             .map((quiz) => quiz.quizIdx)
+  //             .find((quizIdx) => quizIdx !== undefined && quizIdx !== null) ??
+  //           0,
+  //       num: isEditWorkbook
+  //         ? groupedItem
+  //             .map((quiz) => quiz.num)
+  //             .find((num) => num !== undefined && num !== null) ?? 0
+  //         : groupedItem
+  //             .filter((quiz) => quiz.type === 'QUESTION')
+  //             .map((quiz) => quiz.num)
+  //             .find((num) => num !== undefined && num !== null) ?? 0,
+  //       score: isEditWorkbook
+  //         ? groupedItem
+  //             .map((quiz) => quiz.score)
+  //             .find((score) => score !== undefined && score !== null) ?? 0
+  //         : groupedItem
+  //             .filter((item) => item.type === 'QUESTION')
+  //             .map((quiz) => quiz.score)
+  //             .find((score) => score !== undefined && score !== null) ?? 0,
+  //       isQuiz: true,
+  //       height: 0,
+  //       createdAt: '',
+  //       createdBy: '',
+  //       isDelete: false,
+  //       isFavorite: false,
+  //       isUse: true,
+  //       lastArticle: null,
+  //       lastModifiedAt: '',
+  //       lastModifiedBy: '',
+  //       quizCategoryList: groupedCategory,
+  //       quizItemList: groupedItem.map((item) => {
+  //         return {
+  //           ...item,
+  //         };
+  //       }),
+  //       // item.type이 TEXT나 BIG이면 'TEXT'로 설정, 그렇지 않으면 'QUESTION'으로 설정
+  //       type:
+  //         groupedItem[0].groupType === 'BIG' ||
+  //         groupedItem[0].groupType === 'TEXT'
+  //           ? 'TEXT'
+  //           : 'QUESTION',
+  //       userKey: '', // userKey는 추가적인 데이터가 필요하면 지정
+  //     };
+  //     return newQuizList;
+  //   });
+
+  //   // `newQuizListItems`와 `asidedItems`를 합쳐서 새로운 배열로 반환
+  //   const combinedItems = [...newQuizListItems, ...asidedItems].map((item) => {
+  //     const score =
+  //       item.quizItemList
+  //         .filter((quiz) => quiz.type === 'QUESTION')
+  //         .map((quiz) => quiz.score)
+  //         .find((score) => score !== undefined && score !== null) ?? 0;
+  //     if (item.type === 'QUESTION') {
+  //       return {
+  //         ...item,
+  //         num: numCounter++,
+  //         score: score,
+  //       };
+  //     }
+
+  //     return item;
+  //   });
+  //   //console.log('combinedItems', combinedItems);
+  //   return combinedItems; // 합쳐진 배열을 반환
+  // }
 
   //배점 로컬스토리지 저장
   // const saveLocalQutientData = () => {

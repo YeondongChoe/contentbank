@@ -215,7 +215,9 @@ export function Step3() {
         },
         {},
       );
+      //console.log('groupMap:', groupMap);
 
+      let orderCounter = 1;
       const result = quizList.map((quiz: any) => {
         if (quiz.groupCode && groupMap[quiz.groupCode]) {
           const group = groupMap[quiz.groupCode];
@@ -224,59 +226,81 @@ export function Step3() {
           );
 
           if (textType) {
-            let sortCounter = 2; // Sort starts from 2 for non-TEXT items.
             group.forEach((groupItem: any) => {
               if (groupItem !== textType) {
                 // Add items to textItem's quizItemList with appropriate sort value
                 groupItem.quizItemList.forEach((quizItem: any) => {
-                  const { score, num, ...remainingQuizItem } = quizItem; // score와 num 제거
                   textType.quizItemList.push({
                     ...quizItem,
                     quizIdx: groupItem.idx,
-                    quizCode: groupItem.code,
+                    //quizCode: groupItem.code,
                     quizFavorite: groupItem.isFavorite,
-                    sort: sortCounter++,
+                    //sort: sortCounter++,
                   });
                 });
                 groupItem.quizItemList = []; // Clear quizItemList for merged items
               }
+              if (groupItem !== textType) {
+                groupItem.quizCategoryList.forEach((categoryItem: any) => {
+                  textType.quizCategoryList.push({
+                    ...categoryItem,
+                    quizIdx: groupItem.idx,
+                    //quizCode: groupItem.code,
+                    //sort: sortCounter++,
+                  });
+                });
+                groupItem.quizCategoryList = []; // Clear quizItemList for merged items
+              }
             });
-
             // Ensure textItem's own sort is set to 1
             textType.quizItemList = textType.quizItemList.map(
-              (quizItem: any, index: number) => {
-                const { score, num, ...remainingQuizItem } = quizItem; // score와 num 제거
-
-                return {
-                  ...quizItem,
-                  sort: index + 1,
-                  quizIdx:
-                    quizItem.type === 'TEXT' || quizItem.type === 'BIG'
-                      ? textType.idx
-                      : quizItem.quizIdx,
-                  quizCode:
-                    quizItem.type === 'TEXT' || quizItem.type === 'BIG'
-                      ? textType.code
-                      : quizItem.quizCode,
-                  quizFavorite:
-                    quizItem.type === 'TEXT' || quizItem.type === 'BIG'
-                      ? textType.isFavorite
-                      : quizItem.isFavorite,
-                };
-              },
+              (quizItem: any) => ({
+                ...quizItem,
+                //sort: index + 1,
+                quizIdx:
+                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                    ? textType.idx
+                    : quizItem.quizIdx,
+                quizCode:
+                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                    ? textType.code
+                    : quizItem.quizCode,
+                quizFavorite:
+                  quizItem.type === 'TEXT' || quizItem.type === 'BIG'
+                    ? textType.isFavorite
+                    : quizItem.isFavorite,
+              }),
+            );
+            textType.quizCategoryList = textType.quizCategoryList.map(
+              (quizItem: any) => ({
+                ...quizItem,
+                //sort: index + 1,
+                quizIdx: !quizItem.quizIdx ? textType.idx : quizItem.quizIdx,
+                quizCode: !quizItem.quizCode
+                  ? textType.code
+                  : quizItem.quizCode,
+              }),
             );
           }
         }
-        // quizItemList에서 score와 num 제거
-        quiz.quizItemList = quiz.quizItemList.map(
-          ({ score, num, ...remainingQuizItem }: any) => remainingQuizItem,
-        );
 
-        // quiz 객체에서 score와 num 제거
-        const { score, num, ...remainingQuiz } = quiz;
+        quiz.quizItemList.forEach((quizItem: any) => {
+          if (quizItem.type === 'QUESTION') {
+            const order = orderCounter++;
+            quizItem.order = order;
 
-        return remainingQuiz;
+            // Assign the same order to items with matching quizCode
+            quiz.quizItemList.forEach((item: any) => {
+              if (item.quizCode === quizItem.quizCode) {
+                item.order = order;
+              }
+            });
+          }
+        });
+
+        return quiz;
       });
+      //console.log('result:', result);
 
       return result.filter((item: any) => item.quizItemList.length > 0);
     })();
@@ -295,20 +319,18 @@ export function Step3() {
     window.opener.localStorage.removeItem('sendQuotientData');
 
     saveLocalData(data);
-    // localStorage.setItem(
-    //   'sendQuotientData',
-    //   JSON.stringify(getQuotientLocalData),
-    // );
     navigate('/content-create/exam/step2');
   };
 
   // 백엔드로 학습지 만들기 api
   const postNewWorkbook = async () => {
     const processData = newInitialItems.map((item) => ({
-      num: item.num,
+      num: item.quizItemList.find((quizItem) => quizItem.type === 'QUESTION')
+        ?.num,
       idx: item.idx,
       type: item.type,
-      score: item.score,
+      score: item.quizItemList.find((quizItem) => quizItem.type === 'QUESTION')
+        ?.score,
       height: item.height,
     }));
     const data: any = {
@@ -382,12 +404,13 @@ export function Step3() {
       onSuccess: (response) => {
         //수정 값 초기화
         setIsEditWorkbook(0);
-        //alert 열기
+        //대기하라는 alert 닫기기
+        setIsWorkbookPending(false);
+        //성공 alert 열기
         setIsSuccessAlertOpen(true);
         setIsComplete(true);
       },
     });
-
   const submitCreateWorksheet = () => {
     if (!nameValue || !contentAuthor || !gradeValue || !tag) {
       openToastifyAlert({

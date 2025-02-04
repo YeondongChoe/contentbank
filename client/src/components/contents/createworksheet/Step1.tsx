@@ -911,7 +911,7 @@ export function Step1() {
   // 로컬스토리지에 보낼데이터 저장
   const saveLocalData = (data: any) => {
     const quizList = data.quizList;
-    //console.log('quizList:', quizList);
+    console.log('quizList:', quizList);
 
     const mergedQuizList = (() => {
       const groupMap = quizList.reduce(
@@ -938,36 +938,32 @@ export function Step1() {
             group.forEach((groupItem: any) => {
               if (groupItem !== textType) {
                 // Add items to textItem's quizItemList with appropriate sort value
-                groupItem.quizItemList.forEach(
-                  (quizItem: any, index: number) => {
-                    textType.quizItemList.push({
-                      ...quizItem,
-                      quizIdx: groupItem.idx,
-                      quizCode: groupItem.code,
-                      quizFavorite: groupItem.isFavorite,
-                      //sort: sortCounter++,
-                    });
-                  },
-                );
+                groupItem.quizItemList.forEach((quizItem: any) => {
+                  textType.quizItemList.push({
+                    ...quizItem,
+                    quizIdx: groupItem.idx,
+                    quizCode: groupItem.code,
+                    quizFavorite: groupItem.isFavorite,
+                    //sort: sortCounter++,
+                  });
+                });
                 groupItem.quizItemList = []; // Clear quizItemList for merged items
               }
               if (groupItem !== textType) {
-                groupItem.quizCategoryList.forEach(
-                  (categoryItem: any, index: number) => {
-                    textType.quizCategoryList.push({
-                      ...categoryItem,
-                      quizIdx: groupItem.idx,
-                      quizCode: groupItem.code,
-                      //sort: sortCounter++,
-                    });
-                  },
-                );
+                groupItem.quizCategoryList.forEach((categoryItem: any) => {
+                  textType.quizCategoryList.push({
+                    ...categoryItem,
+                    quizIdx: groupItem.idx,
+                    quizCode: groupItem.code,
+                    //sort: sortCounter++,
+                  });
+                });
                 groupItem.quizCategoryList = []; // Clear quizItemList for merged items
               }
             });
             // Ensure textItem's own sort is set to 1
             textType.quizItemList = textType.quizItemList.map(
-              (quizItem: any, index: number) => ({
+              (quizItem: any) => ({
                 ...quizItem,
                 //sort: index + 1,
                 quizIdx:
@@ -985,7 +981,7 @@ export function Step1() {
               }),
             );
             textType.quizCategoryList = textType.quizCategoryList.map(
-              (quizItem: any, index: number) => ({
+              (quizItem: any) => ({
                 ...quizItem,
                 //sort: index + 1,
                 quizIdx: !quizItem.quizIdx ? textType.idx : quizItem.quizIdx,
