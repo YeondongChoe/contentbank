@@ -207,4 +207,16 @@ const Component = styled.div<{ $margin?: string }>`
   .depth-5 {
     margin-left: 5rem;
   }
+
+  .depth-6 {
+    margin-left: 6rem;
+  }
+
+  .depth-7 {
+    margin-left: 7rem;
+  }
+
+  .depth-8 {
+    margin-left: 8rem;
+  }
 `;

@@ -895,6 +895,7 @@ const SchoolSelectorSection = styled.div<{
   border: 1px solid ${COLOR.BORDER_POPUP};
   padding: 20px;
   border-radius: 25px;
+  max-height: 750px;
   flex: 1 0 0;
   ${({ $isSelectTextbookContent, $tabView }) =>
     !$isSelectTextbookContent &&
