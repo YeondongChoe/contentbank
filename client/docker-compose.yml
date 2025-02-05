@@ -5,7 +5,7 @@ services:
     container_name: contentsbank
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-dev
     volumes:
       - ".:/app"
     ports:
@@ -15,3 +15,5 @@ services:
 
 # 커맨드라인에서 빌드 및 실행
 # docker-compose up -d --build
+
+

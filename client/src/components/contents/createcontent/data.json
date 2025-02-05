@@ -1,0 +1,127 @@
+{
+  "ContentInfo" : [
+    {"sort" : 1, "contentLevel": "상", "code": "B1-91-52-03-QL51-S2-18-03-26-03-0-0", "classificatecode": "QB1-91-52-03-QL51-S2-18-03-26-03-0-0", "curriculum": "2015", "schoolLevel": "초등", "schoolYear": "초등1", "semester": "1학기", "subjectTitle": "03 수학", "unitSub": "03 교과수학", "unitMajor": "일차부등식 소분류", "unitMiddle": "12 계수가 소수 일차 부등식", "unitSmall": "06 계수가 소수인 경우-일차부등식의 어쩌구저쭈구블라블라", "unitType": "주관식", "level": "02 중등", "actionType": "62 중등2", "actionType2": "01 1학기", "answer": "뭘까요", "serviced": "활성화"},
+    {"sort" : 2, "contentLevel": "중", "code": "B1-91-52-03-QL51-S2-18-03-26-03-0-0", "classificatecode": "AB1-91-52-03-QL51-S2-18-03-26-03-0-0", "curriculum": "2015", "schoolLevel": "중등", "schoolYear": "중등1", "semester": "1학기", "subjectTitle": "03 수학", "unitSub": "03 교과수학", "unitMajor": "일차부등식 소분류", "unitMiddle": "12 계수가 소수 일차 부등식", "unitSmall": "06 계수가 소수인 경우-일차부등식의 어쩌구저쭈구블라블라", "unitType": "주관식", "level": "02 중등", "actionType": "62 중등2", "actionType2": "01 1학기", "answer": "뭘까요", "serviced": "비활성화"},
+    {"sort" : 3, "contentLevel": "하", "code": "B1-92-53-04-QL52-S2-18-03-26-03-0-0", "classificatecode": "QB1-91-52-03-QL51-S2-18-03-26-03-0-0", "curriculum": "2015", "schoolLevel": "고등", "schoolYear": "고등1", "semester": "1학기", "subjectTitle": "03 수학", "unitSub": "03 교과수학", "unitMajor": "일차부등식 소분류", "unitMiddle": "12 계수가 소수 일차 부등식", "unitSmall": "06 계수가 소수인 경우-일차부등식의 어쩌구저쭈구블라블라", "unitType": "객관식", "level": "02 중등", "actionType": "62 중등2", "actionType2": "01 1학기", "answer": "뭘까요", "serviced": "활성화"},
+    {"sort" : 4, "contentLevel": "상", "code": "B1-92-53-04-QL52-S2-18-03-26-03-0-0", "classificatecode": "AB1-92-53-04-QL52-S2-18-03-26-03-0-0", "curriculum": "2015", "schoolLevel": "초등", "schoolYear": "초등2", "semester": "1학기", "subjectTitle": "03 수학", "unitSub": "03 교과수학", "unitMajor": "일차부등식 중분류", "unitMiddle": "12 계수가 소수 일차 부등식", "unitSmall": "06 계수가 소수인 경우-일차부등식의 어쩌구저쭈구블라블라", "unitType": "주관식", "level": "02 중등", "actionType": "62 중등2", "actionType2": "01 1학기", "answer": "뭘까요", "serviced": "비활성화"},
+    {"sort" : 5, "contentLevel": "중", "code": "B2-93-54-06-QL51-S1-19-04-26-03-0-0", "classificatecode": "QB1-91-52-03-QL51-S2-18-03-26-03-0-0", "curriculum": "2015", "schoolLevel": "중등", "schoolYear": "중등2", "semester": "1학기", "subjectTitle": "03 수학", "unitSub": "03 교과수학", "unitMajor": "일차부등식 중분류", "unitMiddle": "12 계수가 소수 일차 부등식", "unitSmall": "06 계수가 소수인 경우-일차부등식의 어쩌구저쭈구블라블라", "unitType": "서술형", "level": "02 중등", "actionType": "62 중등2", "actionType2": "01 1학기", "answer": "뭘까요", "serviced": "비활성화"},
+    {"sort" : 6, "contentLevel": "하", "code": "B2-93-54-06-QL51-S1-19-04-26-03-0-0", "classificatecode": "AB2-93-54-06-QL51-S1-19-04-26-03-0-0", "curriculum": "2015", "schoolLevel": "고등", "schoolYear": "고등2", "semester": "1학기", "subjectTitle": "03 수학", "unitSub": "03 교과수학", "unitMajor": "일차부등식 중분류", "unitMiddle": "12 계수가 소수 일차 부등식", "unitSmall": "06 계수가 소수인 경우-일차부등식의 어쩌구저쭈구블라블라", "unitType": "주관식", "level": "02 중등", "actionType": "62 중등2", "actionType2": "01 1학기", "answer": "뭘까요", "serviced": "비활성화"},
+    {"sort" : 7, "contentLevel": "상", "code": "B1-91-52-03-QL51-S2-18-03-26-03-0-0", "classificatecode": "QB1-91-52-03-QL51-S2-18-03-26-03-0-0", "curriculum": "2015", "schoolLevel": "초등", "schoolYear": "초등1", "semester": "2학기", "subjectTitle": "03 수학", "unitSub": "03 교과수학", "unitMajor": "일차부등식 중분류", "unitMiddle": "12 계수가 소수 일차 부등식", "unitSmall": "06 계수가 소수인 경우-일차부등식의 어쩌구저쭈구블라블라", "unitType": "객관식", "level": "02 중등", "actionType": "62 중등2", "actionType2": "01 1학기", "answer": "뭘까요", "serviced": "활성화"}],
+  "Category" : [
+    {
+      "id": "1",
+      "label": "개정과정",
+      "value": "1",
+      "options": [
+        { "id": "1", "label": "2015학년", "value": "1" },
+        { "id": "2", "label": "2018학년", "value": "2" },
+        { "id": "3", "label": "2020학년", "value": "3" }
+      ]
+    },
+    {
+      "id": "2",
+      "label": "학교",
+      "value": "2",
+      "options": [
+        { "id": "1", "label": "초등", "value": "1" },
+        { "id": "2", "label": "중등", "value": "2" },
+        { "id": "3", "label": "고등", "value": "3" }
+      ]
+    },
+    {
+      "id": "3",
+      "label": "학년",
+      "value": "3",
+      "options": [
+        { "id": "1", "label": "초등1", "value": "1" },
+        { "id": "2", "label": "초등2", "value": "2" },
+        { "id": "3", "label": "중등1", "value": "3" },
+        { "id": "4", "label": "중등2", "value": "4" },
+        { "id": "5", "label": "고등1", "value": "5" },
+        { "id": "6", "label": "고등2", "value": "6" }
+      ]
+    },
+    {
+      "id": "4",
+      "label": "학기",
+      "value": "4",
+      "options": [
+        { "id": "1", "label": "1학기", "value": "1" },
+        { "id": "2", "label": "2학기", "value": "2" }
+      ]
+    },
+    {
+      "id": "5",
+      "label": "대단원",
+      "value": "5",
+      "options": [
+          { "id": "1", "label": "일차부등식 소분류를 연습해봅시다 초등학교 친구들", "value": "1" },
+          { "id": "2", "label": "일차부등식 중분류", "value": "2" },
+          { "id": "3", "label": "일차부등식 대분류", "value": "3" }
+      ]
+    },
+    {
+      "id": "6",
+      "label": "중단원",
+      "value": "6",
+      "options": [
+        { "id": "1", "label": "계수가 소수 1차 부등식", "value": "1" },
+        { "id": "2", "label": "계수가 소수 2차 부등식", "value": "2" },
+        { "id": "3", "label": "계수가 소수 3차 부등식", "value": "3" }
+      ]
+    },
+    {
+      "id": "7",
+      "label": "소단원",
+      "value": "7",
+      "options": [
+        { "id": "1", "label": "계수가 소수인 경우-일차부등식", "value": "1" },
+        { "id": "2", "label": "계수가 소수인 경우-일차부등식", "value": "2" }
+      ]
+    }
+  ],
+  "Category2" : [
+    {
+      "id": "1",
+      "label": "문제유형",
+      "value": "1",
+      "options": [
+        { "id": "1", "label": "객관식", "value": "1" },
+        { "id": "2", "label": "주관식", "value": "2" },
+        { "id": "3", "label": "서술형", "value": "3" }
+      ]
+    },
+    {
+      "id": "2",
+      "label": "난이도",
+      "value": "2",
+      "options": [
+        { "id": "1", "label": "초등", "value": "1" },
+        { "id": "2", "label": "중등", "value": "2" },
+        { "id": "3", "label": "고등", "value": "3" }
+      ]
+    },
+    {
+      "id": "3",
+      "label": "행동영역",
+      "value": "3",
+      "options": [
+        { "id": "1", "label": "초등1", "value": "1" },
+        { "id": "2", "label": "초등2", "value": "2" },
+        { "id": "3", "label": "중등1", "value": "3" },
+        { "id": "4", "label": "중등2", "value": "4" },
+        { "id": "5", "label": "고등1", "value": "5" },
+        { "id": "6", "label": "고등2", "value": "6" }
+      ]
+    },
+    {
+      "id": "4",
+      "label": "행동영역2",
+      "value": "4",
+      "options": [
+        { "id": "1", "label": "1학기", "value": "1" },
+        { "id": "2", "label": "2학기", "value": "2" }
+      ]
+    }
+  ]
+}

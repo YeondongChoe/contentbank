@@ -1,27 +1,36 @@
 {
   "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "*": ["src/*"]
+    },
     "target": "es6",
     "lib": [
       "dom",
       "dom.iterable",
       "esnext"
     ],
-    "noImplicitAny": true,
-    "allowJs": true,
-    "skipLibCheck": true,
+    // "noImplicitAny": true,
+    // "allowJs": true,
+    // "skipLibCheck": true,
+    // "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "jsx": "react-jsx",
-    "outDir": "./dist",
-    "typeRoots": ["./node_modules/@types", "types"]
+    "jsx": "react",
+    "outDir": "build",
+    "typeRoots": ["./node_modules/@types"],
+		// 퍼블릭의 스타틱폴더 내부 파일
+		"allowJs": true,  // JavaScript 파일 허용
+    "checkJs": false, // JavaScript 파일 내의 타입 검사 비활성화
+    "noImplicitAny": true, // 'any' 타입에 대한 경고 비활성화
+    "strict": true,  // 모든 엄격한 타입-체킹 옵션을 비활성화
+    "skipLibCheck": true  // 라이브러리 파일의 타입 검사 생략
   },
-  "include": [
-    "./src/**/*"
-  ]
+  "include": ["src", "@types/custom.d.ts"],
+  "exclude": ["node_modules", "build"]
 }
